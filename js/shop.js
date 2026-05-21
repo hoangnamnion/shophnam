@@ -28,10 +28,29 @@ function initDevice() {
 }
 
 // ── SESSION ──
-function loadSession() {
+async function loadSession() {
   const saved = localStorage.getItem('mkshop_session');
   if (!saved) return;
-  try { const s = JSON.parse(saved); currentToken = s.token; currentUser = s.user; renderUserBar(); } catch {}
+  try {
+    const s = JSON.parse(saved);
+    currentToken = s.token;
+    currentUser = s.user;
+    renderUserBar();
+
+    // Fetch fresh profile from backend to get updated balance immediately
+    const r = await fetch(SHOP_URL + '/profile', {
+      headers: { 'Authorization': 'Bearer ' + currentToken }
+    });
+    if (r.ok) {
+      const d = await r.json();
+      if (d.username) {
+        currentUser = d;
+        saveSession(currentToken, currentUser);
+      }
+    }
+  } catch(e) {
+    console.error("Error reloading session:", e);
+  }
 }
 function saveSession(token, user) {
   currentToken = token; currentUser = user;
