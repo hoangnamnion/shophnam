@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Admin — MKShop Gold</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen" style="display:none">
+  <div class="login-card fade-in">
+    <div style="width:48px;height:48px;background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto 16px;box-shadow:0 0 24px #f59e0b44">👑</div>
+    <h1>Admin Panel</h1>
+    <p>Đăng nhập bằng tài khoản admin để quản lý</p>
+    <div id="login-alert" class="alert"></div>
+    <div class="form-group"><label class="form-label">Tên đăng nhập</label><input class="form-control" id="a-user" value="admin" autocomplete="username"></div>
+    <div class="form-group"><label class="form-label">Mật khẩu</label><input class="form-control" id="a-pass" type="password" placeholder="••••••" autocomplete="current-password"></div>
+    <button class="btn btn-ind" id="btn-admin-login" onclick="doAdminLogin()" style="width:100%;justify-content:center;padding:12px;margin-top:4px">
+      <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+    </button>
+  </div>
+</div>
+
+<!-- ══ APP SCREEN ══ -->
+<div id="app-screen" style="display:none;flex-direction:row;min-height:100vh">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">⭐</div>
+      MKShop
+      <span class="badge">ADMIN</span>
+    </div>
+    <nav class="nav-links">
+      <button class="nav-link active" data-page="dashboard" onclick="navTo('dashboard')">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </button>
+      <button class="nav-link" data-page="users" onclick="navTo('users')">
+        <i class="fa-solid fa-users"></i> Người dùng
+      </button>
+      <button class="nav-link" data-page="txs" onclick="navTo('txs')">
+        <i class="fa-solid fa-receipt"></i> Giao dịch
+      </button>
+      <a class="nav-link" href="shop.html" target="_blank" style="text-decoration:none">
+        <i class="fa-solid fa-store"></i> Xem Shop
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-chip">
+        <div>
+          <div class="name">👑 Admin</div>
+          <div class="role">Quản trị viên</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="adminLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ── DASHBOARD PAGE ── -->
+    <div id="page-dashboard" class="page active fade-in">
+      <div class="page-header">
+        <div class="page-title">📊 Dashboard</div>
+        <div class="page-sub">Tổng quan hệ thống MKShop Gold</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card ind">
+          <div class="stat-label"><i class="fa-solid fa-users"></i> Tổng người dùng</div>
+          <div class="stat-value" id="stat-users">—</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label"><i class="fa-solid fa-arrow-down"></i> Tổng nạp</div>
+          <div class="stat-value" id="stat-dep">—</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label"><i class="fa-solid fa-arrow-up"></i> Tổng chi</div>
+          <div class="stat-value" id="stat-spent">—</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label"><i class="fa-solid fa-wallet"></i> Tổng số dư</div>
+          <div class="stat-value" id="stat-bal">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <span>👥 Khách hàng gần đây</span>
+          <button class="btn btn-sm btn-ghost" onclick="navTo('users')">Xem tất cả →</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Tài khoản</th><th>Tên</th><th>Số dư</th><th>Tổng nạp</th><th>Tổng chi</th><th>Thao tác</th></tr></thead>
+            <tbody id="recent-users-table"><tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── USERS PAGE ── -->
+    <div id="page-users" class="page fade-in">
+      <div class="page-header">
+        <div class="page-title">👥 Quản lý người dùng</div>
+        <div class="page-sub">Xem và quản lý tài khoản khách hàng</div>
+      </div>
+      <div class="toolbar">
+        <input class="search-box" id="user-search" placeholder="🔍 Tìm theo username, email, tên..." oninput="filterUsers()">
+        <button class="btn btn-ind" onclick="loadUsers()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Tài khoản</th><th>Tên</th><th>Số dư</th><th>Tổng nạp</th><th>Tổng chi</th><th>Thao tác</th></tr></thead>
+            <tbody id="users-table"><tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRANSACTIONS PAGE ── -->
+    <div id="page-txs" class="page fade-in">
+      <div class="page-header">
+        <div class="page-title">💳 Giao dịch nạp tiền</div>
+        <div class="page-sub">Lịch sử giao dịch qua SePay</div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:1fr 1fr">
+        <div class="stat-card green">
+          <div class="stat-label"><i class="fa-solid fa-receipt"></i> Tổng giao dịch</div>
+          <div class="stat-value" id="stat-tx-total">—</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label"><i class="fa-solid fa-coins"></i> Tổng tiền nạp</div>
+          <div class="stat-value" id="stat-tx-amt">—</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input class="search-box" id="tx-search" placeholder="🔍 Tìm theo username, mã GD..." oninput="filterTx()">
+        <button class="btn btn-ind" onclick="loadTransactions()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Mã GD</th><th>Username</th><th>Số tiền</th><th>Thời gian</th><th>Trạng thái</th></tr></thead>
+            <tbody id="tx-table"><tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ USER DETAIL MODAL ══ -->
+<div class="overlay" id="detail-overlay" onclick="closeIfBg(event,'detail-overlay')">
+  <div class="modal" style="max-width:560px">
+    <button class="modal-close" onclick="closeOverlay('detail-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <h3><i class="fa-solid fa-user-circle" style="color:var(--ind)"></i> Chi tiết người dùng</h3>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- ══ SET BALANCE MODAL ══ -->
+<div class="overlay" id="bal-overlay" onclick="closeIfBg(event,'bal-overlay')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOverlay('bal-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <h3><i class="fa-solid fa-coins" style="color:var(--gold)"></i> Cập nhật số dư</h3>
+    <div id="bal-alert" class="alert"></div>
+    <div style="background:#ffffff08;border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div class="detail-row"><span class="detail-lbl">Username</span><span class="detail-val" id="bal-username">—</span></div>
+      <div class="detail-row"><span class="detail-lbl">Số dư hiện tại</span><span class="detail-val" style="color:var(--gold)" id="bal-current">—</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Số dư mới (VNĐ)</label>
+      <input class="form-control" id="bal-amount" type="number" min="0" placeholder="0">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="closeOverlay('bal-overlay')">Hủy</button>
+      <button class="btn btn-gold" id="btn-set-bal" onclick="doSetBalance()" style="flex:1;justify-content:center">
+        <i class="fa-solid fa-check"></i> Xác nhận
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DELETE CONFIRM MODAL ══ -->
+<div class="overlay" id="del-overlay" onclick="closeIfBg(event,'del-overlay')">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <button class="modal-close" onclick="closeOverlay('del-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <div style="font-size:2.5rem;margin-bottom:12px">⚠️</div>
+    <h3>Xác nhận xóa</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin:8px 0 20px">Bạn có chắc muốn xóa user <strong id="del-username"></strong>? Hành động này không thể hoàn tác.</p>
+    <div id="del-alert" class="alert"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="closeOverlay('del-overlay')" style="flex:1;justify-content:center">Hủy</button>
+      <button class="btn btn-red" id="btn-confirm-del" onclick="doDelete()" style="flex:1;justify-content:center">
+        <i class="fa-solid fa-trash"></i> Xác nhận xóa
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="./js/admin.js" defer></script>
+</body>
+</html>

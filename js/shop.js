@@ -1,7 +1,6 @@
-<script>
 const SHOP_URL   = 'https://tkmkshop.caovannamutt.workers.dev';
 const PAY_URL    = 'https://tiennap.caovannamutt.workers.dev';
-const WORKER_URL = 'https://shopbanhang.caovannamutt.workers.dev/'; // worker kick gold (giống nanggold.html)
+const WORKER_URL = 'https://shopbanhang.caovannamutt.workers.dev/'; 
 
 const PLANS = {
   basic:   { name:'Locket Gold — 3 Không', price:50000, key:'basic' },
@@ -13,7 +12,7 @@ let currentToken = null;
 let selectedPlan = null;
 let deviceId     = '';
 
-// ── DEVICE ID (giống nanggold.html) ──
+// ── DEVICE ID ──
 function initDevice() {
   let id = localStorage.getItem('locket_device_id');
   if (id && id.startsWith('dev-') && id.length > 20) { localStorage.removeItem('locket_device_id'); id = null; }
@@ -158,19 +157,79 @@ function buyPlan(key) {
     <div class="price">${fmt(selectedPlan.price)}</div>
     <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Vĩnh viễn · Bảo hành 1 năm</div>`;
   document.getElementById('buy-bal-display').textContent = fmt(currentUser.balance || 0);
-  document.getElementById('locket-user').value = '';
-  document.getElementById('kick-result-area').innerHTML = '';
-  document.getElementById('kick-result-area').style.display = 'none';
-  setBtn('btn-confirm-buy', true);
   clearAlert('buy-alert');
+  resetBuyModal();
   openOverlay('buy-overlay');
 }
 
-// ── CONFIRM BUY → KICK GOLD NGAY ──
-async function confirmBuy() {
-  if (!selectedPlan || !currentUser) return;
+function resetBuyModal() {
+  document.getElementById('locket-user').value = '';
+  document.getElementById('step-check').style.display = 'block';
+  document.getElementById('step-kick').style.display  = 'none';
+  document.getElementById('kick-result-area').innerHTML = '';
+  document.getElementById('kick-result-area').style.display = 'none';
+  document.getElementById('btn-check-locket').disabled = false;
+  document.getElementById('btn-check-locket').innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Kiểm tra tài khoản';
+  clearAlert('buy-alert');
+}
+
+function autoExtractUser(el) {
+  const val = el.value.trim();
+  if (!val.includes('locket.cam/')) return;
+  try {
+    const url  = new URL(val.startsWith('http') ? val : 'https://' + val);
+    let   path = url.pathname.replace('/', '').replace('@', '');
+    if (path && !path.startsWith('invite')) { el.value = path; return; }
+  } catch {}
+  const m = val.match(/locket\.cam\/(@?[a-zA-Z0-9_.-]+)/);
+  if (m && m[1] && !m[1].replace('@','').startsWith('invite')) el.value = m[1].replace('@','');
+}
+
+// ── BƯỚC 1: CHECK tài khoản Locket ──
+async function checkLocket() {
   const locketUser = document.getElementById('locket-user').value.trim();
-  if (!locketUser) { showAlert('buy-alert', 'Nhập username Locket cần nâng Gold', 'err'); return; }
+  if (!locketUser) { showAlert('buy-alert', 'Vui lòng nhập username Locket', 'err'); return; }
+
+  setLoading('btn-check-locket', true);
+  clearAlert('buy-alert');
+
+  try {
+    const res  = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: locketUser, action: 'check', device_id: deviceId })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      const name   = data.name   || locketUser;
+      const uname  = data.username || locketUser;
+      const avatar = data.avatar  || '';
+
+      document.getElementById('preview-name').textContent  = name;
+      document.getElementById('preview-uname').textContent = uname;
+      const avatarEl = document.getElementById('preview-avatar');
+      if (avatar) { avatarEl.src = avatar; avatarEl.style.display = 'block'; }
+      else { avatarEl.style.display = 'none'; }
+
+      document.getElementById('step-check').style.display = 'none';
+      document.getElementById('step-kick').style.display  = 'block';
+      clearAlert('buy-alert');
+    } else {
+      showAlert('buy-alert', data.error || 'Không tìm thấy tài khoản Locket', 'err');
+      setLoading('btn-check-locket', false, '<i class="fa-solid fa-magnifying-glass"></i> Kiểm tra tài khoản');
+    }
+  } catch(e) {
+    showAlert('buy-alert', 'Lỗi kết nối: ' + e.message, 'err');
+    setLoading('btn-check-locket', false, '<i class="fa-solid fa-magnifying-glass"></i> Kiểm tra tài khoản');
+  }
+}
+
+// ── BƯỚC 2: KICK GOLD sau khi đã check ──
+async function kickGoldNow() {
+  if (!selectedPlan || !currentUser) return;
+  const locketUser = document.getElementById('preview-uname').textContent.trim();
+  if (!locketUser) return;
 
   const bal = currentUser.balance || 0;
   if (currentUser.role !== 'admin' && bal < selectedPlan.price) {
@@ -178,10 +237,10 @@ async function confirmBuy() {
     return;
   }
 
-  setLoading('btn-confirm-buy', true);
+  setLoading('btn-kick-gold', true);
   clearAlert('buy-alert');
 
-  // BƯỚC 1: Trừ số dư trước
+  // Trừ số dư
   try {
     const r = await fetch(SHOP_URL + '/balance/deduct', {
       method: 'POST',
@@ -191,35 +250,33 @@ async function confirmBuy() {
     const d = await r.json();
     if (!d.success) {
       showAlert('buy-alert', d.error || 'Thanh toán thất bại', 'err');
-      setLoading('btn-confirm-buy', false, '<i class="fa-solid fa-bolt"></i> Xác nhận &amp; Kick Gold');
+      setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay');
       return;
     }
     currentUser.balance = d.newBalance;
     saveSession(currentToken, currentUser);
   } catch {
     showAlert('buy-alert', 'Lỗi kết nối khi thanh toán', 'err');
-    setLoading('btn-confirm-buy', false, '<i class="fa-solid fa-bolt"></i> Xác nhận &amp; Kick Gold');
+    setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay');
     return;
   }
 
-  // BƯỚC 2: Kick Gold ngay (giống nanggold.html)
+  // Kick Gold
   showAlert('buy-alert', '⚡ Đang kick Gold cho @' + locketUser + '...', 'ok');
   try {
-    const res = await fetch(WORKER_URL, {
+    const res  = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: locketUser, device_id: deviceId })
     });
     const data = await res.json();
-
     const area = document.getElementById('kick-result-area');
     area.style.display = 'block';
 
     if (data.success) {
-      const name  = data.name    || locketUser;
-      const uname = data.username || locketUser;
-      const avatar = data.avatar || '';
-
+      const name   = data.name    || locketUser;
+      const uname  = data.username || locketUser;
+      const avatar = data.avatar || document.getElementById('preview-avatar').src;
       area.innerHTML = `
         <div style="background:#22c55e14;border:1px solid #22c55e33;border-radius:16px;padding:20px;text-align:center">
           ${avatar ? `<img src="${avatar}" style="width:70px;height:70px;border-radius:50%;border:3px solid #f59e0b;margin-bottom:10px;object-fit:cover">` : ''}
@@ -229,16 +286,15 @@ async function confirmBuy() {
           <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;background:#f59e0b18;border:1px solid #f59e0b33;color:#f59e0b;padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:700">⭐ ĐÃ CÓ GOLD</div>
         </div>`;
       clearAlert('buy-alert');
-      setBtn('btn-confirm-buy', false);
+      document.getElementById('btn-kick-gold').style.display = 'none';
     } else {
-      // Kick thất bại - hoàn tiền
+      // Hoàn tiền tự động
       area.innerHTML = `
         <div style="background:#ef444414;border:1px solid #ef444433;border-radius:16px;padding:16px;text-align:center">
           <div style="color:#f87171;font-weight:800;margin-bottom:4px">❌ Kick Thất Bại</div>
           <div style="color:#f87171;font-size:.82rem">${data.error || 'Không xác định'}</div>
-          <div style="color:#94a3b8;font-size:.78rem;margin-top:6px">Tiền đã được hoàn lại vào tài khoản của bạn.</div>
+          <div style="color:#94a3b8;font-size:.78rem;margin-top:6px">Tiền đã được hoàn lại vào tài khoản.</div>
         </div>`;
-      // Hoàn tiền
       try {
         await fetch(SHOP_URL + '/balance/add', {
           method: 'POST',
@@ -249,12 +305,12 @@ async function confirmBuy() {
         saveSession(currentToken, currentUser);
       } catch {}
       clearAlert('buy-alert');
-      setLoading('btn-confirm-buy', false, '<i class="fa-solid fa-bolt"></i> Thử lại');
+      setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thử lại');
     }
   } catch(e) {
     document.getElementById('kick-result-area').innerHTML = `
       <div style="background:#ef444414;border:1px solid #ef444433;border-radius:14px;padding:14px;text-align:center;color:#f87171;font-size:.83rem">❌ Lỗi kết nối: ${e.message}</div>`;
-    setLoading('btn-confirm-buy', false, '<i class="fa-solid fa-bolt"></i> Thử lại');
+    setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thử lại');
   }
 }
 
@@ -296,6 +352,3 @@ document.addEventListener('keydown', e => {
 
 initDevice();
 loadSession();
-</script>
-</body>
-</html>

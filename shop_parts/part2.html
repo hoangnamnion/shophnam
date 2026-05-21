@@ -134,8 +134,8 @@
 <div class="overlay" id="buy-overlay" onclick="closeIfBg(event,'buy-overlay')">
   <div class="modal">
     <button class="modal-close" onclick="closeOverlay('buy-overlay')"><i class="fa-solid fa-xmark"></i></button>
-    <h2><i class="fa-solid fa-cart-shopping" style="color:var(--gold)"></i> Xác nhận mua</h2>
-    <p class="modal-sub">Kiểm tra thông tin trước khi thanh toán</p>
+    <h2><i class="fa-solid fa-bolt" style="color:var(--gold)"></i> Thanh toán &amp; Kick Gold</h2>
+    <p class="modal-sub">Trả tiền xong là kick Gold ngay lập tức!</p>
     <div id="buy-alert" class="alert"></div>
     <div class="buy-plan-info" id="buy-info"></div>
     <div class="bal-display">
@@ -144,14 +144,16 @@
     </div>
     <div class="form-group">
       <label class="form-label">Username Locket cần nâng Gold</label>
-      <input class="form-control" id="locket-user" placeholder="Nhập username Locket...">
+      <input class="form-control" id="locket-user" placeholder="Nhập username hoặc dán link locket.cam/...">
     </div>
-    <button class="btn btn-gold btn-full btn-lg" onclick="confirmBuy()" id="btn-confirm-buy">
-      <i class="fa-solid fa-bolt"></i> Xác nhận &amp; Thanh toán
+    <button class="btn btn-gold btn-full btn-lg" onclick="confirmBuy()" id="btn-confirm-buy" style="display:flex;align-items:center;justify-content:center;gap:8px">
+      <i class="fa-solid fa-bolt"></i> Xác nhận &amp; Kick Gold Ngay
     </button>
+    <div id="kick-result-area" style="display:none;margin-top:16px"></div>
   </div>
 </div>
 
 <footer>
   <p>© 2025 MKShop · Dịch vụ nâng Gold Locket uy tín · Hỗ trợ: Telegram @mkshop</p>
 </footer>
+</body>

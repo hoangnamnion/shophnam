@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>MKShop - Nang Gold Locket</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./css/shop.css">
+</head>
+
+<body>
+  <div id="toast"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a class="logo" href="#">
+        <div class="logo-icon">⭐</div>
+        CAO VĂN NAM LKGOLD
+      </a>
+      <div class="nav-actions">
+        <div id="guest-bar">
+          <button class="btn btn-ghost" onclick="openAuth()"><i class="fa-solid fa-right-to-bracket"></i> Đăng
+            nhập</button>
+          <button class="btn btn-ind" onclick="openAuth('register')"><i class="fa-solid fa-user-plus"></i> Đăng
+            ký</button>
+        </div>
+        <div id="user-bar">
+          <div class="bal-chip" id="nav-balance">💰 0đ</div>
+          <button class="btn btn-ghost" onclick="openDeposit()"><i class="fa-solid fa-plus"></i> Nạp tiền</button>
+          <button class="btn btn-ghost" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag"><i class="fa-solid fa-shield-halved"></i> Bảo hành 1 năm · Uy tín · An toàn</div>
+    <h1>Nâng <em>Locket Gold</em><br>Không lo gì cả</h1>
+    <p class="hero-sub">Dịch vụ nâng cấp Locket Gold uy tín, an toàn tuyệt đối. Không cần tài khoản iCloud, không cần
+      mật khẩu.</p>
+    <div class="trust-row">
+      <div class="trust-item"><i class="fa-solid fa-bolt"></i> Xử lý nhanh 5 phút</div>
+      <div class="trust-item"><i class="fa-solid fa-lock"></i> Bảo mật tuyệt đối</div>
+      <div class="trust-item"><i class="fa-solid fa-headset"></i> Hỗ trợ 24/7</div>
+      <div class="trust-item"><i class="fa-solid fa-rotate-left"></i> Bảo hành 1 năm</div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <div class="products-section">
+    <h2 class="section-title">Chọn Gói Của Bạn</h2>
+    <p class="section-sub">Tất cả các gói đều <strong>vĩnh viễn</strong> và bảo hành <strong>1 năm</strong></p>
+    <div class="plans-grid">
+
+      <!-- GÓI 50K -->
+      <div class="plan-card">
+        <div class="plan-tier basic"><i class="fa-solid fa-star-half-stroke"></i> GÓI CƠ BẢN</div>
+        <div class="plan-price-wrap">
+          <div class="plan-price">50<sub>k</sub></div>
+        </div>
+        <div class="plan-name">Locket Gold — 3 Không</div>
+        <div class="plan-warranty"><i class="fa-solid fa-shield-check"></i> Vĩnh viễn · BH 1 năm</div>
+        <ul class="plan-features">
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không đăng nhập iCloud
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không cần tài khoản &amp; mật khẩu
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không nâng qua app lậu
+          </li>
+          <li>
+            <div class="icon icon-gold"><i class="fa-solid fa-info"></i></div> Cần cài thêm 1 Cấu Hình DNS để giữ Gold
+          </li>
+        </ul>
+        <button class="btn btn-ind btn-lg btn-full" onclick="buyPlan('basic')">
+          <i class="fa-solid fa-cart-shopping"></i> Mua ngay — 50.000đ
+        </button>
+      </div>
+
+      <!-- GÓI 99K -->
+      <div class="plan-card featured">
+        <div class="plan-ribbon">HOT</div>
+        <div class="plan-tier premium"><i class="fa-solid fa-crown"></i> GÓI CAO CẤP</div>
+        <div class="plan-price-wrap">
+          <div class="plan-price"
+            style="background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+            99<sub style="-webkit-text-fill-color:#94a3b8">k</sub></div>
+        </div>
+        <div class="plan-name">Locket Gold — 4 Không</div>
+        <div class="plan-warranty"><i class="fa-solid fa-shield-check"></i> Vĩnh viễn · BH 1 năm</div>
+        <ul class="plan-features">
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không đăng nhập iCloud
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không cần tài khoản &amp; mật khẩu
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không nâng qua app lậu
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không cần cài Cấu hình DNS
+          </li>
+        </ul>
+        <button class="btn btn-gold btn-lg btn-full" onclick="buyPlan('premium')">
+          <i class="fa-solid fa-crown"></i> Mua ngay — 99.000đ
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="overlay" id="auth-overlay" onclick="closeIfBg(event,'auth-overlay')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeOverlay('auth-overlay')"><i class="fa-solid fa-xmark"></i></button>
+      <h2>Chào mừng</h2>
+      <p class="modal-sub">Đăng nhập để mua hàng và nạp tiền</p>
+      <div class="tabs">
+        <button class="tab active" id="tab-login" onclick="switchTab('login')">Đăng nhập</button>
+        <button class="tab" id="tab-register" onclick="switchTab('register')">Đăng ký</button>
+      </div>
+      <div id="auth-alert" class="alert"></div>
+      <!-- LOGIN -->
+      <div id="form-login">
+        <div class="form-group"><label class="form-label">Tên đăng nhập</label><input class="form-control" id="l-user"
+            placeholder="username" autocomplete="username"></div>
+        <div class="form-group"><label class="form-label">Mật khẩu</label><input class="form-control" id="l-pass"
+            type="password" placeholder="••••••" autocomplete="current-password"></div>
+        <button class="btn btn-ind btn-full btn-lg" onclick="doLogin()" id="btn-login">Đăng nhập</button>
+      </div>
+      <!-- REGISTER -->
+      <div id="form-register" style="display:none">
+        <div class="form-group"><label class="form-label">Tên đăng nhập</label><input class="form-control" id="r-user"
+            placeholder="3–20 ký tự" autocomplete="username"></div>
+        <div class="form-group"><label class="form-label">Mật khẩu</label><input class="form-control" id="r-pass"
+            type="password" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password"></div>
+        <div class="form-group"><label class="form-label">Email (tuỳ chọn)</label><input class="form-control"
+            id="r-email" placeholder="email@example.com" autocomplete="email"></div>
+        <button class="btn btn-ind btn-full btn-lg" onclick="doRegister()" id="btn-register">Tạo tài khoản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT MODAL -->
+  <div class="overlay" id="dep-overlay" onclick="closeIfBg(event,'dep-overlay')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeOverlay('dep-overlay')"><i class="fa-solid fa-xmark"></i></button>
+      <h2><i class="fa-solid fa-wallet" style="color:var(--gold)"></i> Nạp tiền</h2>
+      <p class="modal-sub">Chuyển khoản theo thông tin dưới. Tiền sẽ vào ngay sau khi hệ thống nhận.</p>
+      <div id="dep-alert" class="alert"></div>
+      <div class="qr-wrap"><img id="qr-img" src="" alt="QR Code"></div>
+      <div class="bank-box">
+        <div class="bank-row"><span class="bank-lbl">Ngân hàng</span><span class="bank-val" id="dep-bank">—</span></div>
+        <div class="bank-row"><span class="bank-lbl">Số tài khoản</span><span class="bank-val"><span
+              id="dep-acc">—</span><button class="copy-btn" onclick="copyText('dep-acc')">Copy</button></span></div>
+        <div class="bank-row"><span class="bank-lbl">Chủ tài khoản</span><span class="bank-val" id="dep-name">—</span>
+        </div>
+        <div class="bank-row"><span class="bank-lbl">Nội dung CK</span><span class="bank-val"><span id="dep-code"
+              style="color:var(--gold)">—</span><button class="copy-btn"
+              onclick="copyText('dep-code')">Copy</button></span></div>
+      </div>
+      <button class="btn btn-ind btn-full" onclick="checkPayment()" id="btn-check-pay">
+        <i class="fa-solid fa-rotate"></i> Kiểm tra đã chuyển
+      </button>
+    </div>
+  </div>
+
+  <!-- BUY MODAL -->
+  <div class="overlay" id="buy-overlay" onclick="closeIfBg(event,'buy-overlay')">
+    <div class="modal">
+      <button class="modal-close" onclick="closeOverlay('buy-overlay')"><i class="fa-solid fa-xmark"></i></button>
+      <h2><i class="fa-solid fa-bolt" style="color:var(--gold)"></i> Thanh toán &amp; Kick Gold</h2>
+      <p class="modal-sub">Kiểm tra tài khoản Locket trước, rồi mới kick Gold!</p>
+      <div id="buy-alert" class="alert"></div>
+      <div class="buy-plan-info" id="buy-info"></div>
+      <div class="bal-display">
+        <span class="lbl">Số dư hiện tại</span>
+        <span class="val" id="buy-bal-display">0đ</span>
+      </div>
+      <!-- STEP 1: Nhập username + Check -->
+      <div id="step-check">
+        <div class="form-group">
+          <label class="form-label">Username Locket cần nâng Gold</label>
+          <input class="form-control" id="locket-user" placeholder="Nhập username hoặc dán link locket.cam/..."
+            oninput="autoExtractUser(this)">
+        </div>
+        <button class="btn btn-ind btn-full btn-lg" onclick="checkLocket()" id="btn-check-locket"
+          style="display:flex;align-items:center;justify-content:center;gap:8px">
+          <i class="fa-solid fa-magnifying-glass"></i> Kiểm tra tài khoản
+        </button>
+      </div>
+      <!-- STEP 2: Preview + Kick -->
+      <div id="step-kick" style="display:none">
+        <div id="locket-preview"
+          style="background:#ffffff08;border:1px solid var(--bd);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px">
+          <img id="preview-avatar" src=""
+            style="width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;margin-bottom:10px;display:none">
+          <div id="preview-name" style="font-size:1.1rem;font-weight:900;margin-bottom:2px"></div>
+          <div style="font-size:.82rem;color:var(--muted)">@<span id="preview-uname"></span></div>
+        </div>
+        <button class="btn btn-gold btn-full btn-lg" onclick="kickGoldNow()" id="btn-kick-gold"
+          style="display:flex;align-items:center;justify-content:center;gap:8px">
+          <i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay
+        </button>
+        <button class="btn btn-ghost btn-full" onclick="resetBuyModal()" style="margin-top:8px;justify-content:center">
+          <i class="fa-solid fa-arrow-left"></i> Đổi username
+        </button>
+      </div>
+      <div id="kick-result-area" style="display:none;margin-top:16px"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 CAOVANNAMSHOP · Dịch vụ nâng Gold Locket uy tín · Hỗ trợ: CAOVANNAM </p>
+  </footer>
+
+  <script src="./js/shop.js" defer></script>
+</body>
+
+</html>

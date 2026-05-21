@@ -1,11 +1,13 @@
 // tiennap.js - Cloudflare Worker: Xử lý nạp tiền qua SePay
-// Deploy tại: https://tiennap.your-subdomain.workers.dev
+// Deploy tại: https://shy-mode-c579.caovannamutt.workers.dev
 
-const SEPAY_API_KEY = "YOUR_SEPAY_API_KEY"; // Thay bằng API key SePay thật
-const SEPAY_ACCOUNT = "YOUR_BANK_ACCOUNT"; // Số tài khoản ngân hàng
-const TKMKSHOP_URL = "https://tkmkshop.caovannamutt.workers.dev/"; // URL của tkmkshop.js
-const INTERNAL_KEY = "mkshop_internal_2025";
-const JWT_SECRET = "mkshop_secret_jwt_2025"; // Phải giống tkmkshop.js
+const SEPAY_API_KEY  = "https://shy-mode-c579.caovannamutt.workers.dev/webhook"; // Thay bằng API key SePay thật (lấy tại my.sepay.vn)
+const SEPAY_ACCOUNT  = "338935";              // Số tài khoản MB Bank
+const BANK_NAME      = "MB Bank";
+const ACCOUNT_NAME   = "CAO VAN NAM";
+const TKMKSHOP_URL   = "https://tkmkshop.caovannamutt.workers.dev"; // URL của tkmkshop.js
+const INTERNAL_KEY   = "mkshop_internal_2025";
+const JWT_SECRET     = "mkshop_secret_jwt_2025"; // Phải giống tkmkshop.js
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -90,14 +92,17 @@ async function handlePaymentInfo(request, env) {
 
   const transferCode = generateTransferCode(payload.username);
 
-  // Tạo QR SePay
-  const qrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_ACCOUNT}&bank=MB&amount=&des=${transferCode}&template=compact`;
+  // Lưu mapping code → username để webhook tìm được user sau
+  await env.TIENNAP_KV.put(`code:${transferCode}`, payload.username, { expirationTtl: 86400 * 90 });
+
+  // Tạo QR VietQR (MB Bank)
+  const qrUrl = `https://img.vietqr.io/image/${SEPAY_ACCOUNT}-compact2.png?amount=&addInfo=${transferCode}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
 
   return jsonRes({
     success: true,
     bankAccount: SEPAY_ACCOUNT,
-    bankName: "MB Bank",
-    accountName: "MKSHOP LOCKET GOLD",
+    bankName: BANK_NAME,
+    accountName: ACCOUNT_NAME,
     transferCode,
     qrUrl,
     note: `Nội dung chuyển khoản: ${transferCode}`,
@@ -204,35 +209,57 @@ async function handleCheckPayment(request, env) {
 async function handleWebhook(request, env) {
   // SePay tự động POST khi có giao dịch mới
   let body;
-  try {
-    body = await request.json();
-  } catch {
-    return new Response("OK", { status: 200 });
-  }
+  try { body = await request.json(); } catch { return new Response("OK", { status: 200 }); }
 
-  const desc = (body.content || body.description || "").toUpperCase();
+  // SePay gửi: transferAmount, content/description, referenceCode, id
+  const desc   = (body.content || body.description || body.transferDescription || "").toUpperCase();
   const amount = parseInt(body.transferAmount || body.amount || 0);
-  const txId = body.referenceCode || body.id || Date.now().toString();
+  const txId   = body.referenceCode || body.id || body.transactionId || Date.now().toString();
 
-  // Tìm username từ mã chuyển khoản
-  // Mã = MKSHOP + 6 ký tự username đầu
+  // Chỉ xử lý giao dịch có tiền vào
+  if (amount <= 0) return new Response("OK", { status: 200 });
+
+  // Tìm mã MKSHOP trong nội dung chuyển khoản
   const match = desc.match(/MKSHOP([A-Z0-9]{1,6})/);
-  if (!match || amount <= 0) {
+  if (!match) return new Response("OK", { status: 200 });
+
+  const transferCode = "MKSHOP" + match[1];
+
+  // Chống trùng: kiểm tra txId đã xử lý chưa
+  const already = await env.TIENNAP_KV.get(`tx:${txId}`);
+  if (already) return new Response("OK", { status: 200 });
+
+  // Tìm username từ code mapping
+  const username = await env.TIENNAP_KV.get(`code:${transferCode}`);
+  if (!username) {
+    // Không tìm thấy → lưu pending để xử lý sau
+    const pendingKey = `pending:${transferCode}`;
+    const pendingRaw = await env.TIENNAP_KV.get(pendingKey);
+    const pending = pendingRaw ? JSON.parse(pendingRaw) : [];
+    pending.unshift({ txId, amount, date: new Date().toISOString(), transferCode });
+    await env.TIENNAP_KV.put(pendingKey, JSON.stringify(pending), { expirationTtl: 86400 * 7 });
     return new Response("OK", { status: 200 });
   }
 
-  const codePrefix = match[1];
+  // Đánh dấu đã xử lý
+  await env.TIENNAP_KV.put(`tx:${txId}`, JSON.stringify({
+    username, amount, processed: true, date: new Date().toISOString()
+  }));
 
-  // Tìm user khớp
-  const userListRaw = await env.TIENNAP_KV.get("userlist_cache");
-  // Nếu không có cache, gọi tkmkshop để lấy danh sách
-  // (hoặc lưu mapping riêng)
-  // Webhook sẽ lưu pending, user tự check sau
-  const pendingKey = `pending:${codePrefix}`;
-  const pendingRaw = await env.TIENNAP_KV.get(pendingKey);
-  const pending = pendingRaw ? JSON.parse(pendingRaw) : [];
-  pending.unshift({ txId, amount, date: new Date().toISOString(), codePrefix });
-  await env.TIENNAP_KV.put(pendingKey, JSON.stringify(pending));
+  // Cộng tiền vào tài khoản ngay lập tức
+  await fetch(`${TKMKSHOP_URL}/balance/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Internal-Key": INTERNAL_KEY },
+    body: JSON.stringify({ username, amount, txCode: transferCode }),
+  });
+
+  // Lưu lịch sử
+  const histKey = `history:${username}`;
+  const histRaw = await env.TIENNAP_KV.get(histKey);
+  const hist = histRaw ? JSON.parse(histRaw) : [];
+  hist.unshift({ txId, amount, transferCode, username, date: new Date().toISOString() });
+  if (hist.length > 100) hist.splice(100);
+  await env.TIENNAP_KV.put(histKey, JSON.stringify(hist));
 
   return new Response("OK", { status: 200 });
 }
