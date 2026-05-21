@@ -1,5 +1,5 @@
 const SHOP_URL   = 'https://tkmkshop.caovannamutt.workers.dev';
-const PAY_URL    = 'https://tiennap.caovannamutt.workers.dev';
+const PAY_URL    = 'https://shy-mode-c579.caovannamutt.workers.dev';
 const WORKER_URL = 'https://shopbanhang.caovannamutt.workers.dev/'; 
 
 const PLANS = {

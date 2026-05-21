@@ -1,44 +1,54 @@
 // tiennap.js - Cloudflare Worker: Xử lý nạp tiền qua SePay
 // Deploy tại: https://shy-mode-c579.caovannamutt.workers.dev
 
-const SEPAY_API_KEY  = "https://shy-mode-c579.caovannamutt.workers.dev/webhook"; // Thay bằng API key SePay thật (lấy tại my.sepay.vn)
+const SEPAY_API_KEY  = "YOUR_SEPAY_API_KEY"; // Thay bằng API key SePay thật (lấy tại my.sepay.vn)
 const SEPAY_ACCOUNT  = "338935";              // Số tài khoản MB Bank
 const BANK_NAME      = "MB Bank";
 const ACCOUNT_NAME   = "CAO VAN NAM";
 const TKMKSHOP_URL   = "https://tkmkshop.caovannamutt.workers.dev"; // URL của tkmkshop.js
 const INTERNAL_KEY   = "mkshop_internal_2025";
-const JWT_SECRET     = "mkshop_secret_jwt_2025"; // Phải giống tkmkshop.js
+const JWT_SECRET     = "mkshop_secret_jwt_2025"; 
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Content-Type": "application/json",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Internal-Key",
 };
 
 function jsonRes(data, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: CORS_HEADERS });
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+}
+
+function getAuthToken(request) {
+  const auth = request.headers.get("Authorization");
+  if (!auth || !auth.startsWith("Bearer ")) return null;
+  return auth.substring(7);
 }
 
 async function verifyToken(token) {
+  if (!token) return null;
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
-    return JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(atob(parts[1]));
+    if (payload.exp && payload.exp < Date.now() / 1000) return null;
+    return payload;
   } catch {
     return null;
   }
 }
 
-function getAuthToken(request) {
-  const auth = request.headers.get("Authorization") || "";
-  return auth.replace("Bearer ", "").trim();
-}
-
-// Tạo mã chuyển khoản theo username
 function generateTransferCode(username) {
   const suffix = username.toUpperCase().replace(/[^A-Z0-9]/g, "").substring(0, 6);
   return `MKSHOP${suffix}`;
+}
+
+// Hàm lấy KV namespace an toàn (hỗ trợ cả TIENNAP_KV, MKSHOP_KV và ORDERS)
+function getKV(env) {
+  return env.TIENNAP_KV || env.MKSHOP_KV || env.MKSHOP || env.ORDERS;
 }
 
 export default {
@@ -91,12 +101,14 @@ async function handlePaymentInfo(request, env) {
   if (!payload) return jsonRes({ error: "Unauthorized" }, 401);
 
   const transferCode = generateTransferCode(payload.username);
+  const kv = getKV(env);
+  if (!kv) return jsonRes({ error: "Server error: KV namespace is not bound" }, 500);
 
   // Lưu mapping code → username để webhook tìm được user sau
-  await env.TIENNAP_KV.put(`code:${transferCode}`, payload.username, { expirationTtl: 86400 * 90 });
+  await kv.put(`code:${transferCode}`, payload.username, { expirationTtl: 86400 * 90 });
 
-  // Tạo QR VietQR (MB Bank)
-  const qrUrl = `https://img.vietqr.io/image/${SEPAY_ACCOUNT}-compact2.png?amount=&addInfo=${transferCode}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+  // Tạo QR VietQR (MB Bank) - Chỉ lấy mã QR duy nhất không kèm viền/thông tin ngoài
+  const qrUrl = `https://img.vietqr.io/image/MB-${SEPAY_ACCOUNT}-qr_only.jpg?amount=&addInfo=${transferCode}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
 
   return jsonRes({
     success: true,
@@ -116,6 +128,8 @@ async function handleCheckPayment(request, env) {
   if (!payload) return jsonRes({ error: "Unauthorized" }, 401);
 
   const transferCode = generateTransferCode(payload.username);
+  const kv = getKV(env);
+  if (!kv) return jsonRes({ error: "Server error: KV namespace is not bound" }, 500);
 
   // Gọi SePay API để kiểm tra giao dịch
   try {
@@ -145,13 +159,13 @@ async function handleCheckPayment(request, env) {
       if (desc.includes(transferCode)) {
         const txId = tx.id || tx.reference_number;
         // Kiểm tra đã xử lý chưa
-        const processed = await env.TIENNAP_KV.get(`tx:${txId}`);
+        const processed = await kv.get(`tx:${txId}`);
         if (!processed) {
           const amount = parseInt(tx.amount_in || tx.amount || 0);
           if (amount > 0) {
             totalNew += amount;
             newTxs.push({ txId, amount, date: tx.transaction_date });
-            await env.TIENNAP_KV.put(`tx:${txId}`, JSON.stringify({
+            await kv.put(`tx:${txId}`, JSON.stringify({
               username: payload.username,
               amount,
               processed: true,
@@ -179,13 +193,13 @@ async function handleCheckPayment(request, env) {
 
       // Lưu lịch sử
       const histKey = `history:${payload.username}`;
-      const histRaw = await env.TIENNAP_KV.get(histKey);
+      const histRaw = await kv.get(histKey);
       const hist = histRaw ? JSON.parse(histRaw) : [];
       for (const tx of newTxs) {
         hist.unshift({ ...tx, username: payload.username });
       }
       if (hist.length > 100) hist.splice(100);
-      await env.TIENNAP_KV.put(histKey, JSON.stringify(hist));
+      await kv.put(histKey, JSON.stringify(hist));
 
       return jsonRes({
         success: true,
@@ -224,25 +238,27 @@ async function handleWebhook(request, env) {
   if (!match) return new Response("OK", { status: 200 });
 
   const transferCode = "MKSHOP" + match[1];
+  const kv = getKV(env);
+  if (!kv) return new Response("OK", { status: 200 });
 
   // Chống trùng: kiểm tra txId đã xử lý chưa
-  const already = await env.TIENNAP_KV.get(`tx:${txId}`);
+  const already = await kv.get(`tx:${txId}`);
   if (already) return new Response("OK", { status: 200 });
 
   // Tìm username từ code mapping
-  const username = await env.TIENNAP_KV.get(`code:${transferCode}`);
+  const username = await kv.get(`code:${transferCode}`);
   if (!username) {
     // Không tìm thấy → lưu pending để xử lý sau
     const pendingKey = `pending:${transferCode}`;
-    const pendingRaw = await env.TIENNAP_KV.get(pendingKey);
+    const pendingRaw = await kv.get(pendingKey);
     const pending = pendingRaw ? JSON.parse(pendingRaw) : [];
     pending.unshift({ txId, amount, date: new Date().toISOString(), transferCode });
-    await env.TIENNAP_KV.put(pendingKey, JSON.stringify(pending), { expirationTtl: 86400 * 7 });
+    await kv.put(pendingKey, JSON.stringify(pending), { expirationTtl: 86400 * 7 });
     return new Response("OK", { status: 200 });
   }
 
   // Đánh dấu đã xử lý
-  await env.TIENNAP_KV.put(`tx:${txId}`, JSON.stringify({
+  await kv.put(`tx:${txId}`, JSON.stringify({
     username, amount, processed: true, date: new Date().toISOString()
   }));
 
@@ -255,11 +271,11 @@ async function handleWebhook(request, env) {
 
   // Lưu lịch sử
   const histKey = `history:${username}`;
-  const histRaw = await env.TIENNAP_KV.get(histKey);
+  const histRaw = await kv.get(histKey);
   const hist = histRaw ? JSON.parse(histRaw) : [];
   hist.unshift({ txId, amount, transferCode, username, date: new Date().toISOString() });
   if (hist.length > 100) hist.splice(100);
-  await env.TIENNAP_KV.put(histKey, JSON.stringify(hist));
+  await kv.put(histKey, JSON.stringify(hist));
 
   return new Response("OK", { status: 200 });
 }
@@ -269,8 +285,11 @@ async function handleHistory(request, env) {
   const payload = await verifyToken(token);
   if (!payload) return jsonRes({ error: "Unauthorized" }, 401);
 
+  const kv = getKV(env);
+  if (!kv) return jsonRes({ error: "Server error: KV namespace is not bound" }, 500);
+
   const histKey = `history:${payload.username}`;
-  const histRaw = await env.TIENNAP_KV.get(histKey);
+  const histRaw = await kv.get(histKey);
   const history = histRaw ? JSON.parse(histRaw) : [];
 
   return jsonRes({ success: true, history });
@@ -281,11 +300,14 @@ async function handleAllTransactions(request, env) {
   const payload = await verifyToken(token);
   if (!payload || payload.role !== "admin") return jsonRes({ error: "Admin only" }, 403);
 
+  const kv = getKV(env);
+  if (!kv) return jsonRes({ error: "Server error: KV namespace is not bound" }, 500);
+
   // Lấy tất cả keys có prefix "history:"
-  const list = await env.TIENNAP_KV.list({ prefix: "history:" });
+  const list = await kv.list({ prefix: "history:" });
   const all = [];
   for (const key of list.keys) {
-    const raw = await env.TIENNAP_KV.get(key.name);
+    const raw = await kv.get(key.name);
     if (raw) {
       const txs = JSON.parse(raw);
       all.push(...txs);
