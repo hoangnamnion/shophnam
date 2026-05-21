@@ -1,0 +1,6 @@
+html = open('shop.html', 'w', encoding='utf-8')
+html.write(open('shop_parts/part1.html', encoding='utf-8').read())
+html.write(open('shop_parts/part2.html', encoding='utf-8').read())
+html.write(open('shop_parts/part3.html', encoding='utf-8').read())
+html.close()
+print('shop.html generated')
