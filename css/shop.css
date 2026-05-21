@@ -120,3 +120,15 @@ nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);background:rgba
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .float-anim{animation:float 3s ease-in-out infinite}
 footer{border-top:1px solid var(--bd);padding:30px 20px;text-align:center;color:var(--muted);font-size:.78rem;position:relative;z-index:1}
+
+/* Zalo Card & Modal Animations */
+.zalo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 104, 255, 0.15);
+  border-color: #0068ff !important;
+  background: #f5f9ff !important;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}

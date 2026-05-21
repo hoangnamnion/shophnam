@@ -352,3 +352,21 @@ document.addEventListener('keydown', e => {
 
 initDevice();
 loadSession();
+
+// ── SYSTEM ANNOUNCEMENT ──
+function checkAnn() {
+  const dismissUntil = localStorage.getItem('sys_ann_dismissed');
+  if (dismissUntil) {
+    if (Date.now() < parseInt(dismissUntil)) return;
+  }
+  document.getElementById('sys-ann-overlay').style.display = 'flex';
+}
+function closeAnn() {
+  document.getElementById('sys-ann-overlay').style.display = 'none';
+}
+function closeAnn24h() {
+  const tomorrow = Date.now() + 24 * 60 * 60 * 1000;
+  localStorage.setItem('sys_ann_dismissed', tomorrow.toString());
+  document.getElementById('sys-ann-overlay').style.display = 'none';
+}
+checkAnn();
