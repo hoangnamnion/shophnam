@@ -4,7 +4,9 @@ const WORKER_URL = 'https://shopbanhang.caovannamutt.workers.dev/';
 
 const PLANS = {
   basic:   { name:'Locket Gold — 3 Không', price:50000, key:'basic' },
-  premium: { name:'Locket Gold — 4 Không', price:99000, key:'premium' }
+  android: { name:'Locket Gold Android', price:69000, key:'android' },
+  premium: { name:'Locket Gold — 4 Không', price:99000, key:'premium' },
+  vip:     { name:'Locket Gold VIP — Video 15s', price:130000, key:'vip' }
 };
 
 let currentUser  = null;
@@ -28,29 +30,27 @@ function initDevice() {
 }
 
 // ── SESSION ──
-async function loadSession() {
+function loadSession() {
   const saved = localStorage.getItem('mkshop_session');
   if (!saved) return;
-  try {
-    const s = JSON.parse(saved);
-    currentToken = s.token;
-    currentUser = s.user;
-    renderUserBar();
-
-    // Fetch fresh profile from backend to get updated balance immediately
-    const r = await fetch(SHOP_URL + '/profile', {
-      headers: { 'Authorization': 'Bearer ' + currentToken }
-    });
-    if (r.ok) {
-      const d = await r.json();
-      if (d.username) {
-        currentUser = d;
-        saveSession(currentToken, currentUser);
-      }
-    }
-  } catch(e) {
-    console.error("Error reloading session:", e);
-  }
+  try { 
+    const s = JSON.parse(saved); 
+    currentToken = s.token; 
+    currentUser = s.user; 
+    renderUserBar(); 
+    
+    // Auto sync latest profile data
+    fetch(SHOP_URL + '/profile', { headers: { Authorization: 'Bearer ' + currentToken } })
+      .then(r => r.json())
+      .then(d => {
+        if (!d.error && currentUser) {
+          currentUser.balance = d.balance || 0;
+          currentUser.totalDeposit = d.totalDeposit || 0;
+          currentUser.totalSpent = d.totalSpent || 0;
+          saveSession(currentToken, currentUser);
+        }
+      }).catch(() => {});
+  } catch {}
 }
 function saveSession(token, user) {
   currentToken = token; currentUser = user;
@@ -171,10 +171,22 @@ async function checkPayment() {
 function buyPlan(key) {
   if (!currentUser) { openAuth(); return; }
   selectedPlan = PLANS[key];
+  
+  let extraWarning = '';
+  if (key === 'android') {
+    extraWarning = `
+      <div style="margin-top:10px;padding:8px 12px;background:rgba(239,68,68,0.1);border-left:3px solid #ef4444;color:#b91c1c;font-size:0.8rem;text-align:left">
+        <strong><i class="fa-solid fa-triangle-exclamation"></i> LƯU Ý QUAN TRỌNG:</strong><br>
+        Với gói Android, sau khi mua xong App sẽ bắt đăng nhập lại. Hãy chắc chắn rằng bạn <strong>NHỚ CHÍNH XÁC</strong> Tài khoản và Mật khẩu Locket của mình trước khi mua!
+      </div>
+    `;
+  }
+
   document.getElementById('buy-info').innerHTML = `
     <div class="name">${selectedPlan.name}</div>
     <div class="price">${fmt(selectedPlan.price)}</div>
-    <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Vĩnh viễn · Bảo hành 1 năm</div>`;
+    <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Vĩnh viễn · Bảo hành 1 năm</div>
+    ${extraWarning}`;
   document.getElementById('buy-bal-display').textContent = fmt(currentUser.balance || 0);
   clearAlert('buy-alert');
   resetBuyModal();
@@ -182,6 +194,8 @@ function buyPlan(key) {
 }
 
 function resetBuyModal() {
+  document.getElementById('buy-info').style.display = 'block';
+  document.querySelector('.bal-display').style.display = 'flex';
   document.getElementById('locket-user').value = '';
   document.getElementById('step-check').style.display = 'block';
   document.getElementById('step-kick').style.display  = 'none';
@@ -202,6 +216,68 @@ function autoExtractUser(el) {
   } catch {}
   const m = val.match(/locket\.cam\/(@?[a-zA-Z0-9_.-]+)/);
   if (m && m[1] && !m[1].replace('@','').startsWith('invite')) el.value = m[1].replace('@','');
+}
+
+// ── PROFILE ──
+async function openProfile() {
+  if (!currentUser) return;
+  openOverlay('profile-overlay');
+  switchProfTab('orders');
+  document.getElementById('profile-loading').style.display = 'block';
+  document.getElementById('profile-content').style.display = 'none';
+
+  try {
+    const r = await fetch(SHOP_URL + '/profile', { headers: { Authorization: 'Bearer ' + currentToken } });
+    const d = await r.json();
+    if (!d.error) {
+      document.getElementById('prof-fullname').textContent = d.fullname || d.username;
+      document.getElementById('prof-username').textContent = d.username;
+      document.getElementById('prof-bal').textContent   = fmt(d.balance || 0);
+      document.getElementById('prof-dep').textContent   = fmt(d.totalDeposit || 0);
+      document.getElementById('prof-spent').textContent = fmt(d.totalSpent || 0);
+
+      if (currentUser) {
+        currentUser.balance = d.balance || 0;
+        currentUser.totalDeposit = d.totalDeposit || 0;
+        currentUser.totalSpent = d.totalSpent || 0;
+        saveSession(currentToken, currentUser);
+      }
+
+      const ordersHtml = (d.orders || []).map(o => `
+        <div class="history-item">
+          <div class="hi-info">
+            <div class="hi-desc">${o.description || 'Giao dịch'}</div>
+            <div class="hi-date">${new Date(o.date).toLocaleString('vi-VN')}</div>
+          </div>
+          <div class="hi-amount" style="color:#ef4444">- ${fmt(o.amount)}</div>
+        </div>
+      `).join('') || '<div style="text-align:center;color:var(--muted);font-size:.8rem;padding:10px">Chưa có giao dịch mua nào.</div>';
+      document.getElementById('prof-orders-list').innerHTML = ordersHtml;
+
+      const depsHtml = (d.depositHistory || []).map(dp => `
+        <div class="history-item">
+          <div class="hi-info">
+            <div class="hi-desc">${dp.txCode || 'Nạp tiền'}</div>
+            <div class="hi-date">${new Date(dp.date).toLocaleString('vi-VN')}</div>
+          </div>
+          <div class="hi-amount" style="color:#16a34a">+ ${fmt(dp.amount)}</div>
+        </div>
+      `).join('') || '<div style="text-align:center;color:var(--muted);font-size:.8rem;padding:10px">Chưa có giao dịch nạp nào.</div>';
+      document.getElementById('prof-deposits-list').innerHTML = depsHtml;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+
+  document.getElementById('profile-loading').style.display = 'none';
+  document.getElementById('profile-content').style.display = 'block';
+}
+
+function switchProfTab(tab) {
+  document.getElementById('prof-orders-view').style.display   = tab === 'orders' ? 'block' : 'none';
+  document.getElementById('prof-deposits-view').style.display = tab === 'deposits' ? 'block' : 'none';
+  document.getElementById('tab-prof-orders').classList.toggle('active', tab === 'orders');
+  document.getElementById('tab-prof-deposits').classList.toggle('active', tab === 'deposits');
 }
 
 // ── BƯỚC 1: CHECK tài khoản Locket ──
@@ -296,16 +372,30 @@ async function kickGoldNow() {
       const name   = data.name    || locketUser;
       const uname  = data.username || locketUser;
       const avatar = data.avatar || document.getElementById('preview-avatar').src;
+      
+      document.getElementById('buy-info').style.display = 'none';
+      document.querySelector('.bal-display').style.display = 'none';
+      document.getElementById('step-kick').style.display = 'none';
+      
       area.innerHTML = `
-        <div style="background:#22c55e14;border:1px solid #22c55e33;border-radius:16px;padding:20px;text-align:center">
-          ${avatar ? `<img src="${avatar}" style="width:70px;height:70px;border-radius:50%;border:3px solid #f59e0b;margin-bottom:10px;object-fit:cover">` : ''}
-          <div style="font-size:1.5rem;margin-bottom:6px">🎉</div>
-          <div style="color:#4ade80;font-weight:900;font-size:1rem;margin-bottom:4px">Kick Gold Thành Công!</div>
-          <div style="color:#4ade80;font-size:.83rem"><strong>${name}</strong> (@${uname}) đã được nâng Gold.</div>
-          <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;background:#f59e0b18;border:1px solid #f59e0b33;color:#f59e0b;padding:4px 14px;border-radius:20px;font-size:.75rem;font-weight:700">⭐ ĐÃ CÓ GOLD</div>
+        <div style="background:#22c55e14;border:1px solid #22c55e33;border-radius:16px;padding:30px 20px;text-align:center">
+          <div style="font-size:3.5rem;margin-bottom:10px;line-height:1">🎉</div>
+          <div style="color:#16a34a;font-weight:900;font-size:1.3rem;margin-bottom:6px">Thanh Toán & Kick Gold Thành Công!</div>
+          <div style="color:var(--muted);font-size:.9rem;margin-bottom:20px">Gói <strong>${selectedPlan.name}</strong></div>
+          
+          ${avatar ? `<img src="${avatar}" style="width:76px;height:76px;border-radius:50%;border:3px solid #10b981;margin:0 auto 10px;object-fit:cover;box-shadow:0 8px 16px rgba(16,185,129,0.2)">` : ''}
+          <div style="color:#15803d;font-size:1.15rem;font-weight:800;margin-bottom:2px">${name}</div>
+          <div style="color:#16a34a;font-size:.85rem;margin-bottom:16px">@${uname}</div>
+          
+          <div style="margin-bottom:24px;display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#d97706;padding:8px 20px;border-radius:30px;font-size:.85rem;font-weight:800">
+            <i class="fa-solid fa-star"></i> ĐÃ CÓ GOLD VĨNH VIỄN
+          </div>
+          
+          <button class="btn btn-ind btn-full btn-lg" onclick="closeOverlay('buy-overlay')" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#10b981,#059669)">
+            Hoàn tất
+          </button>
         </div>`;
       clearAlert('buy-alert');
-      document.getElementById('btn-kick-gold').style.display = 'none';
     } else {
       // Hoàn tiền tự động
       area.innerHTML = `
@@ -389,3 +479,36 @@ function closeAnn24h() {
   document.getElementById('sys-ann-overlay').style.display = 'none';
 }
 checkAnn();
+
+async function loadPublicStats() {
+  try {
+    const r = await fetch(SHOP_URL + '/stats');
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('stat-members').textContent = Number(d.members).toLocaleString('en-US');
+      document.getElementById('stat-usages').textContent  = Number(d.usages).toLocaleString('en-US');
+      document.getElementById('stat-vips').textContent    = Number(d.vips).toLocaleString('en-US');
+    }
+  } catch {}
+}
+loadPublicStats();
+
+async function loadPublicTransactions() {
+  try {
+    const r = await fetch(PAY_URL + '/public-transactions');
+    const d = await r.json();
+    if (d.success && d.transactions) {
+      const feed = document.getElementById('deposit-history-feed');
+      feed.innerHTML = d.transactions.map(t => `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:12px;padding:10px 14px">
+          <div>
+            <div style="font-size:.82rem;font-weight:800;color:var(--txt)">${t.username}</div>
+            <div style="font-size:.7rem;color:var(--muted)">${t.time}</div>
+          </div>
+          <div style="font-size:.85rem;font-weight:900;color:#16a34a">+ ${Number(t.amount).toLocaleString('en-US')}đ</div>
+        </div>
+      `).join('');
+    }
+  } catch {}
+}
+loadPublicTransactions();

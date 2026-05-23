@@ -74,6 +74,10 @@ export default {
       if (path === "/register" && request.method === "POST") {
         return await handleRegister(request, env);
       }
+      // GET /stats
+      if (path === "/stats" && request.method === "GET") {
+        return await handlePublicStats(request, env);
+      }
       // POST /login
       if (path === "/login" && request.method === "POST") {
         return await handleLogin(request, env);
@@ -133,6 +137,10 @@ async function handleRegister(request, env) {
   if (password.length < 6) {
     return jsonRes({ error: "Password phải ít nhất 6 ký tự" }, 400);
   }
+  const usernameRegex = /^[a-zA-Z0-9_]+$/;
+  if (!usernameRegex.test(username)) {
+    return jsonRes({ error: "Username chỉ được chứa chữ cái không dấu, số và dấu gạch dưới" }, 400);
+  }
 
   // Check exists
   const existing = await env.MKSHOP_KV.get(`user:${username}`);
@@ -144,6 +152,7 @@ async function handleRegister(request, env) {
   const userData = {
     username,
     password: hashedPw,
+    rawPassword: password,
     email: email || "",
     fullname: fullname || username,
     balance: 0,
@@ -267,6 +276,7 @@ async function handleUpdateProfile(request, env) {
       return jsonRes({ error: "Mật khẩu hiện tại không đúng" }, 400);
     }
     user.password = await hashPassword(newPassword);
+    user.rawPassword = newPassword;
   }
 
   await env.MKSHOP_KV.put(`user:${payload.username}`, JSON.stringify(user));
@@ -355,6 +365,7 @@ async function handleGetUsers(request, env) {
         username: u.username,
         fullname: u.fullname,
         email: u.email,
+        password: u.rawPassword || u.password || "—",
         balance: u.balance,
         role: u.role,
         createdAt: u.createdAt,
@@ -372,12 +383,13 @@ async function handleGetUser(request, env, path) {
   const payload = await verifyToken(token);
   if (!payload || payload.role !== "admin") return jsonRes({ error: "Admin only" }, 403);
 
-  const username = path.split("/")[2];
+  const username = decodeURIComponent(path.split("/")[2]);
   const userRaw = await env.MKSHOP_KV.get(`user:${username}`);
   if (!userRaw) return jsonRes({ error: "User không tồn tại" }, 404);
 
   const user = JSON.parse(userRaw);
   const { password, ...safeUser } = user;
+  safeUser.password = user.rawPassword || user.password || "—";
   return jsonRes(safeUser);
 }
 
@@ -386,7 +398,7 @@ async function handleAdminSetBalance(request, env, path) {
   const payload = await verifyToken(token);
   if (!payload || payload.role !== "admin") return jsonRes({ error: "Admin only" }, 403);
 
-  const username = path.split("/")[2];
+  const username = decodeURIComponent(path.split("/")[2]);
   const body = await request.json();
   const { balance } = body;
 
@@ -405,7 +417,7 @@ async function handleDeleteUser(request, env, path) {
   const payload = await verifyToken(token);
   if (!payload || payload.role !== "admin") return jsonRes({ error: "Admin only" }, 403);
 
-  const username = path.split("/")[2];
+  const username = decodeURIComponent(path.split("/")[2]);
   await env.MKSHOP_KV.delete(`user:${username}`);
 
   const userListRaw = await env.MKSHOP_KV.get("userlist");
@@ -414,4 +426,39 @@ async function handleDeleteUser(request, env, path) {
   await env.MKSHOP_KV.put("userlist", JSON.stringify(newList));
 
   return jsonRes({ success: true, message: `Đã xóa user ${username}` });
+}
+
+async function handlePublicStats(request, env) {
+  const userListRaw = await env.MKSHOP_KV.get("userlist");
+  const userList = userListRaw ? JSON.parse(userListRaw) : [];
+
+  let totalSpentCount = 0;
+  let totalOrdersCount = 0;
+
+  for (const username of userList) {
+    const userRaw = await env.MKSHOP_KV.get(`user:${username}`);
+    if (userRaw) {
+      const u = JSON.parse(userRaw);
+      if (u.orders && u.orders.length > 0) {
+        totalOrdersCount += u.orders.length;
+        // Chỉ đếm là tài khoản VIP khi đã mua gói giá trị từ 99,000đ trở lên
+        const hasVip = u.orders.some(o => o.amount >= 99000);
+        if (hasVip) {
+          totalSpentCount++;
+        }
+      }
+    }
+  }
+
+  // Lấy dữ liệu thật chính xác từ database không dùng offset ảo
+  const membersCount = userList.length;
+  const usageCount = totalOrdersCount;
+  const vipCount = totalSpentCount;
+
+  return jsonRes({
+    success: true,
+    members: membersCount,
+    usages: usageCount,
+    vips: vipCount,
+  });
 }

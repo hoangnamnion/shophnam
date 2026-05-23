@@ -81,6 +81,11 @@ export default {
         return await handleHistory(request, env);
       }
 
+      // GET /public-transactions - Hiển thị lịch sử nạp ẩn danh cho trang chủ
+      if (path === "/public-transactions" && request.method === "GET") {
+        return await handlePublicTransactions(request, env);
+      }
+
       // GET /transactions - Admin: xem tất cả giao dịch
       if (path === "/transactions" && request.method === "GET") {
         return await handleAllTransactions(request, env);
@@ -316,4 +321,71 @@ async function handleAllTransactions(request, env) {
 
   all.sort((a, b) => new Date(b.date) - new Date(a.date));
   return jsonRes({ success: true, transactions: all, total: all.length });
+}
+
+async function handlePublicTransactions(request, env) {
+  const kv = getKV(env);
+  if (!kv) return jsonRes({ error: "Server error: KV namespace is not bound" }, 500);
+
+  const list = await kv.list({ prefix: "history:" });
+  const all = [];
+  for (const key of list.keys) {
+    const raw = await kv.get(key.name);
+    if (raw) {
+      const txs = JSON.parse(raw);
+      all.push(...txs);
+    }
+  }
+
+  // Sắp xếp giảm dần theo thời gian nạp gần nhất
+  all.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Lấy tối đa 10 giao dịch gần nhất
+  const recent = all.slice(0, 10).map(t => {
+    let masked = "Khách Hàng";
+    if (t.username) {
+      const u = t.username;
+      if (u.length <= 2) {
+        masked = u + "***";
+      } else {
+        masked = u.substring(0, 2) + "***" + u.substring(u.length - 2);
+      }
+    }
+    
+    const diffMs = Date.now() - new Date(t.date).getTime();
+    let timeStr = "Vừa xong";
+    if (diffMs > 0) {
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60000);
+      const diffDays = Math.floor(diffHours / 24);
+      if (diffDays > 0) {
+        timeStr = `${diffDays} ngày trước`;
+      } else if (diffHours > 0) {
+        timeStr = `${diffHours} giờ trước`;
+      } else if (diffMins > 0) {
+        timeStr = `${diffMins} phút trước`;
+      }
+    }
+
+    return {
+      username: masked,
+      amount: t.amount,
+      time: timeStr
+    };
+  });
+
+  // Nếu chưa có giao dịch thật nào, tự động dùng danh sách gốc siêu uy tín làm nền tảng
+  if (recent.length === 0) {
+    recent.push(
+      { username: "Ng***ng", amount: 149000, time: "8 giờ trước" },
+      { username: "tr***23", amount: 99000, time: "9 giờ trước" },
+      { username: "NT***k5", amount: 109000, time: "9 giờ trước" },
+      { username: "Ng***12", amount: 99000, time: "9 giờ trước" },
+      { username: "Hu***ga", amount: 109000, time: "12 giờ trước" },
+      { username: "Du***an", amount: 109000, time: "12 giờ trước" },
+      { username: "Ch***hi", amount: 149000, time: "13 giờ trước" }
+    );
+  }
+
+  return jsonRes({ success: true, transactions: recent });
 }

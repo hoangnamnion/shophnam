@@ -16,36 +16,47 @@
 
   <!-- SYSTEM NOTIFICATION MODAL -->
   <div class="overlay" id="sys-ann-overlay" style="display:none;align-items:center;justify-content:center">
-    <div class="modal" style="max-width:480px;position:relative;animation:modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)">
+    <div class="modal"
+      style="max-width:480px;position:relative;animation:modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)">
       <div style="text-align:center;margin-bottom:16px">
         <div style="font-size:3rem;margin-bottom:10px">📢</div>
         <h2 style="font-size:1.4rem;font-weight:900;color:var(--txt);margin-bottom:4px">THÔNG BÁO HỆ THỐNG</h2>
-        <p style="font-size:.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px">Đọc kĩ tránh gặp lỗi</p>
+        <p style="font-size:.78rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px">Đọc kĩ
+          tránh gặp lỗi</p>
       </div>
-      
+
       <div class="ann-body" style="font-size:.9rem;line-height:1.6;color:var(--txt);margin-bottom:20px">
-        <p style="margin-bottom:12px;text-align:center">Vui lòng đọc và xem kỹ video <strong>HƯỚNG DẪN</strong> trước khi thao tác!</p>
-        
+        <p style="margin-bottom:12px;text-align:center">Vui lòng đọc và xem kỹ video <strong>HƯỚNG DẪN</strong> trước
+          khi thao tác!</p>
+
         <!-- Link Nhóm Zalo Card -->
-        <a href="https://zalo.me/g/bxiitz660" target="_blank" class="zalo-card" style="display:flex;align-items:center;gap:12px;background:#f0f7ff;border:1px solid #cce3ff;border-radius:12px;padding:12px;text-decoration:none;margin-bottom:16px;transition:all 0.2s">
-          <div style="width:40px;height:40px;border-radius:50%;background:#0068ff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:1.2rem">Z</div>
+        <a href="https://zalo.me/g/bxiitz660" target="_blank" class="zalo-card"
+          style="display:flex;align-items:center;gap:12px;background:#f0f7ff;border:1px solid #cce3ff;border-radius:12px;padding:12px;text-decoration:none;margin-bottom:16px;transition:all 0.2s">
+          <div
+            style="width:40px;height:40px;border-radius:50%;background:#0068ff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:1.2rem">
+            Z</div>
           <div style="flex:1">
             <div style="font-weight:800;color:#0068ff;font-size:.88rem">Tham gia Nhóm Zalo Hỗ Trợ</div>
             <div style="font-size:.75rem;color:#475569">Giải đáp nhanh và cập nhật hướng dẫn mới nhất</div>
           </div>
           <i class="fa-solid fa-chevron-right" style="color:#0068ff;font-size:.8rem"></i>
         </a>
-        
-        <div style="background:rgba(245,158,11,0.08);border-left:4px solid #f59e0b;padding:12px;border-radius:0 8px 8px 0;font-size:.85rem;color:#78350f;margin-bottom:12px;text-align:left">
-          <i class="fa-solid fa-circle-info"></i> <strong>Lưu ý:</strong> Hệ thống nâng cấp an toàn 100% tất cả các gói đều được sử dụng vĩnh viễn.
+
+        <div
+          style="background:rgba(245,158,11,0.08);border-left:4px solid #f59e0b;padding:12px;border-radius:0 8px 8px 0;font-size:.85rem;color:#78350f;margin-bottom:12px;text-align:left">
+          <i class="fa-solid fa-circle-info"></i> <strong>Lưu ý:</strong> Hệ thống nâng cấp an toàn 100% tất cả các gói
+          đều được sử dụng vĩnh viễn.
         </div>
-        
-        <p style="font-weight:700;color:#ef4444;text-align:center;font-size:.85rem"><i class="fa-solid fa-triangle-exclamation"></i> CÁC BẠN XEM KĨ VIDEO HƯỚNG DẪN!</p>
+
+        <p style="font-weight:700;color:#ef4444;text-align:center;font-size:.85rem"><i
+            class="fa-solid fa-triangle-exclamation"></i> CÁC BẠN XEM KĨ VIDEO HƯỚNG DẪN!</p>
       </div>
-      
+
       <div style="display:flex;gap:10px">
-        <button class="btn btn-ind btn-full" onclick="closeAnn()" style="font-weight:800;justify-content:center">Đã hiểu</button>
-        <button class="btn btn-ghost btn-full" onclick="closeAnn24h()" style="justify-content:center;font-size:.82rem;color:var(--muted)">Đóng trong 24h tới</button>
+        <button class="btn btn-ind btn-full" onclick="closeAnn()" style="font-weight:800;justify-content:center">Đã
+          hiểu</button>
+        <button class="btn btn-ghost btn-full" onclick="closeAnn24h()"
+          style="justify-content:center;font-size:.82rem;color:var(--muted)">Đóng trong 24h tới</button>
       </div>
     </div>
   </div>
@@ -59,14 +70,16 @@
       </a>
       <div class="nav-actions">
         <div id="guest-bar">
-          <button class="btn btn-ghost" onclick="openAuth()"><i class="fa-solid fa-right-to-bracket"></i> Đăng
-            nhập</button>
-          <button class="btn btn-ind" onclick="openAuth('register')"><i class="fa-solid fa-user-plus"></i> Đăng
-            ký</button>
+          <button class="btn btn-ghost hide-text-mobile" onclick="openAuth()"><i
+              class="fa-solid fa-right-to-bracket"></i> <span>Đăng nhập</span></button>
+          <button class="btn btn-ind hide-text-mobile" onclick="openAuth('register')"><i
+              class="fa-solid fa-user-plus"></i> <span>Đăng ký</span></button>
         </div>
         <div id="user-bar">
           <div class="bal-chip" id="nav-balance">💰 0đ</div>
-          <button class="btn btn-ghost" onclick="openDeposit()"><i class="fa-solid fa-plus"></i> Nạp tiền</button>
+          <button class="btn btn-ghost hide-text-mobile" onclick="openDeposit()"><i class="fa-solid fa-plus"></i>
+            <span>Nạp tiền</span></button>
+          <button class="btn btn-ghost" onclick="openProfile()"><i class="fa-solid fa-user"></i></button>
           <button class="btn btn-ghost" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
         </div>
       </div>
@@ -76,14 +89,56 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-tag"><i class="fa-solid fa-shield-halved"></i> Bảo hành 1 năm · Uy tín · An toàn</div>
-    <h1>Nâng <em>Locket Gold</em><br>Không lo gì cả</h1>
-    <p class="hero-sub">Dịch vụ nâng cấp Locket Gold uy tín, an toàn tuyệt đối. Không cần tài khoản iCloud, không cần
-      mật khẩu.</p>
-    <div class="trust-row">
-      <div class="trust-item"><i class="fa-solid fa-bolt"></i> Xử lý nhanh 5 phút</div>
-      <div class="trust-item"><i class="fa-solid fa-lock"></i> Bảo mật tuyệt đối</div>
-      <div class="trust-item"><i class="fa-solid fa-headset"></i> Hỗ trợ 24/7</div>
-      <div class="trust-item"><i class="fa-solid fa-rotate-left"></i> Bảo hành 1 năm</div>
+    <h1>Hệ Thống Nâng Cấp<br><em>LocketGold Tự Động</em></h1>
+    <p class="hero-sub" style="max-width: 680px; margin-bottom: 24px;">
+      Độc quyền tại <strong>shoplkgold.vercel.app</strong> — Nền tảng tự động nâng cấp Locket Gold thông qua Username / Link
+      kết bạn. Quy trình được mã hóa, tuyệt đối an toàn và bảo vệ quyền riêng tư của khách hàng với cam kết 100% quy tắc
+      4 KHÔNG:
+    </p>
+
+    <div class="rule-box-row">
+      <div class="rule-box">
+        <span style="color:#ef4444;font-size:1.1rem">❌</span> KHÔNG đăng nhập iCloud
+      </div>
+      <div class="rule-box">
+        <span style="color:#ef4444;font-size:1.1rem">❌</span> KHÔNG cần tài khoản mật khẩu
+      </div>
+      <div class="rule-box">
+        <span style="color:#ef4444;font-size:1.1rem">❌</span> KHÔNG yêu cầu tải Shadowrocket
+      </div>
+      <div class="rule-box">
+        <span style="color:#ef4444;font-size:1.1rem">❌</span> KHÔNG cài đặt DNS
+      </div>
+    </div>
+
+    <div style="font-size:.8rem;font-weight:800;color:var(--muted);margin-bottom:32px">
+      <i class="fa-solid fa-mobile-screen-button"></i> Hệ thống hỗ trợ toàn diện: <span
+        style="color:#2563eb">Android</span> &amp; <span style="color:#2563eb">iOS</span>
+    </div>
+
+    <!-- STATS BLOCK -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-info">
+          <div class="stat-number" id="stat-members">12,612</div>
+          <div class="stat-label">Thành viên</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon icon-green"><i class="fa-solid fa-bolt"></i></div>
+        <div class="stat-info">
+          <div class="stat-number" id="stat-usages">1,417</div>
+          <div class="stat-label">Lượt sử dụng</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon icon-gold"><i class="fa-solid fa-crown"></i></div>
+        <div class="stat-info">
+          <div class="stat-number" id="stat-vips">1,035</div>
+          <div class="stat-label">Tài khoản VIP</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -114,9 +169,40 @@
           <li>
             <div class="icon icon-gold"><i class="fa-solid fa-info"></i></div> Cần cài thêm 1 Cấu Hình DNS để giữ Gold
           </li>
+          <li>
+            <div class="icon icon-gold"><i class="fa-solid fa-info"></i></div> Chỉ hỗ trợ quay video 5s
+          </li>
         </ul>
         <button class="btn btn-ind btn-lg btn-full" onclick="buyPlan('basic')">
           <i class="fa-solid fa-cart-shopping"></i> Mua ngay — 50.000đ
+        </button>
+      </div>
+
+      <!-- GÓI 69K (ANDROID) -->
+      <div class="plan-card">
+        <div class="plan-ribbon" style="background:#10b981">ANDROID</div>
+        <div class="plan-tier" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);color:#10b981"><i class="fa-brands fa-android"></i> DÀNH RIÊNG ANDROID</div>
+        <div class="plan-price-wrap">
+          <div class="plan-price" style="color:#10b981">69<sub style="color:var(--muted)">k</sub></div>
+        </div>
+        <div class="plan-name">Locket Gold Android</div>
+        <div class="plan-warranty"><i class="fa-solid fa-shield-check"></i> Vĩnh viễn · BH 1 năm</div>
+        <ul class="plan-features">
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Tương thích 100% máy Android
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Đầy đủ các tính năng Gold
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> An toàn, không app lậu
+          </li>
+          <li>
+            <div class="icon" style="background:rgba(239,68,68,0.1);color:#ef4444"><i class="fa-solid fa-triangle-exclamation"></i></div> 
+            <span style="color:#ef4444;font-weight:700">Lưu ý quan trọng:</span> Mua xong sẽ bị văng tài khoản bắt đăng nhập lại.
+        </ul>
+        <button class="btn btn-ind btn-lg btn-full" onclick="buyPlan('android')" style="background:linear-gradient(135deg,#10b981,#059669)">
+          <i class="fa-brands fa-android"></i> Mua ngay — 69.000đ
         </button>
       </div>
 
@@ -144,14 +230,338 @@
           <li>
             <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không cần cài Cấu hình DNS
           </li>
+          <li>
+            <div class="icon icon-gold"><i class="fa-solid fa-info"></i></div> Chỉ hỗ trợ quay video 5s
+          </li>
         </ul>
         <button class="btn btn-gold btn-lg btn-full" onclick="buyPlan('premium')">
           <i class="fa-solid fa-crown"></i> Mua ngay — 99.000đ
         </button>
       </div>
 
+      <!-- GÓI 130K -->
+      <div class="plan-card featured" style="border-color:rgba(16,185,129,0.3);background:linear-gradient(160deg,#f0fdf4,var(--card))">
+        <div class="plan-ribbon" style="background:linear-gradient(135deg,#10b981,#059669)">VIP</div>
+        <div class="plan-tier" style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);color:#10b981"><i class="fa-solid fa-gem"></i> GÓI VIP ĐẶC BIỆT</div>
+        <div class="plan-price-wrap">
+          <div class="plan-price"
+            style="background:linear-gradient(135deg,#10b981,#059669);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+            130<sub style="-webkit-text-fill-color:#94a3b8">k</sub></div>
+        </div>
+        <div class="plan-name">Locket Gold — Video 15s</div>
+        <div class="plan-warranty"><i class="fa-solid fa-shield-check"></i> Vĩnh viễn · BH 1 năm</div>
+        <ul class="plan-features">
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không đăng nhập iCloud
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không cần tài khoản &amp; mật khẩu
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không nâng qua app lậu
+          </li>
+          <li>
+            <div class="icon icon-green"><i class="fa-solid fa-check"></i></div> Không cần cài Cấu hình DNS
+          </li>
+          <li>
+            <div class="icon icon-green" style="background:rgba(16,185,129,0.2)"><i class="fa-solid fa-video"></i></div> Hỗ trợ quay video lên đến 15s
+          </li>
+        </ul>
+        <button class="btn btn-ind btn-lg btn-full" onclick="buyPlan('vip')" style="background:linear-gradient(135deg,#10b981,#059669)">
+          <i class="fa-solid fa-gem"></i> Mua ngay — 130.000đ
+        </button>
+      </div>
+
     </div>
   </div>
+
+  <!-- EXCLUSIVE FEATURES SECTION -->
+  <section class="features-section" style="max-width:1100px;margin:80px auto 80px;padding:0 20px;text-align:center">
+    <h2 class="section-title" style="margin-bottom:8px">Các Tính Năng Độc Quyền</h2>
+    <p class="section-sub" style="margin-bottom:40px">Nâng cấp trải nghiệm với bộ công cụ mạnh mẽ và xịn xò nhất hiện
+      nay.</p>
+
+    <div class="features-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px">
+      <!-- Card 1 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">👑</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Mở khóa Locket Gold</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Kích hoạt vĩnh viễn mác Gold Premium cao cấp trên
+          trang cá nhân.</p>
+      </div>
+      <!-- Card 2 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">🚫</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Không quảng cáo</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Trải nghiệm mượt mà, sạch bóng không một cọng
+          quảng cáo khó chịu.</p>
+      </div>
+      <!-- Card 3 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">📤</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Upload ảnh từ thư viện</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Lấy ảnh trực tiếp từ camera roll để gửi nhanh cho
+          bạn bè thay vì chụp mới.</p>
+      </div>
+      <!-- Card 4 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">🎥</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Quay video Lockets 15s</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Ghi lại các đoạn clip chuyển động lên đến 15 giây sống động (tuỳ gói đăng ký).</p>
+      </div>
+      <!-- Card 5 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">👁️</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Xem người đã xem Lockets</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Xem chính xác danh sách những ai đã mở và xem bài
+          đăng của bạn.</p>
+      </div>
+      <!-- Card 6 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">✨</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Thay đổi icon Locket</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Làm mới màn hình chính với bộ icon ứng dụng
+          Locket viền vàng Gold quyền lực.</p>
+      </div>
+      <!-- Card 7 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">🎨</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Thay đổi theme Locket</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Cá nhân hóa màu sắc giao diện bên trong ứng dụng
+          hoàn toàn theo sở thích.</p>
+      </div>
+      <!-- Card 8 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">👥</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Mở khóa giới hạn bạn bè</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Xoá bỏ những rào cản, thêm vô số bạn bè xung
+          quanh không bị giới hạn.</p>
+      </div>
+      <!-- Card 9 -->
+      <div class="feat-card"
+        style="background:#fff;border:1px solid var(--bd);border-radius:20px;padding:24px;transition:all 0.3s;box-shadow:0 6px 20px rgba(0,0,0,0.01);text-align:left">
+        <div style="font-size:2rem;margin-bottom:12px">🎁</div>
+        <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:8px;color:var(--txt)">Tặng Canva Edu Pro 3 Năm</h3>
+        <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Tặng kèm tài khoản Canva Edu Pro miễn phí 3 năm
+          để thỏa sức thiết kế.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIP BENEFITS SECTION -->
+  <section class="vip-benefits-section" style="max-width:860px;margin:0 auto 80px;padding:0 20px;">
+    <h2 class="section-title" style="margin-bottom:8px">Đặc Quyền Của Gói Locket Gold VIP</h2>
+    <p class="section-sub" style="margin-bottom:40px">Trở thành thành viên VIP để mở khóa toàn bộ sức mạnh của Locket Gold, không giới hạn tính năng và trải nghiệm trọn vẹn nhất.</p>
+
+    <div style="background:#fff;border:1px solid var(--bd);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.02);margin-bottom:60px;">
+      <table style="width:100%;border-collapse:collapse;text-align:left;">
+        <thead>
+          <tr style="border-bottom:1px solid var(--bd);">
+            <th style="padding:18px 24px;font-size:.9rem;font-weight:800;color:var(--txt);">Tính Năng &amp; Quyền Lợi</th>
+            <th style="padding:18px 24px;font-size:.9rem;font-weight:800;color:var(--gold);text-align:center;">Locket Gold VIP <i class="fa-solid fa-star"></i></th>
+          </tr>
+        </thead>
+        <tbody style="font-size:.85rem;font-weight:600;">
+          <tr style="border-bottom:1px solid var(--bd);">
+            <td style="padding:16px 24px;color:var(--txt);">Trải nghiệm toàn bộ tính năng Gold (Video, Icon, Đổi logo...)</td>
+            <td style="padding:16px 24px;text-align:center;color:#10b981;font-size:1.1rem;"><i class="fa-solid fa-circle-check"></i></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--bd);">
+            <td style="padding:16px 24px;color:var(--txt);">Thời hạn duy trì Premium</td>
+            <td style="padding:16px 24px;text-align:center;color:var(--gold);font-weight:800;">Vĩnh viễn</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--bd);">
+            <td style="padding:16px 24px;color:var(--txt);">Cấu hình duy trì sự ổn định Premium (Anti-Revoke)</td>
+            <td style="padding:16px 24px;text-align:center;color:#10b981;font-size:1.1rem;"><i class="fa-solid fa-circle-check"></i></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--bd);">
+            <td style="padding:16px 24px;color:var(--txt);">Hỗ trợ chuyển đổi thiết bị (Đổi sang iPhone/iPad khác)</td>
+            <td style="padding:16px 24px;text-align:center;color:var(--ind);font-weight:800;">Miễn phí đổi máy</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--bd);">
+            <td style="padding:16px 24px;color:var(--txt);">Hỗ trợ kỹ thuật ưu tiên</td>
+            <td style="padding:16px 24px;text-align:center;color:var(--ind);font-weight:800;">Zalo/Telegram 24/7</td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px;color:var(--txt);">Tặng tài khoản Canva Edu Pro 3 năm</td>
+            <td style="padding:16px 24px;text-align:center;color:#10b981;font-weight:800;">Miễn phí</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TWO-COLUMN SOCIAL PROOF GRID -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:24px;width:100%;max-width:860px;margin:0 auto;">
+      <!-- RECENT DEPOSITS -->
+      <div style="background:#fff;border:1px solid var(--bd);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.02);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#10b981;"></div>
+          <h3 style="font-size:1.1rem;font-weight:800;color:var(--txt);">Lịch Sử Nạp Tiền</h3>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:18px;">Giao dịch nạp gói VIP thành công gần đây</p>
+        
+        <div class="custom-scroll" style="max-height:300px;overflow-y:auto;padding-right:6px;display:flex;flex-direction:column;gap:10px;">
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">Ng***ng</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">8 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 149,000đ</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">tr***23</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">9 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 99,000đ</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">NT***k5</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">9 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 109,000đ</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">Ng***12</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">9 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 99,000đ</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">Hu***ga</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">12 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 109,000đ</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">Du***an</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">13 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 109,000đ</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--bd);">
+            <div><div style="font-weight:800;font-size:.85rem;color:var(--txt);">Ch***hi</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px;">13 giờ trước</div></div>
+            <div style="font-weight:900;color:#10b981;font-size:.88rem;">+ 149,000đ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div style="background:#fff;border:1px solid var(--bd);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.02);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <h3 style="font-size:1.1rem;font-weight:800;color:var(--txt);">⭐ Đánh Giá Khách Hàng</h3>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:18px;">Cảm nhận thực tế từ khách hàng đã sử dụng dịch vụ</p>
+        
+        <div class="custom-scroll" style="max-height:300px;overflow-y:auto;padding-right:6px;display:flex;flex-direction:column;gap:14px;">
+          <!-- Review 1 -->
+          <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid var(--bd);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--muted)">Q</div>
+                <strong style="font-size:.85rem;color:var(--txt)">Qu***23</strong>
+              </div>
+              <div style="color:#f59e0b;font-size:.75rem">⭐⭐⭐⭐⭐</div>
+            </div>
+            <div style="font-size:.85rem;color:var(--txt);line-height:1.5;margin-bottom:6px">Uy tín nha, làm 5s xong luôn!</div>
+            <div style="font-size:.7rem;color:var(--muted)">2 ngày trước</div>
+          </div>
+          <!-- Review 2 -->
+          <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid var(--bd);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--muted)">P</div>
+                <strong style="font-size:.85rem;color:var(--txt)">pe***24</strong>
+              </div>
+              <div style="color:#f59e0b;font-size:.75rem">⭐⭐⭐⭐⭐</div>
+            </div>
+            <div style="font-size:.85rem;color:var(--txt);line-height:1.5;margin-bottom:6px">Ngonn</div>
+            <div style="font-size:.7rem;color:var(--muted)">3 ngày trước</div>
+          </div>
+          <!-- Review 3 -->
+          <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid var(--bd);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--muted)">G</div>
+                <strong style="font-size:.85rem;color:var(--txt)">G***</strong>
+              </div>
+              <div style="color:#f59e0b;font-size:.75rem">⭐⭐⭐⭐⭐</div>
+            </div>
+            <div style="font-size:.85rem;color:var(--txt);line-height:1.5;margin-bottom:6px">Mới đầu mình không có mục DNS nhưng mà sau khi mò kim đáy bể cũng thành công nha. Lên gold đúng nha, chủ shop tếu. Uy tín!</div>
+            <div style="font-size:.7rem;color:var(--muted)">3 ngày trước</div>
+          </div>
+          <!-- Review 4 -->
+          <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid var(--bd);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--muted)">T</div>
+                <strong style="font-size:.85rem;color:var(--txt)">Tr***an</strong>
+              </div>
+              <div style="color:#f59e0b;font-size:.75rem">⭐⭐⭐⭐⭐</div>
+            </div>
+            <div style="font-size:.85rem;color:var(--txt);line-height:1.5;margin-bottom:6px">Giao dịch 5s locket lên vip luôn. Sịn xò vđ</div>
+            <div style="font-size:.7rem;color:var(--muted)">4 ngày trước</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE EASY STEPS SECTION -->
+  <section class="steps-section"
+    style="background:#fff;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:80px 20px;margin-bottom:80px;text-align:center">
+    <div style="max-width:1100px;margin:0 auto">
+      <h2 class="section-title" style="margin-bottom:8px">Sở Hữu Locket Gold Chỉ Với 3 Bước</h2>
+      <p class="section-sub" style="margin-bottom:48px">Quá trình nâng cấp diễn ra hoàn toàn tự động trong chưa đầy 1
+        phút. Không rườm rà, không chờ đợi.</p>
+
+      <div class="steps-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px">
+        <div class="step-card"
+          style="position:relative;background:var(--bg);border-radius:20px;padding:30px;transition:all 0.2s;text-align:left">
+          <div
+            style="position:absolute;top:20px;right:20px;font-size:3rem;font-weight:900;color:rgba(37,99,235,0.06);line-height:1">
+            1</div>
+          <div
+            style="width:48px;height:48px;border-radius:14px;background:rgba(37,99,235,0.1);color:var(--ind);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;margin-bottom:20px">
+            <i class="fa-solid fa-user-plus"></i></div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:10px;color:var(--txt)">Đăng Ký Tài Khoản</h3>
+          <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Tạo tài khoản miễn phí trên hệ thống để bắt đầu
+            quá trình đồng bộ dữ liệu.</p>
+        </div>
+        <div class="step-card"
+          style="position:relative;background:var(--bg);border-radius:20px;padding:30px;transition:all 0.2s;text-align:left">
+          <div
+            style="position:absolute;top:20px;right:20px;font-size:3rem;font-weight:900;color:rgba(245,158,11,0.06);line-height:1">
+            2</div>
+          <div
+            style="width:48px;height:48px;border-radius:14px;background:rgba(245,158,11,0.1);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;margin-bottom:20px">
+            <i class="fa-solid fa-magnifying-glass"></i></div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:10px;color:var(--txt)">Nhập ID Locket</h3>
+          <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Cung cấp link trang cá nhân Locket. Hệ thống sẽ
+            tự động tìm nạp thông tin hoàn toàn ẩn danh.</p>
+        </div>
+        <div class="step-card"
+          style="position:relative;background:var(--bg);border-radius:20px;padding:30px;transition:all 0.2s;text-align:left">
+          <div
+            style="position:absolute;top:20px;right:20px;font-size:3rem;font-weight:900;color:rgba(34,197,94,0.06);line-height:1">
+            3</div>
+          <div
+            style="width:48px;height:48px;border-radius:14px;background:rgba(34,197,94,0.1);color:#16a34a;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;margin-bottom:20px">
+            <i class="fa-solid fa-circle-check"></i></div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:10px;color:var(--txt)">Tận Hưởng Premium</h3>
+          <p style="font-size:.82rem;line-height:1.5;color:var(--muted)">Cài đặt Profile Bảo Vệ Nhận Diện. Mở app và sử
+            dụng ngay toàn bộ đặc quyền Gold vĩnh viễn.</p>
+        </div>
+      </div>
+
+      <!-- Privacy commitment -->
+      <div
+        style="max-width:800px;margin:40px auto 0;background:rgba(37,99,235,0.03);border:1px dashed rgba(37,99,235,0.2);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:2rem">🔒</div>
+        <div style="font-size:.82rem;line-height:1.5;color:var(--muted);text-align:left">
+          <strong>Cam kết quyền riêng tư:</strong> Tài khoản của bạn sẽ được mở khóa toàn bộ các đặc quyền Premium. Xin
+          lưu ý: Để đảm bảo quyền riêng tư tuyệt đối, hệ thống sẽ hoàn toàn không hiển thị Huy hiệu Vàng trên trang cá
+          nhân của bạn cũng như với người dùng khác.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
 
   <!-- AUTH MODAL -->
   <div class="overlay" id="auth-overlay" onclick="closeIfBg(event,'auth-overlay')">
@@ -238,7 +648,7 @@
         <div id="locket-preview"
           style="background:#f8fafc;border:1px solid var(--bd);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px">
           <img id="preview-avatar" src=""
-            style="width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;margin-bottom:10px;display:none">
+            style="width:72px;height:72px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;margin:0 auto 10px auto;display:none">
           <div id="preview-name" style="font-size:1.1rem;font-weight:900;margin-bottom:2px"></div>
           <div style="font-size:.82rem;color:var(--muted)">@<span id="preview-uname"></span></div>
         </div>
@@ -251,6 +661,55 @@
         </button>
       </div>
       <div id="kick-result-area" style="display:none;margin-top:16px"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div class="overlay" id="profile-overlay" onclick="closeIfBg(event,'profile-overlay')">
+    <div class="modal" style="max-width:540px; padding:24px;">
+      <button class="modal-close" onclick="closeOverlay('profile-overlay')"><i class="fa-solid fa-xmark"></i></button>
+      <h2 style="margin-bottom:16px"><i class="fa-solid fa-circle-user" style="color:var(--ind)"></i> Hồ sơ cá nhân</h2>
+
+      <div id="profile-loading" style="text-align:center; padding:20px; display:none;">
+        <span class="spin"></span> Đang tải...
+      </div>
+
+      <div id="profile-content" style="display:none">
+        <div class="profile-header-card">
+          <div class="ph-avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="ph-info">
+            <div class="ph-name" id="prof-fullname">...</div>
+            <div class="ph-uname">@<span id="prof-username">...</span></div>
+          </div>
+        </div>
+
+        <div class="prof-stats-grid">
+          <div class="prof-stat">
+            <div class="ps-label">Số dư</div>
+            <div class="ps-val" id="prof-bal" style="color:var(--gold)">0đ</div>
+          </div>
+          <div class="prof-stat">
+            <div class="ps-label">Tổng nạp</div>
+            <div class="ps-val" id="prof-dep" style="color:#16a34a">0đ</div>
+          </div>
+          <div class="prof-stat">
+            <div class="ps-label">Tổng tiêu</div>
+            <div class="ps-val" id="prof-spent" style="color:#ef4444">0đ</div>
+          </div>
+        </div>
+
+        <div class="tabs" style="margin-bottom:14px; margin-top:20px">
+          <button class="tab active" id="tab-prof-orders" onclick="switchProfTab('orders')">Lịch sử Mua</button>
+          <button class="tab" id="tab-prof-deposits" onclick="switchProfTab('deposits')">Lịch sử Nạp</button>
+        </div>
+
+        <div id="prof-orders-view">
+          <div class="history-list custom-scroll" id="prof-orders-list"></div>
+        </div>
+        <div id="prof-deposits-view" style="display:none">
+          <div class="history-list custom-scroll" id="prof-deposits-list"></div>
+        </div>
+      </div>
     </div>
   </div>
 

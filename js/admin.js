@@ -93,22 +93,23 @@ async function loadUsers() {
   try {
     const r = await fetch(SHOP_URL + '/users', { headers: { Authorization: 'Bearer ' + adminToken } });
     const d = await r.json();
-    if (!d.users) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Lỗi tải dữ liệu</td></tr>'; return; }
+    if (!d.users) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Lỗi tải dữ liệu</td></tr>'; return; }
     allUsers = d.users;
     renderUserTable(allUsers, 'users-table');
-  } catch { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Lỗi kết nối</td></tr>'; }
+  } catch { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Lỗi kết nối</td></tr>'; }
 }
 
 function renderUserTable(users, tableId) {
   const tbody = document.getElementById(tableId);
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-users-slash"></i>Chưa có người dùng</div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-users-slash"></i>Chưa có người dùng</div></td></tr>';
     return;
   }
   tbody.innerHTML = users.map(u => `
     <tr>
       <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'👑 Admin':'👤 User'}</span></td>
       <td><strong>${u.username}</strong><br><span style="color:var(--muted);font-size:.75rem">${u.email||'—'}</span></td>
+      <td><span class="blur-pass" title="Hover để xem mật khẩu">${u.password||'—'}</span></td>
       <td>${u.fullname||'—'}</td>
       <td style="color:var(--gold);font-weight:700">${fmt(u.balance||0)}</td>
       <td style="color:#4ade80">${fmt(u.totalDeposit||0)}</td>
@@ -150,6 +151,7 @@ async function openUserDetail(username) {
         <span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}" style="margin-top:8px">${u.role==='admin'?'👑 Admin':'👤 User'}</span>
       </div>
       <div class="card" style="margin-bottom:16px">
+        <div class="detail-row"><span class="detail-lbl">Mật khẩu</span><span class="detail-val"><span class="blur-pass" title="Hover để xem mật khẩu">${u.password||'—'}</span></span></div>
         <div class="detail-row"><span class="detail-lbl">Số dư</span><span class="detail-val" style="color:var(--gold)">${fmt(u.balance||0)}</span></div>
         <div class="detail-row"><span class="detail-lbl">Tổng nạp</span><span class="detail-val" style="color:#4ade80">${fmt(u.totalDeposit||0)}</span></div>
         <div class="detail-row"><span class="detail-lbl">Tổng chi</span><span class="detail-val" style="color:#f87171">${fmt(u.totalSpent||0)}</span></div>
