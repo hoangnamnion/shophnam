@@ -391,6 +391,8 @@ async function kickGoldNow() {
             <i class="fa-solid fa-star"></i> ĐÃ CÓ GOLD VĨNH VIỄN
           </div>
           
+          ${(selectedPlan.price === 50000 || selectedPlan.price === 130000 || selectedPlan.price === 99000) ? '<div style="margin-bottom:16px;"><a href="https://zalo.me/0378787154" target="_blank" class="btn btn-ind btn-full btn-lg" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#3B82F6,#2563EB);margin-bottom:10px;text-decoration:none;color:#fff;"><i class="fa-solid fa-download"></i> Liên hệ Admin nhận Cấu hình</a><a href="https://zalo.me/0378787154" target="_blank" class="btn btn-ind btn-full btn-lg" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#0ea5e9,#0284c7);text-decoration:none;color:#fff;"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" style="width:20px;height:20px;margin-right:8px;filter:brightness(0) invert(1);"> Zalo: 0378787154</a></div>' : ''}
+
           <button class="btn btn-ind btn-full btn-lg" onclick="closeOverlay('buy-overlay')" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#10b981,#059669)">
             Hoàn tất
           </button>
