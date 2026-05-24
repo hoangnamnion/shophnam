@@ -1,13 +1,27 @@
 // tiennap.js - Cloudflare Worker: Xử lý nạp tiền qua SePay
 // Deploy tại: https://shy-mode-c579.caovannamutt.workers.dev
 
-const SEPAY_API_KEY  = "YOUR_SEPAY_API_KEY"; // Thay bằng API key SePay thật (lấy tại my.sepay.vn)
-const SEPAY_ACCOUNT  = "338935";              // Số tài khoản MB Bank
-const BANK_NAME      = "MB Bank";
-const ACCOUNT_NAME   = "CAO VAN NAM";
-const TKMKSHOP_URL   = "https://tkmkshop.caovannamutt.workers.dev"; // URL của tkmkshop.js
-const INTERNAL_KEY   = "mkshop_internal_2025";
-const JWT_SECRET     = "mkshop_secret_jwt_2025"; 
+const DEFAULTS = {
+  SEPAY_API_KEY: "YOUR_SEPAY_API_KEY", // Thay bằng API key SePay thật (lấy tại my.sepay.vn)
+  SEPAY_ACCOUNT: "338935",              // Số tài khoản MB Bank
+  BANK_NAME: "MB Bank",
+  ACCOUNT_NAME: "CAO VAN NAM",
+  TKMKSHOP_URL: "https://tkmkshop.caovannamutt.workers.dev", // URL của tkmkshop.js
+  INTERNAL_KEY: "mkshop_internal_2025",
+  JWT_SECRET: "mkshop_secret_jwt_2025"
+};
+
+function getConfig(env) {
+  return {
+    SEPAY_API_KEY: env.SEPAY_API_KEY || DEFAULTS.SEPAY_API_KEY,
+    SEPAY_ACCOUNT: env.SEPAY_ACCOUNT || DEFAULTS.SEPAY_ACCOUNT,
+    BANK_NAME: env.BANK_NAME || DEFAULTS.BANK_NAME,
+    ACCOUNT_NAME: env.ACCOUNT_NAME || DEFAULTS.ACCOUNT_NAME,
+    TKMKSHOP_URL: env.TKMKSHOP_URL || DEFAULTS.TKMKSHOP_URL,
+    INTERNAL_KEY: env.INTERNAL_KEY || DEFAULTS.INTERNAL_KEY,
+    JWT_SECRET: env.JWT_SECRET || DEFAULTS.JWT_SECRET
+  };
+}
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -101,6 +115,7 @@ export default {
 // =================== HANDLERS ===================
 
 async function handlePaymentInfo(request, env) {
+  const config = getConfig(env);
   const token = getAuthToken(request);
   const payload = await verifyToken(token);
   if (!payload) return jsonRes({ error: "Unauthorized" }, 401);
@@ -113,13 +128,13 @@ async function handlePaymentInfo(request, env) {
   await kv.put(`code:${transferCode}`, payload.username, { expirationTtl: 86400 * 90 });
 
   // Tạo QR VietQR (MB Bank) - Chỉ lấy mã QR duy nhất không kèm viền/thông tin ngoài
-  const qrUrl = `https://img.vietqr.io/image/MB-${SEPAY_ACCOUNT}-qr_only.jpg?amount=&addInfo=${transferCode}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+  const qrUrl = `https://img.vietqr.io/image/MB-${config.SEPAY_ACCOUNT}-qr_only.jpg?amount=&addInfo=${transferCode}&accountName=${encodeURIComponent(config.ACCOUNT_NAME)}`;
 
   return jsonRes({
     success: true,
-    bankAccount: SEPAY_ACCOUNT,
-    bankName: BANK_NAME,
-    accountName: ACCOUNT_NAME,
+    bankAccount: config.SEPAY_ACCOUNT,
+    bankName: config.BANK_NAME,
+    accountName: config.ACCOUNT_NAME,
     transferCode,
     qrUrl,
     note: `Nội dung chuyển khoản: ${transferCode}`,
@@ -128,6 +143,7 @@ async function handlePaymentInfo(request, env) {
 }
 
 async function handleCheckPayment(request, env) {
+  const config = getConfig(env);
   const token = getAuthToken(request);
   const payload = await verifyToken(token);
   if (!payload) return jsonRes({ error: "Unauthorized" }, 401);
@@ -139,10 +155,10 @@ async function handleCheckPayment(request, env) {
   // Gọi SePay API để kiểm tra giao dịch
   try {
     const sePayRes = await fetch(
-      `https://my.sepay.vn/userapi/transactions/list?account_number=${SEPAY_ACCOUNT}&limit=20`,
+      `https://my.sepay.vn/userapi/transactions/list?account_number=${config.SEPAY_ACCOUNT}&limit=20`,
       {
         headers: {
-          Authorization: `Bearer ${SEPAY_API_KEY}`,
+          Authorization: `Bearer ${config.SEPAY_API_KEY}`,
           "Content-Type": "application/json",
         },
       }
@@ -183,11 +199,11 @@ async function handleCheckPayment(request, env) {
 
     if (totalNew > 0) {
       // Cộng tiền vào tài khoản qua tkmkshop
-      await fetch(`${TKMKSHOP_URL}/balance/add`, {
+      await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Internal-Key": INTERNAL_KEY,
+          "X-Internal-Key": config.INTERNAL_KEY,
         },
         body: JSON.stringify({
           username: payload.username,
@@ -226,6 +242,7 @@ async function handleCheckPayment(request, env) {
 }
 
 async function handleWebhook(request, env) {
+  const config = getConfig(env);
   // SePay tự động POST khi có giao dịch mới
   let body;
   try { body = await request.json(); } catch { return new Response("OK", { status: 200 }); }
@@ -268,9 +285,9 @@ async function handleWebhook(request, env) {
   }));
 
   // Cộng tiền vào tài khoản ngay lập tức
-  await fetch(`${TKMKSHOP_URL}/balance/add`, {
+  await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Internal-Key": INTERNAL_KEY },
+    headers: { "Content-Type": "application/json", "X-Internal-Key": config.INTERNAL_KEY },
     body: JSON.stringify({ username, amount, txCode: transferCode }),
   });
 
