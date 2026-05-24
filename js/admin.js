@@ -1,5 +1,5 @@
 const SHOP_URL = 'https://tkmkshop.caovannamutt.workers.dev';
-const PAY_URL  = 'https://shy-mode-c579.caovannamutt.workers.dev';
+const PAY_URL  = 'https://tiennap.caovannamutt.workers.dev';
 
 let adminToken = null;
 let allUsers   = [];
@@ -173,27 +173,49 @@ async function openUserDetail(username) {
 
 // ── SET BALANCE ──
 let editUsername = '';
+let balOp = 'add'; // 'add' | 'deduct' | 'set'
+
+function setBalOp(op) {
+  balOp = op;
+  const labels = { add: 'Số tiền cộng thêm (VNĐ)', deduct: 'Số tiền trừ bớt (VNĐ)', set: 'Số dư mới đặt thẳng (VNĐ)' };
+  document.getElementById('bal-label').textContent = labels[op];
+  document.getElementById('bal-amount').value = '';
+  ['add','deduct','set'].forEach(o => {
+    const btn = document.getElementById('op-' + o);
+    btn.style.opacity = o === op ? '1' : '0.4';
+  });
+}
+
 function openSetBalance(username, currentBal) {
   editUsername = username;
+  balOp = 'add';
   document.getElementById('bal-username').textContent = username;
   document.getElementById('bal-current').textContent  = fmt(currentBal);
-  document.getElementById('bal-amount').value = currentBal;
+  document.getElementById('bal-amount').value = '';
+  document.getElementById('bal-label').textContent = 'Số tiền cộng thêm (VNĐ)';
+  // Reset nút
+  ['add','deduct','set'].forEach(o => {
+    document.getElementById('op-' + o).style.opacity = o === 'add' ? '1' : '0.4';
+  });
   clearAlert('bal-alert');
   openOverlay('bal-overlay');
 }
+
 async function doSetBalance() {
-  const amount = parseInt(document.getElementById('bal-amount').value) || 0;
-  if (amount < 0) { showAlert('bal-alert', 'Số tiền không hợp lệ', 'err'); return; }
+  const amount = parseInt(document.getElementById('bal-amount').value);
+  if (isNaN(amount) || amount < 0) { showAlert('bal-alert', 'Số tiền không hợp lệ', 'err'); return; }
+  if (amount === 0 && balOp !== 'set') { showAlert('bal-alert', 'Số tiền phải lớn hơn 0', 'err'); return; }
   setBtnLoading('btn-set-bal', true);
   try {
     const r = await fetch(SHOP_URL + '/users/' + editUsername + '/balance', {
       method: 'PUT',
       headers: { Authorization: 'Bearer ' + adminToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ balance: amount })
+      body: JSON.stringify({ amount, operation: balOp })
     });
     const d = await r.json();
     if (d.success) {
-      toast('Đã cập nhật số dư cho ' + editUsername, 'ok');
+      const msgs = { add: 'Cộng ' + fmt(amount) + ' vào tài khoản ' + editUsername, deduct: 'Trừ ' + fmt(amount) + ' khỏi tài khoản ' + editUsername, set: 'Đặt số dư của ' + editUsername + ' = ' + fmt(amount) };
+      toast(msgs[balOp], 'ok');
       closeOverlay('bal-overlay');
       loadUsers();
     } else { showAlert('bal-alert', d.error || 'Thất bại', 'err'); }

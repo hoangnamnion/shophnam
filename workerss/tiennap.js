@@ -65,6 +65,35 @@ function getKV(env) {
   return env.TIENNAP_KV || env.MKSHOP_KV || env.MKSHOP || env.ORDERS;
 }
 
+// Hàm cộng tiền trực tiếp vào KV (không cần gọi HTTP sang tkmkshop)
+async function addUserBalance(env, username, amount, txCode) {
+  // Ưu tiên dùng MKSHOP_KV trực tiếp (cần bind MKSHOP_KV vào tiennap worker)
+  const mkshopKV = env.MKSHOP_KV;
+  if (mkshopKV) {
+    const userRaw = await mkshopKV.get(`user:${username}`);
+    if (!userRaw) throw new Error("User không tồn tại trong hệ thống");
+    const user = JSON.parse(userRaw);
+    user.balance = (user.balance || 0) + amount;
+    user.totalDeposit = (user.totalDeposit || 0) + amount;
+    if (!user.depositHistory) user.depositHistory = [];
+    user.depositHistory.unshift({ amount, txCode, date: new Date().toISOString() });
+    if (user.depositHistory.length > 50) user.depositHistory = user.depositHistory.slice(0, 50);
+    await mkshopKV.put(`user:${username}`, JSON.stringify(user));
+    return user.balance;
+  }
+  // Fallback: gọi HTTP sang tkmkshop (nếu không có KV trực tiếp)
+  const config = getConfig(env);
+  const res = await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Internal-Key": config.INTERNAL_KEY },
+    body: JSON.stringify({ username, amount, txCode }),
+  });
+  let data;
+  try { data = await res.json(); } catch { throw new Error("Máy chủ tài khoản trả về lỗi (" + res.status + ")"); }
+  if (!data.success) throw new Error(data.error || "Cộng tiền thất bại");
+  return data.newBalance;
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -198,39 +227,19 @@ async function handleCheckPayment(request, env) {
     }
 
     if (totalNew > 0) {
-      // Cộng tiền vào tài khoản qua tkmkshop - kiểm tra kết quả
-      let addRes, addData;
+      // Cộng tiền trực tiếp vào KV (không cần gọi HTTP)
+      let newBalance;
       try {
-        addRes = await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Internal-Key": config.INTERNAL_KEY,
-          },
-          body: JSON.stringify({
-            username: payload.username,
-            amount: totalNew,
-            txCode: transferCode,
-          }),
-        });
-        addData = await addRes.json();
-      } catch (fetchErr) {
+        newBalance = await addUserBalance(env, payload.username, totalNew, transferCode);
+      } catch (addErr) {
         // Gỡ bỏ dấu đã xử lý để có thể thử lại sau
         for (const tx of newTxs) {
           await kv.delete(`tx:${tx.txId}`);
         }
-        return jsonRes({ error: "Lỗi kết nối tới máy chủ tài khoản: " + fetchErr.message }, 502);
+        return jsonRes({ error: "Cộng tiền thất bại: " + addErr.message }, 500);
       }
 
-      if (!addData || !addData.success) {
-        // Gỡ bỏ dấu đã xử lý để có thể thử lại sau
-        for (const tx of newTxs) {
-          await kv.delete(`tx:${tx.txId}`);
-        }
-        return jsonRes({ error: "Cộng tiền thất bại: " + (addData?.error || "Lỗi không xác định") }, 500);
-      }
-
-      // Lưu lịch sử
+      // Lưu lịch sử giao dịch trong tiennap KV
       const histKey = `history:${payload.username}`;
       const histRaw = await kv.get(histKey);
       const hist = histRaw ? JSON.parse(histRaw) : [];
@@ -244,7 +253,7 @@ async function handleCheckPayment(request, env) {
         success: true,
         found: true,
         totalAdded: totalNew,
-        newBalance: addData.newBalance,
+        newBalance,
         transactions: newTxs,
         message: `Đã nạp thành công ${totalNew.toLocaleString("vi-VN")}đ vào tài khoản!`,
       });
@@ -304,11 +313,12 @@ async function handleWebhook(request, env) {
   }));
 
   // Cộng tiền vào tài khoản ngay lập tức
-  await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Internal-Key": config.INTERNAL_KEY },
-    body: JSON.stringify({ username, amount, txCode: transferCode }),
-  });
+  try {
+    await addUserBalance(env, username, amount, transferCode);
+  } catch (e) {
+    // Log lỗi nhưng vẫn return OK để SePay không retry
+    console.error("addUserBalance webhook error:", e.message);
+  }
 
   // Lưu lịch sử
   const histKey = `history:${username}`;

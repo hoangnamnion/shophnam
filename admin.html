@@ -228,7 +228,7 @@
   <div class="overlay" id="bal-overlay" onclick="closeIfBg(event,'bal-overlay')">
     <div class="modal">
       <button class="modal-close" onclick="closeOverlay('bal-overlay')"><i class="fa-solid fa-xmark"></i></button>
-      <h3><i class="fa-solid fa-coins" style="color:var(--gold)"></i> Cập nhật số dư</h3>
+      <h3><i class="fa-solid fa-coins" style="color:var(--gold)"></i> Chỉnh số dư</h3>
       <div id="bal-alert" class="alert"></div>
       <div style="background:#ffffff08;border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:16px">
         <div class="detail-row"><span class="detail-lbl">Username</span><span class="detail-val"
@@ -236,8 +236,14 @@
         <div class="detail-row"><span class="detail-lbl">Số dư hiện tại</span><span class="detail-val"
             style="color:var(--gold)" id="bal-current">—</span></div>
       </div>
+      <!-- Chế độ thành toán -->
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button id="op-add" class="btn btn-gold" style="flex:1;justify-content:center;font-size:.82rem" onclick="setBalOp('add')"><i class="fa-solid fa-plus"></i> Cộng tiền</button>
+        <button id="op-deduct" class="btn btn-red" style="flex:1;justify-content:center;font-size:.82rem;opacity:.5" onclick="setBalOp('deduct')"><i class="fa-solid fa-minus"></i> Trừ tiền</button>
+        <button id="op-set" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:.82rem;opacity:.5" onclick="setBalOp('set')"><i class="fa-solid fa-equals"></i> Đặt thẳng</button>
+      </div>
       <div class="form-group">
-        <label class="form-label">Số dư mới (VNĐ)</label>
+        <label class="form-label" id="bal-label">Số tiền cộng thêm (VNĐ)</label>
         <input class="form-control" id="bal-amount" type="number" min="0" placeholder="0">
       </div>
       <div style="display:flex;gap:10px">

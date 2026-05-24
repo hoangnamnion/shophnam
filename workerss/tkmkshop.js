@@ -400,16 +400,35 @@ async function handleAdminSetBalance(request, env, path) {
 
   const username = decodeURIComponent(path.split("/")[2]);
   const body = await request.json();
-  const { balance } = body;
+  const { amount, operation, balance } = body;
 
   const userRaw = await env.MKSHOP_KV.get(`user:${username}`);
   if (!userRaw) return jsonRes({ error: "User không tồn tại" }, 404);
 
   const user = JSON.parse(userRaw);
-  user.balance = balance;
-  await env.MKSHOP_KV.put(`user:${username}`, JSON.stringify(user));
+  const op = operation || "set";
+  const val = amount !== undefined ? parseInt(amount) : parseInt(balance) || 0;
 
-  return jsonRes({ success: true, message: `Đã cập nhật số dư cho ${username}` });
+  if (op === "add") {
+    user.balance = (user.balance || 0) + val;
+    user.totalDeposit = (user.totalDeposit || 0) + val;
+    if (!user.depositHistory) user.depositHistory = [];
+    user.depositHistory.unshift({ amount: val, txCode: "ADMIN_ADD", date: new Date().toISOString() });
+    if (user.depositHistory.length > 50) user.depositHistory = user.depositHistory.slice(0, 50);
+  } else if (op === "deduct") {
+    if (user.balance < val) return jsonRes({ error: "Số dư không đủ để trừ" }, 400);
+    user.balance = (user.balance || 0) - val;
+    user.totalSpent = (user.totalSpent || 0) + val;
+    if (!user.orders) user.orders = [];
+    user.orders.unshift({ description: "Admin trừ tiền", amount: val, date: new Date().toISOString() });
+    if (user.orders.length > 50) user.orders = user.orders.slice(0, 50);
+  } else {
+    // set: đặt thẳng số dư
+    user.balance = val;
+  }
+
+  await env.MKSHOP_KV.put(`user:${username}`, JSON.stringify(user));
+  return jsonRes({ success: true, newBalance: user.balance, message: `Đã cập nhật số dư cho ${username}` });
 }
 
 async function handleDeleteUser(request, env, path) {
