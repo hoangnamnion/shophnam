@@ -198,19 +198,37 @@ async function handleCheckPayment(request, env) {
     }
 
     if (totalNew > 0) {
-      // Cộng tiền vào tài khoản qua tkmkshop
-      await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Internal-Key": config.INTERNAL_KEY,
-        },
-        body: JSON.stringify({
-          username: payload.username,
-          amount: totalNew,
-          txCode: transferCode,
-        }),
-      });
+      // Cộng tiền vào tài khoản qua tkmkshop - kiểm tra kết quả
+      let addRes, addData;
+      try {
+        addRes = await fetch(`${config.TKMKSHOP_URL}/balance/add`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Internal-Key": config.INTERNAL_KEY,
+          },
+          body: JSON.stringify({
+            username: payload.username,
+            amount: totalNew,
+            txCode: transferCode,
+          }),
+        });
+        addData = await addRes.json();
+      } catch (fetchErr) {
+        // Gỡ bỏ dấu đã xử lý để có thể thử lại sau
+        for (const tx of newTxs) {
+          await kv.delete(`tx:${tx.txId}`);
+        }
+        return jsonRes({ error: "Lỗi kết nối tới máy chủ tài khoản: " + fetchErr.message }, 502);
+      }
+
+      if (!addData || !addData.success) {
+        // Gỡ bỏ dấu đã xử lý để có thể thử lại sau
+        for (const tx of newTxs) {
+          await kv.delete(`tx:${tx.txId}`);
+        }
+        return jsonRes({ error: "Cộng tiền thất bại: " + (addData?.error || "Lỗi không xác định") }, 500);
+      }
 
       // Lưu lịch sử
       const histKey = `history:${payload.username}`;
@@ -226,6 +244,7 @@ async function handleCheckPayment(request, env) {
         success: true,
         found: true,
         totalAdded: totalNew,
+        newBalance: addData.newBalance,
         transactions: newTxs,
         message: `Đã nạp thành công ${totalNew.toLocaleString("vi-VN")}đ vào tài khoản!`,
       });

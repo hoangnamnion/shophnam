@@ -159,10 +159,15 @@ async function checkPayment() {
     const d = await r.json();
     if (d.found) {
       toast('Nạp thành công ' + fmt(d.totalAdded) + '!', 'ok');
-      currentUser.balance = (currentUser.balance || 0) + d.totalAdded;
+      // Dùng số dư server trả về để đảm bảo chính xác
+      if (d.newBalance !== undefined) {
+        currentUser.balance = d.newBalance;
+      } else {
+        currentUser.balance = (currentUser.balance || 0) + d.totalAdded;
+      }
       saveSession(currentToken, currentUser);
       closeOverlay('dep-overlay');
-    } else { showAlert('dep-alert', d.message || 'Chưa có giao dịch mới', 'err'); }
+    } else { showAlert('dep-alert', d.message || d.error || 'Chưa có giao dịch mới', 'err'); }
   } catch { showAlert('dep-alert', 'Lỗi kết nối', 'err'); }
   setLoading('btn-check-pay', false, '<i class="fa-solid fa-rotate"></i> Kiểm tra đã chuyển');
 }
