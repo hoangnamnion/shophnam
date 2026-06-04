@@ -1,6 +1,9 @@
-const SHOP_URL   = 'https://tkmkshop.caovannamutt.workers.dev';
-const PAY_URL    = 'https://tiennap.caovannamutt.workers.dev';
-const WORKER_URL = 'https://shopbanhang.caovannamutt.workers.dev/'; 
+const SHOP_URL      = 'https://tkmkshop.caovannamutt.workers.dev';
+const PAY_URL       = 'https://tiennap.caovannamutt.workers.dev';
+const WORKER_URL    = 'https://shopbanhang.caovannamutt.workers.dev/';
+const WARRANTY_URL  = 'https://baohanhlocket.caovannamutt.workers.dev'; // Worker bảo hành
+const WARRANTY_KEY  = 'mkshop_internal_2025'; // Phải khớp với baohanhlk.js
+const DNS_BASE_URL  = 'https://www.webhoangnam.click'; // Domain chứa download2.html
 
 const PLANS = {
   basic:   { name:'Locket Gold — 3 Không', price:50000, key:'basic' },
@@ -331,37 +334,60 @@ async function kickGoldNow() {
   const locketUser = document.getElementById('preview-uname').textContent.trim();
   if (!locketUser) return;
 
-  const bal = currentUser.balance || 0;
-  if (currentUser.role !== 'admin' && bal < selectedPlan.price) {
-    showAlert('buy-alert', 'Số dư không đủ. Cần nạp thêm ' + fmt(selectedPlan.price - bal), 'err');
-    return;
-  }
-
   setLoading('btn-kick-gold', true);
   clearAlert('buy-alert');
 
-  // Trừ số dư
+  // ── Kiểm tra bảo hành trước (timeout 4s để không block UI) ──
+  let hasWarranty = false;
   try {
-    const r = await fetch(SHOP_URL + '/balance/deduct', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + currentToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: selectedPlan.price, description: selectedPlan.name + ' for @' + locketUser })
-    });
-    const d = await r.json();
-    if (!d.success) {
-      showAlert('buy-alert', d.error || 'Thanh toán thất bại', 'err');
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), 4000); // bỏ qua sau 4 giây
+    const wRes = await fetch(
+      `${WARRANTY_URL}/check?locket_username=${encodeURIComponent(locketUser)}&plan=${selectedPlan.key}`,
+      { headers: { 'X-Internal-Key': WARRANTY_KEY }, signal: ctrl.signal }
+    );
+    clearTimeout(tid);
+    if (wRes.ok) {
+      const wData = await wRes.json();
+      if (wData.has_warranty) {
+        hasWarranty = true;
+        showAlert('buy-alert', '🛡️ Tài khoản có bảo hành — nâng cấp miễn phí!', 'ok');
+      }
+    }
+  } catch { /* Timeout hoặc lỗi mạng → tiếp tục bình thường */ }
+
+  // ── Trừ số dư (nếu không có bảo hành) ──
+  if (!hasWarranty) {
+    const bal = currentUser.balance || 0;
+    if (currentUser.role !== 'admin' && bal < selectedPlan.price) {
+      showAlert('buy-alert', 'Số dư không đủ. Cần nạp thêm ' + fmt(selectedPlan.price - bal), 'err');
       setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay');
       return;
     }
-    currentUser.balance = d.newBalance;
-    saveSession(currentToken, currentUser);
-  } catch {
-    showAlert('buy-alert', 'Lỗi kết nối khi thanh toán', 'err');
-    setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay');
-    return;
+    if (currentUser.role !== 'admin') {
+      try {
+        const r = await fetch(SHOP_URL + '/balance/deduct', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + currentToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: selectedPlan.price, description: selectedPlan.name + ' for @' + locketUser })
+        });
+        const d = await r.json();
+        if (!d.success) {
+          showAlert('buy-alert', d.error || 'Thanh toán thất bại', 'err');
+          setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay');
+          return;
+        }
+        currentUser.balance = d.newBalance;
+        saveSession(currentToken, currentUser);
+      } catch {
+        showAlert('buy-alert', 'Lỗi kết nối khi thanh toán', 'err');
+        setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thanh toán &amp; Kick Gold Ngay');
+        return;
+      }
+    }
   }
 
-  // Kick Gold
+  // ── Kick Gold ──
   showAlert('buy-alert', '⚡ Đang kick Gold cho @' + locketUser + '...', 'ok');
   try {
     const res  = await fetch(WORKER_URL, {
@@ -377,49 +403,87 @@ async function kickGoldNow() {
       const name   = data.name    || locketUser;
       const uname  = data.username || locketUser;
       const avatar = data.avatar || document.getElementById('preview-avatar').src;
-      
+
+      // ── Lưu bảo hành sau khi kick thành công ──
+      try {
+        await fetch(WARRANTY_URL + '/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Internal-Key': WARRANTY_KEY },
+          body: JSON.stringify({
+            locket_username : uname,
+            plan            : selectedPlan.key,
+            mkshop_username : currentUser.username
+          })
+        });
+      } catch { /* Không block UI nếu lưu bảo hành lỗi */ }
+
+      // ── Tự tạo link DNS Giữ Gold phía client (không cần API) ──
+      let dnsLink = null;
+      if (selectedPlan.key !== 'android') {
+        try {
+          const ttlMin = 1440; // 24 giờ
+          const payload = { name: name, ttlMinutes: ttlMin, exp: Date.now() + ttlMin * 60 * 1000 };
+          const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+          dnsLink = DNS_BASE_URL + '/download2.html?data=' + encodeURIComponent(encoded);
+        } catch { /* silent */ }
+      }
+
       document.getElementById('buy-info').style.display = 'none';
       document.querySelector('.bal-display').style.display = 'none';
       document.getElementById('step-kick').style.display = 'none';
-      
+
+      const warrantyBadge = hasWarranty
+        ? `<div style="margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.3);color:#2563eb;padding:6px 16px;border-radius:20px;font-size:.78rem;font-weight:800"><i class="fa-solid fa-shield-halved"></i> Đã dùng bảo hành — Miễn phí</div>`
+        : '';
+
+      // ── Nút tải cấu hình DNS ──
+      const dnsButton = (dnsLink && selectedPlan.key !== 'android')
+        ? `<div style="margin-bottom:16px;">
+            <button onclick="openDnsLink('${dnsLink}')" class="btn btn-ind btn-full btn-lg" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#f59e0b,#d97706);margin-bottom:8px;border:none;color:#000;cursor:pointer;">
+              <i class="fa-solid fa-download"></i> Tải Cấu Hình Giữ Gold
+            </button>
+            <div style="font-size:.71rem;color:var(--muted);">⏳ Hiệu lực 24 giờ &middot; Mở bằng Safari trên iPhone</div>
+           </div>`
+        : '';
+
+
       area.innerHTML = `
         <div style="background:#22c55e14;border:1px solid #22c55e33;border-radius:16px;padding:30px 20px;text-align:center">
           <div style="font-size:3.5rem;margin-bottom:10px;line-height:1">🎉</div>
-          <div style="color:#16a34a;font-weight:900;font-size:1.3rem;margin-bottom:6px">Thanh Toán & Kick Gold Thành Công!</div>
-          <div style="color:var(--muted);font-size:.9rem;margin-bottom:20px">Gói <strong>${selectedPlan.name}</strong></div>
-          
-          ${avatar ? `<img src="${avatar}" style="width:76px;height:76px;border-radius:50%;border:3px solid #10b981;margin:0 auto 10px;object-fit:cover;box-shadow:0 8px 16px rgba(16,185,129,0.2)">` : ''}
+          <div style="color:#16a34a;font-weight:900;font-size:1.3rem;margin-bottom:6px">${hasWarranty ? 'Nâng Cấp Bảo Hành Thành Công!' : 'Thanh Toán & Kick Gold Thành Công!'}</div>
+          <div style="color:var(--muted);font-size:.9rem;margin-bottom:12px">Gói <strong>${selectedPlan.name}</strong></div>
+          ${warrantyBadge}
+          ${avatar ? `<img src="${avatar}" style="width:76px;height:76px;border-radius:50%;border:3px solid #10b981;margin:10px auto;object-fit:cover;display:block;box-shadow:0 8px 16px rgba(16,185,129,0.2)">` : ''}
           <div style="color:#15803d;font-size:1.15rem;font-weight:800;margin-bottom:2px">${name}</div>
           <div style="color:#16a34a;font-size:.85rem;margin-bottom:16px">@${uname}</div>
-          
           <div style="margin-bottom:24px;display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#d97706;padding:8px 20px;border-radius:30px;font-size:.85rem;font-weight:800">
             <i class="fa-solid fa-star"></i> ĐÃ CÓ GOLD VĨNH VIỄN
           </div>
-          
-          ${(selectedPlan.price === 50000 || selectedPlan.price === 130000 || selectedPlan.price === 99000) ? '<div style="margin-bottom:16px;"><a href="https://zalo.me/0378787154" target="_blank" class="btn btn-ind btn-full btn-lg" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#3B82F6,#2563EB);margin-bottom:10px;text-decoration:none;color:#fff;"><i class="fa-solid fa-download"></i> Liên hệ Admin nhận Cấu hình</a><a href="https://zalo.me/0378787154" target="_blank" class="btn btn-ind btn-full btn-lg" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#0ea5e9,#0284c7);text-decoration:none;color:#fff;"><img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" style="width:20px;height:20px;margin-right:8px;filter:brightness(0) invert(1);"> Zalo: 0378787154</a></div>' : ''}
-
+          ${dnsButton}
           <button class="btn btn-ind btn-full btn-lg" onclick="closeOverlay('buy-overlay')" style="justify-content:center;font-weight:800;background:linear-gradient(135deg,#10b981,#059669)">
             Hoàn tất
           </button>
         </div>`;
       clearAlert('buy-alert');
     } else {
-      // Hoàn tiền tự động
+      // Hoàn tiền tự động (chỉ khi đã trừ tiền, không hoàn nếu dùng bảo hành)
       area.innerHTML = `
         <div style="background:#ef444414;border:1px solid #ef444433;border-radius:16px;padding:16px;text-align:center">
           <div style="color:#f87171;font-weight:800;margin-bottom:4px">❌ Kick Thất Bại</div>
           <div style="color:#f87171;font-size:.82rem">${data.error || 'Không xác định'}</div>
-          <div style="color:#94a3b8;font-size:.78rem;margin-top:6px">Tiền đã được hoàn lại vào tài khoản.</div>
+          <div style="color:#94a3b8;font-size:.78rem;margin-top:6px">${hasWarranty ? 'Bảo hành không bị mất, bạn có thể thử lại.' : 'Tiền đã được hoàn lại vào tài khoản.'}</div>
         </div>`;
-      try {
-        await fetch(SHOP_URL + '/balance/add', {
-          method: 'POST',
-          headers: { 'X-Internal-Key': 'mkshop_internal_2025', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: currentUser.username, amount: selectedPlan.price, txCode: 'REFUND' })
-        });
-        currentUser.balance = (currentUser.balance || 0) + selectedPlan.price;
-        saveSession(currentToken, currentUser);
-      } catch {}
+      if (!hasWarranty) {
+        try {
+          await fetch(SHOP_URL + '/balance/add', {
+            method: 'POST',
+            headers: { 'X-Internal-Key': 'mkshop_internal_2025', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentUser.username, amount: selectedPlan.price, txCode: 'REFUND' })
+          });
+          currentUser.balance = (currentUser.balance || 0) + selectedPlan.price;
+          saveSession(currentToken, currentUser);
+        } catch {}
+      }
       clearAlert('buy-alert');
       setLoading('btn-kick-gold', false, '<i class="fa-solid fa-bolt"></i> Thử lại');
     }
@@ -437,6 +501,55 @@ function toast(msg, type = 'ok') {
   t.className = 'show ' + type;
   setTimeout(() => { t.className = ''; }, 3200);
 }
+
+// ── MỞ LINK CẤU HÌNH DNS ──
+function openDnsLink(url) {
+  // Thử mở thẳng tab mới
+  const opened = window.open(url, '_blank');
+  // Nếu bị chặn popup (thường xảy ra trên một số trình duyệt),
+  // hiện modal hướng dẫn khách copy/mở thủ công
+  if (!opened || opened.closed || typeof opened.closed === 'undefined') {
+    _showDnsModal(url);
+    return;
+  }
+  // Với Safari iOS, window.open đôi khi trả về null → hiện modal
+  setTimeout(() => {
+    try { if (!opened || !opened.location) _showDnsModal(url); }
+    catch { _showDnsModal(url); }
+  }, 800);
+}
+
+function _showDnsModal(url) {
+  // Xoá modal cũ nếu có
+  const old = document.getElementById('dns-link-modal');
+  if (old) old.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'dns-link-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);';
+  modal.innerHTML = `
+    <div style="background:#1a1a2e;border-radius:24px 24px 0 0;padding:28px 20px 36px;width:100%;max-width:480px;text-align:center;animation:slideUp .3s ease">
+      <div style="font-size:2rem;margin-bottom:8px">📲</div>
+      <div style="color:#f59e0b;font-weight:900;font-size:1.1rem;margin-bottom:6px">Link Cấu Hình Giữ Gold</div>
+      <div style="color:#94a3b8;font-size:.8rem;margin-bottom:16px">Nhấn nút bên dưới để mở trang tải cấu hình.<br>Nhớ mở bằng <b style="color:#fff">Safari</b> trên iPhone!</div>
+      <input id="dns-link-input" value="${url}" readonly
+        style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#94a3b8;font-size:.72rem;margin-bottom:14px;box-sizing:border-box;cursor:pointer;"
+        onclick="this.select()">
+      <a href="${url}" target="_blank"
+        style="display:block;padding:14px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-weight:800;font-size:1rem;text-decoration:none;margin-bottom:10px;">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Link Tải Cấu Hình
+      </a>
+      <button onclick="navigator.clipboard.writeText('${url}').then(()=>toast('Đã sao chép link!','ok')).catch(()=>{})"
+        style="width:100%;padding:12px;border-radius:12px;background:#1e293b;border:1px solid #334155;color:#94a3b8;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:12px;">
+        <i class="fa-regular fa-copy"></i> Sao chép link
+      </button>
+      <button onclick="document.getElementById('dns-link-modal').remove()"
+        style="background:none;border:none;color:#64748b;font-size:.82rem;cursor:pointer;">Đóng</button>
+    </div>`;
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
 function showAlert(id, msg, type) {
   const el = document.getElementById(id);
   el.textContent = msg;
