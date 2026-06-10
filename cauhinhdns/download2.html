@@ -384,6 +384,9 @@
         let data = params.get("data");
         let timerInterval;
 
+        // ── URL Cloudflare Worker tạo mobileconfig ──
+        const WORKER_URL = 'https://dnsgold.caovannamutt.workers.dev';
+
         function getDeviceBrowserWarning() {
             var ua = navigator.userAgent || navigator.vendor || window.opera;
             var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -469,9 +472,9 @@
                 btn.innerHTML = "⏳ Đang mở file cấu hình...";
                 btn.style.pointerEvents = "none";
 
-                // Gọi tới /api/download2 cho Locket VIP
-                const url = "./api/download2?data=" + encodeURIComponent(data);
-                window.location.assign(url);
+                // Gọi Cloudflare Worker để tạo và trả file .mobileconfig
+                const workerUrl = WORKER_URL + '?data=' + encodeURIComponent(data);
+                window.location.assign(workerUrl);
 
                 setTimeout(() => {
                     btn.innerHTML = "⬇️ Tải Profile VIP";
