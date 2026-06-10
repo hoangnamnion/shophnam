@@ -1,10 +1,10 @@
 {
   "cleanUrls": false,
   "rewrites": [
-    { "source": "/api/download2", "destination": "/api/download2.js" },
-    { "source": "/api/download",  "destination": "/api/download.js"  },
-    { "source": "/api/gen-dns",   "destination": "/api/gen-dns.js"   },
-    { "source": "/api/create",    "destination": "/api/create.js"    }
+    { "source": "/cauhinhdns/api/download2", "destination": "/cauhinhdns/api/download2.js" },
+    { "source": "/cauhinhdns/api/download",  "destination": "/cauhinhdns/api/download.js"  },
+    { "source": "/cauhinhdns/api/gen-dns",   "destination": "/cauhinhdns/api/gen-dns.js"   },
+    { "source": "/cauhinhdns/api/create",    "destination": "/cauhinhdns/api/create.js"    }
   ]
 }
 
