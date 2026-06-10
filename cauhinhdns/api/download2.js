@@ -124,7 +124,9 @@ export default function handler(req, res) {
     <key>PayloadDescription</key>
     <string>Chức Năng:
 ✔️ Hỗ Trợ Không Bị Mất Locket Gold
-_Dương Bình Đẹp Zai_ </string>
+_CAO VĂN NAM_
+Zalo : 0378787154 💕
+Web : https://shoplkgold.vercel.app/ </string>
     <key>PayloadDisplayName</key>
     <string>💛 Locket Gold VIP (Vĩnh Viễn) - ${displayName}</string>
     <key>PayloadIdentifier</key>
