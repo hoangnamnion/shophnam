@@ -188,7 +188,7 @@
                 btn.style.pointerEvents = "none";
                 
                 // Sử dụng window.location.assign để Safari hiển thị prompt cài profile
-                const url = "/api/download?data=" + encodeURIComponent(data);
+                const url = "./api/download?data=" + encodeURIComponent(data);
                 window.location.assign(url);
                 
                 setTimeout(() => {
