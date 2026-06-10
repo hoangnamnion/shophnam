@@ -3,7 +3,7 @@ const PAY_URL       = 'https://tiennap.caovannamutt.workers.dev';
 const WORKER_URL    = 'https://shopbanhang.caovannamutt.workers.dev/';
 const WARRANTY_URL  = 'https://baohanhlocket.caovannamutt.workers.dev'; // Worker bảo hành
 const WARRANTY_KEY  = 'mkshop_internal_2025'; // Phải khớp với baohanhlk.js
-const DNS_BASE_URL  = 'https://www.webhoangnam.click'; // Domain chứa download2.html
+const DNS_BASE_URL  = 'https://shoplkgold.vercel.app/cauhinhdns/'; // Domain chứa download2.html
 
 const PLANS = {
   basic:   { name:'Locket Gold — 3 Không', price:50000, key:'basic' },
