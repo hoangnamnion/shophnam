@@ -1,3 +1,10 @@
 {
-  "cleanUrls": false
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/api/download2", "destination": "/api/download2.js" },
+    { "source": "/api/download",  "destination": "/api/download.js"  },
+    { "source": "/api/gen-dns",   "destination": "/api/gen-dns.js"   },
+    { "source": "/api/create",    "destination": "/api/create.js"    }
+  ]
 }
+
