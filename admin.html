@@ -75,6 +75,16 @@
     <!-- MAIN CONTENT -->
     <main class="main">
 
+      <div class="mobile-topbar">
+        <div class="sidebar-logo" style="border:none;padding:0">
+          <div class="icon" style="width:28px;height:28px;font-size:.75rem">⭐</div>
+          <span style="font-weight:900;margin-left:8px;font-size:.9rem">MKShop</span>
+          <span class="badge" style="margin-left:6px">ADMIN</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleSidebar()" style="padding:6px 12px;font-size:1rem"><i class="fa-solid fa-bars"></i></button>
+      </div>
+      <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
       <!-- ── DASHBOARD PAGE ── -->
       <div id="page-dashboard" class="page active fade-in">
         <div class="page-header">

@@ -56,6 +56,12 @@ function adminLogout() {
 }
 
 // ── NAVIGATION ──
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (overlay) overlay.classList.toggle('show');
+}
+
 function navTo(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -65,6 +71,12 @@ function navTo(page) {
   if (page === 'dashboard') loadDashboard();
   if (page === 'users')     loadUsers();
   if (page === 'txs')       loadTransactions();
+
+  // Đóng sidebar nếu đang mở trên mobile
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar && sidebar.classList.contains('open')) {
+    toggleSidebar();
+  }
 }
 
 // ── DASHBOARD ──
@@ -107,15 +119,15 @@ function renderUserTable(users, tableId) {
   }
   tbody.innerHTML = users.map(u => `
     <tr>
-      <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'👑 Admin':'👤 User'}</span></td>
-      <td><strong>${u.username}</strong><br><span style="color:var(--muted);font-size:.75rem">${u.email||'—'}</span></td>
-      <td><span class="blur-pass" title="Hover để xem mật khẩu">${u.password||'—'}</span></td>
-      <td>${u.fullname||'—'}</td>
-      <td style="color:var(--gold);font-weight:700">${fmt(u.balance||0)}</td>
-      <td style="color:#4ade80">${fmt(u.totalDeposit||0)}</td>
-      <td style="color:#f87171">${fmt(u.totalSpent||0)}</td>
-      <td>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <td data-label="Role"><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'👑 Admin':'👤 User'}</span></td>
+      <td data-label="Tài khoản"><div style="text-align:right;line-height:1.3"><strong>${u.username}</strong><br><span style="color:var(--muted);font-size:.75rem">${u.email||'—'}</span></div></td>
+      <td data-label="Mật khẩu"><span class="blur-pass" title="Hover để xem mật khẩu">${u.password||'—'}</span></td>
+      <td data-label="Tên">${u.fullname||'—'}</td>
+      <td data-label="Số dư" style="color:var(--gold);font-weight:700">${fmt(u.balance||0)}</td>
+      <td data-label="Tổng nạp" style="color:#4ade80">${fmt(u.totalDeposit||0)}</td>
+      <td data-label="Tổng chi" style="color:#f87171">${fmt(u.totalSpent||0)}</td>
+      <td data-label="Thao tác">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
           <button class="btn btn-sm btn-ind" onclick="openUserDetail('${u.username}')"><i class="fa-solid fa-eye"></i></button>
           <button class="btn btn-sm btn-gold" onclick="openSetBalance('${u.username}',${u.balance||0})"><i class="fa-solid fa-coins"></i></button>
           <button class="btn btn-sm btn-red" onclick="confirmDelete('${u.username}')"><i class="fa-solid fa-trash"></i></button>
@@ -262,11 +274,11 @@ async function loadTransactions() {
     if (!txs.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-receipt"></i>Chưa có giao dịch</div></td></tr>'; return; }
     tbody.innerHTML = txs.map(t => `
       <tr>
-        <td style="font-family:monospace;font-size:.75rem">${t.txId||'—'}</td>
-        <td><strong>${t.username||'—'}</strong></td>
-        <td class="hist-amount">+${fmt(t.amount||0)}</td>
-        <td style="color:var(--muted);font-size:.75rem">${t.date ? fmtDate(t.date) : '—'}</td>
-        <td><span class="badge badge-green">✓ Đã nạp</span></td>
+        <td data-label="Mã GD" style="font-family:monospace;font-size:.75rem">${t.txId||'—'}</td>
+        <td data-label="Username"><strong>${t.username||'—'}</strong></td>
+        <td data-label="Số tiền" class="hist-amount">+${fmt(t.amount||0)}</td>
+        <td data-label="Thời gian" style="color:var(--muted);font-size:.75rem">${t.date ? fmtDate(t.date) : '—'}</td>
+        <td data-label="Trạng thái"><span class="badge badge-green">✓ Đã nạp</span></td>
       </tr>`).join('');
   } catch { tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Lỗi tải dữ liệu</td></tr>'; }
 }
