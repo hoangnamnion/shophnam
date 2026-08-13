@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bảo Hành Locket Gold Miễn Phí (0đ) | LocketGold</title>
+  <meta name="description" content="Trang bảo hành và kích hoạt lại Locket Gold miễn phí 0đ cho khách hàng đã từng mua gói.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gold-glow { box-shadow: 0 0 35px rgba(245, 158, 11, 0.25); }
+  </style>
+</head>
+<body class="bg-[#FFFCEB] dark:bg-zinc-950 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col justify-between relative overflow-x-hidden" x-data="warrantyApp()">
+
+  <!-- Ambient light blobs -->
+  <div class="fixed top-10 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-amber-300/30 dark:bg-amber-500/10 rounded-full blur-[100px] pointer-events-none z-[-2]"></div>
+  <div class="fixed bottom-0 right-0 w-[400px] h-[400px] bg-yellow-400/20 dark:bg-amber-600/10 rounded-full blur-[90px] pointer-events-none z-[-2]"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-[#FFFCEB]/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-amber-200/50 dark:border-zinc-800/60 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 font-black text-lg sm:text-xl tracking-tight text-gray-900 dark:text-white">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-base shadow-md shadow-amber-500/20">⭐</span>
+        <span>Locket<span class="text-amber-500">Gold</span></span>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="/profile/" class="px-4 py-2 bg-white/80 dark:bg-zinc-900 border border-amber-200/60 dark:border-zinc-700/60 rounded-xl text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-200 hover:border-amber-400 transition-all flex items-center gap-2 shadow-sm">
+          <i class="fa-solid fa-user text-amber-500"></i> Trang cá nhân
+        </a>
+        <a href="/" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs sm:text-sm font-extrabold transition-all shadow-md shadow-amber-500/20">
+          Trang chủ
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-3xl mx-auto w-full px-4 py-10 sm:py-16">
+    
+    <!-- Title Card -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs font-extrabold uppercase tracking-wider mb-4">
+        <i class="fa-solid fa-shield-halved"></i> Trung tâm Bảo Hành Locket Gold
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight mb-3">
+        Bảo Hành & Kích Hoạt Lại <span class="text-amber-500">0đ</span>
+      </h1>
+      <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 font-medium max-w-xl mx-auto">
+        Tài khoản Locket đã từng mua gói tại shop sẽ được bảo hành tự động kích hoạt lại Gold hoàn toàn miễn phí (0đ).
+      </p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex justify-center mb-8">
+      <div class="bg-gray-200/80 dark:bg-zinc-800/80 p-1.5 rounded-2xl flex gap-1 border border-gray-300/50 dark:border-zinc-700/60 max-w-md w-full shadow-inner">
+        <button @click="activeTab = 'warranty'" :class="activeTab === 'warranty' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-shield-halved"></i> Bảo Hành 0đ
+        </button>
+        <button @click="activeTab = 'diagnostic'" :class="activeTab === 'diagnostic' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'" class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-microscope"></i> Tự Chẩn Đoán DNS & Gold
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: WARRANTY 0đ -->
+    <div x-show="activeTab === 'warranty'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 shadow-xl border border-white/60 dark:border-zinc-800/80 gold-glow">
+      
+      <!-- Input Step -->
+      <template x-if="step === 1">
+        <div class="space-y-6">
+          <div>
+            <label class="block text-xs font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+              Nhập Username Locket Cần Bảo Hành
+            </label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-base">@</span>
+              <input type="text" x-model="username" @keydown.enter="checkWarranty()" placeholder="duongbinh" class="w-full pl-9 pr-4 py-3.5 bg-gray-50 dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 rounded-2xl text-base font-bold text-gray-900 dark:text-white outline-none focus:border-amber-400 dark:focus:border-amber-500 transition-all placeholder-gray-400">
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Ví dụ: nếu link locket của bạn là <code class="bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-amber-600 font-bold">locket.cam/duongbinh</code> thì username là <strong class="text-gray-700 dark:text-gray-300">duongbinh</strong></p>
+          </div>
+
+          <!-- Error Alert -->
+          <div x-show="errorMessage" x-transition class="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-2xl text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold flex items-center gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-lg shrink-0"></i>
+            <span x-text="errorMessage"></span>
+          </div>
+
+          <!-- Submit Button -->
+          <button @click="checkWarranty()" :disabled="loading" class="w-full py-4 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white font-extrabold text-base rounded-2xl shadow-lg shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50">
+            <template x-if="!loading">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved"></i> Kiểm Tra & Bảo Hành 0đ Ngay
+              </span>
+            </template>
+            <template x-if="loading">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Đang xác minh đơn hàng...
+              </span>
+            </template>
+          </button>
+        </div>
+      </template>
+
+      <!-- Claim Step (Order Verified) -->
+      <template x-if="step === 2">
+        <div class="space-y-6 text-center">
+          <div class="relative inline-block mx-auto">
+            <img :src="locketUser?.avatar || '/assets/images/avatar-default.jpg'" alt="Avatar Locket" class="w-20 h-20 rounded-3xl object-cover border-4 border-amber-400 shadow-xl shadow-amber-500/20 bg-white dark:bg-zinc-800" />
+            <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 text-white flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-check text-xs"></i>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-xl font-black text-gray-900 dark:text-white mb-0.5" x-text="locketUser?.name || ('@' + username)"></h3>
+            <p class="text-xs text-amber-600 dark:text-amber-400 font-extrabold mb-2" x-text="'@' + (locketUser?.username || username)"></p>
+            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-full inline-block">
+              🎉 Đơn hàng hợp lệ bảo hành 0đ!
+            </p>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-zinc-800/60 border border-gray-200 dark:border-zinc-700 rounded-2xl p-4 text-left text-xs space-y-2.5">
+            <div class="flex justify-between"><span class="text-gray-400 font-semibold">Chủ tài khoản:</span><span class="font-extrabold text-gray-800 dark:text-gray-200" x-text="locketUser?.name || ('@' + username)"></span></div>
+            <div class="flex justify-between"><span class="text-gray-400 font-semibold">Locket Username:</span><span class="font-extrabold text-amber-600 dark:text-amber-400" x-text="'@' + username"></span></div>
+            <div class="flex justify-between"><span class="text-gray-400 font-semibold">Gói kích hoạt:</span><span class="font-extrabold text-gray-900 dark:text-white" x-text="verifiedOrder?.plan || 'Locket Gold'"></span></div>
+            <div class="flex justify-between"><span class="text-gray-400 font-semibold">Phí bảo hành:</span><span class="font-black text-emerald-600 text-sm">0đ (FREE)</span></div>
+          </div>
+
+          <div class="flex gap-3">
+            <button @click="step = 1; errorMessage = '';" class="flex-1 py-3.5 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-extrabold text-sm rounded-xl transition-all cursor-pointer">
+              Đổi Username
+            </button>
+            <button @click="claimWarranty()" :disabled="claiming" class="flex-[2] py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50">
+              <template x-if="!claiming">
+                <span>⚡ Kích Hoạt Gold 0đ Ngay</span>
+              </template>
+              <template x-if="claiming">
+                <span><i class="fa-solid fa-spinner fa-spin"></i> Đang nâng Gold...</span>
+              </template>
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <!-- Success Step -->
+      <template x-if="step === 3">
+        <div class="text-center py-2 space-y-6">
+          <div class="relative w-24 h-24 mx-auto">
+            <img :src="locketUser?.avatar || '/assets/images/avatar-default.jpg'" alt="Avatar Locket" class="w-24 h-24 rounded-3xl object-cover shadow-xl shadow-amber-400/35 border-4 border-amber-400/80 p-0.5 bg-white dark:bg-zinc-800"/>
+            <div class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 text-white flex items-center justify-center shadow-md">
+              <i class="fa-solid fa-check text-xs"></i>
+            </div>
+          </div>
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-1">Nâng Cấp Bảo Hành Thành Công!</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Tài khoản <strong class="text-amber-600 dark:text-amber-400 font-bold" x-text="locketUser?.name || ('@'+username)"></strong> (<span x-text="'@'+username"></span>) đã được kích hoạt lại gói <strong class="text-gray-900 dark:text-white font-bold" x-text="verifiedOrder?.plan || 'Locket Gold'"></strong></p>
+          </div>
+
+          <div class="bg-gradient-to-br from-amber-50/80 to-amber-100/30 dark:from-zinc-800/80 dark:to-zinc-800/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-5 text-left space-y-3 shadow-inner">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Tên hiển thị</span>
+              <span class="font-bold text-gray-900 dark:text-white" x-text="locketUser?.name || 'Khách Hàng Locket'"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Locket Username</span>
+              <span class="font-bold text-amber-600 dark:text-amber-400" x-text="'@'+username"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Gói kích hoạt</span>
+              <span class="font-black text-gray-900 dark:text-white" x-text="verifiedOrder?.plan || 'Locket Gold (Bảo Hành)'"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Trạng thái</span>
+              <span class="font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">✅ Đã kích hoạt 0đ</span>
+            </div>
+            <div class="pt-2 border-t border-amber-200/60 dark:border-zinc-700/60 flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Phí dịch vụ</span>
+              <span class="font-black text-emerald-600 text-base">0đ (FREE WARRANTY)</span>
+            </div>
+            <div class="pt-3 border-t border-amber-200/60 dark:border-zinc-700/60">
+              <div class="flex items-center justify-between text-xs mb-2.5">
+                <span class="text-amber-800 dark:text-amber-300 font-bold flex items-center gap-1.5">
+                  <span class="text-sm">🔑</span> Link Cấu Hình VIP (Sống 60 Phút)
+                </span>
+                <span class="text-[11px] font-extrabold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800" x-text="vipCountdown"></span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" @click="copyVipLink()" class="py-2.5 px-3 bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                  <i class="far fa-copy"></i>
+                  <span>Copy Link</span>
+                </button>
+                <a :href="vipLink" target="_blank" class="py-2.5 px-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all no-underline shadow-sm">
+                  <i class="fas fa-download"></i>
+                  <span>Tải Cấu Hình</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button @click="step = 1; username = ''; errorMessage = '';" class="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-sm rounded-xl shadow-lg transition-all cursor-pointer">
+              Bảo hành tài khoản khác
+            </button>
+          </div>
+        </div>
+      </template>
+
+    </div>
+
+    <!-- TAB 2: DIAGNOSTIC TOOL -->
+    <div x-show="activeTab === 'diagnostic'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 shadow-xl border border-white/60 dark:border-zinc-800/80 gold-glow space-y-6">
+      
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 bg-gradient-to-tr from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center text-white text-2xl mx-auto shadow-lg shadow-amber-500/20">
+          <i class="fa-solid fa-microscope"></i>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">Công Cụ Tự Chẩn Đoán DNS & Gold</h2>
+        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium max-w-lg mx-auto">
+          Kiểm tra trực tiếp xem iPhone/iPad của bạn đã chặn DNS thu hồi Gold thành công chưa và chẩn đoán tình trạng tài khoản Locket.
+        </p>
+      </div>
+
+      <!-- Username Input for Diagnostic -->
+      <div class="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-gray-200/80 dark:border-zinc-700/60">
+        <label class="block text-xs font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+          Nhập Username Locket Cần Chẩn Đoán (Tùy chọn)
+        </label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-base">@</span>
+          <input type="text" x-model="diagnosticUsername" placeholder="duongbinh" class="w-full pl-9 pr-4 py-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl text-sm font-bold text-gray-900 dark:text-white outline-none focus:border-amber-400 transition-all">
+        </div>
+      </div>
+
+      <!-- Run Diagnostic Button -->
+      <button @click="runDiagnostic()" :disabled="diagnosticRunning" class="w-full py-4 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white font-extrabold text-base rounded-2xl shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
+        <template x-if="!diagnosticRunning">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-play text-sm"></i> Chạy Chẩn Đoán Trực Tiếp Ngay
+          </span>
+        </template>
+        <template x-if="diagnosticRunning">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-spinner fa-spin"></i> Đang quét cấu hình thiết bị (<span x-text="diagnosticProgress + '%'"></span>)...
+          </span>
+        </template>
+      </button>
+
+      <!-- Progress Bar -->
+      <div x-show="diagnosticRunning" x-transition class="w-full bg-gray-200 dark:bg-zinc-800 h-2.5 rounded-full overflow-hidden">
+        <div class="bg-amber-500 h-full transition-all duration-300 ease-out" :style="'width: ' + diagnosticProgress + '%'"></div>
+      </div>
+
+      <!-- Diagnostic Results Display -->
+      <div x-show="diagnosticCompleted" x-transition class="space-y-4 pt-2">
+        <div class="text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-check"></i> Kết quả chẩn đoán hệ thống:
+        </div>
+
+        <!-- Checklist Item 1: DNS Blocking Status -->
+        <div class="p-4 rounded-2xl border transition-all flex items-start gap-3.5" :class="dnsTestResult === 'blocked' ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50' : 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50'">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg shadow-sm" :class="dnsTestResult === 'blocked' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'">
+            <i :class="dnsTestResult === 'blocked' ? 'fa-solid fa-shield-check' : 'fa-solid fa-triangle-exclamation'"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h4 class="font-extrabold text-sm text-gray-900 dark:text-white">1. Cấu Hình DNS Chặn Thu Hồi Gold</h4>
+              <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full" :class="dnsTestResult === 'blocked' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300'">
+                <span x-text="dnsTestResult === 'blocked' ? '🟢 HOẠT ĐỘNG TỐT' : '⚠️ CHƯA BẬT'"></span>
+              </span>
+            </div>
+            <p class="text-xs text-gray-600 dark:text-gray-300 mt-1" x-text="dnsTestResult === 'blocked' ? 'Thiết bị của bạn đã chặn thành công domain theo dõi của Locket. Bạn an tâm sử dụng Locket Gold mà không sợ bị nhả thô!' : 'Không tìm thấy DNS chặn RevenueCat trên thiết bị. Vui lòng tải và bật tệp cấu hình VIP (.mobileconfig) để giữ Gold vĩnh viễn.'"></p>
+          </div>
+        </div>
+
+        <!-- Checklist Item 2: Locket Account Status -->
+        <template x-if="diagnosticUsername">
+          <div class="p-4 rounded-2xl border transition-all flex items-start gap-3.5" :class="goldTestResult === 'active' ? 'bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50' : 'bg-rose-50/80 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/50'">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg shadow-sm" :class="goldTestResult === 'active' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'">
+              <i :class="goldTestResult === 'active' ? 'fa-solid fa-crown' : 'fa-solid fa-user-xmark'"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h4 class="font-extrabold text-sm text-gray-900 dark:text-white">2. Trạng Thái Tài Khoản Locket (@<span x-text="diagnosticUsername"></span>)</h4>
+                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full" :class="goldTestResult === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300'">
+                  <span x-text="goldTestResult === 'active' ? '⭐ LOCKET GOLD ACTIVE' : '🔴 TÀI KHOẢN THƯỜNG'"></span>
+                </span>
+              </div>
+              <p class="text-xs text-gray-600 dark:text-gray-300 mt-1" x-text="goldTestResult === 'active' ? 'Tài khoản Locket của bạn đang có huy hiệu Gold chính thức!' : 'Tài khoản hiện chưa có huy hiệu Gold. Nếu bạn từng mua tại shop, hãy bấm nút Bảo Hành 0đ bên dưới.'"></p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Checklist Item 3: Warranty History Status -->
+        <template x-if="diagnosticWarrantyDays !== null">
+          <div class="p-4 rounded-2xl border bg-blue-50/80 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/50 flex items-start gap-3.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 text-lg shadow-sm">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <h4 class="font-extrabold text-sm text-gray-900 dark:text-white">3. Quyền Lợi Bảo Hành Hợp Lệ</h4>
+                <span class="text-xs font-black text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60 px-2.5 py-0.5 rounded-full" x-text="'🛡️ Còn ' + diagnosticWarrantyDays + ' ngày'"></span>
+              </div>
+              <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Đơn hàng của bạn nằm trong chính sách hỗ trợ kích hoạt lại Gold miễn phí 0đ bất kỳ lúc nào.</p>
+            </div>
+          </div>
+        </template>
+
+        <!-- Action Options -->
+        <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <a :href="'/CAUHINH/download2.html?name=' + encodeURIComponent(diagnosticUsername || username || 'Khach_VIP')" target="_blank" @click="notifyTelegram('dns_download', diagnosticUsername || username, 'Khách hàng bấm Tải Cấu Hình DNS VIP (.mobileconfig)')" class="py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-amber-500/20 no-underline transition-all">
+            <i class="fa-solid fa-download"></i> Tải DNS Chặn Thu Hồi Gold
+          </a>
+          <button @click="activeTab = 'warranty'; if(diagnosticUsername) { username = diagnosticUsername; checkWarranty(); }" class="py-3 px-4 bg-gray-900 dark:bg-zinc-800 hover:bg-black text-white rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
+            <i class="fa-solid fa-shield-halved"></i> Chuyển Sang Bảo Hành 0đ
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white/60 dark:bg-zinc-950/60 border-t border-amber-200/40 dark:border-zinc-900 py-6 text-center text-xs text-gray-400 font-medium">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>© 2026 LocketGold. Trang bảo hành kích hoạt Locket Gold tự động.</div>
+      <div class="flex gap-4">
+        <a href="/" class="hover:text-amber-500 transition-colors">Trang chủ</a>
+        <a href="/profile/" class="hover:text-amber-500 transition-colors">Trang cá nhân</a>
+        <a href="/baohanh/" class="text-amber-600 dark:text-amber-400 font-bold">Bảo hành 0đ</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const WORKER_URL = 'https://shopbanhanglkduongbinh.caovannamutt.workers.dev';
+
+    function warrantyApp() {
+      return {
+        activeTab: 'warranty',
+        step: 1,
+        username: '',
+        loading: false,
+        claiming: false,
+        errorMessage: '',
+        verifiedOrder: null,
+        locketUser: null,
+        vipLink: '',
+        vipCountdown: '',
+        _vipTimer: null,
+
+        // Diagnostic state
+        diagnosticUsername: '',
+        diagnosticRunning: false,
+        diagnosticCompleted: false,
+        diagnosticProgress: 0,
+        dnsTestResult: null, // 'blocked' | 'not_blocked'
+        goldTestResult: null, // 'active' | 'inactive'
+        diagnosticWarrantyDays: null,
+
+        async runDiagnostic() {
+          this.diagnosticRunning = true;
+          this.diagnosticCompleted = false;
+          this.diagnosticProgress = 15;
+          this.dnsTestResult = null;
+          this.goldTestResult = null;
+          this.diagnosticWarrantyDays = null;
+
+          // Step 1: Check DNS Blocking via RevenueCat ping test
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+            
+            // Send test fetch to RevenueCat endpoint
+            await fetch('https://api.revenuecat.com/v1/health', {
+              method: 'GET',
+              mode: 'no-cors',
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            // If fetch succeeds/completes, network was reached => DNS not blocking
+            this.dnsTestResult = 'not_blocked';
+          } catch(e) {
+            // If fetch errors out / aborted / blocked => DNS is successfully blocking RevenueCat
+            this.dnsTestResult = 'blocked';
+          }
+          this.diagnosticProgress = 60;
+
+          let uname = this.diagnosticUsername.trim().replace('@', '');
+
+          // Bắn thông báo Telegram nếu phát hiện DNS đang hoạt động thành công
+          if (this.dnsTestResult === 'blocked') {
+            this.notifyTelegram('dns_active', uname || this.username || 'Khách truy cập', 'Xác nhận DNS chặn RevenueCat đang hoạt động hoàn hảo trên thiết bị!');
+          }
+
+          // Step 2: Check Locket Gold Status & Warranty if Username entered
+          if (uname) {
+            try {
+              const lookupRes = await fetch('https://twilight-mountain-96b6.caovannamutt.workers.dev/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'info', username: uname })
+              });
+              const lookupData = await lookupRes.json();
+              if (lookupData.is_gold || lookupData.premium || (lookupData.badge && lookupData.badge.includes('gold'))) {
+                this.goldTestResult = 'active';
+              } else {
+                this.goldTestResult = 'inactive';
+              }
+            } catch(e) {
+              this.goldTestResult = 'inactive';
+            }
+
+            try {
+              const wRes = await fetch(WORKER_URL + '/api/check-warranty', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: uname })
+              });
+              const wData = await wRes.json();
+              if (wData.success && wData.eligible) {
+                const orderTime = wData.order?.created_at || wData.order?.paid_at || Date.now();
+                const daysPassed = Math.floor((Date.now() - orderTime) / (1000 * 60 * 60 * 24));
+                this.diagnosticWarrantyDays = Math.max(0, 365 - daysPassed);
+              }
+            } catch(e) {}
+          }
+
+          this.diagnosticProgress = 100;
+          setTimeout(() => {
+            this.diagnosticRunning = false;
+            this.diagnosticCompleted = true;
+          }, 300);
+        },
+
+        notifyTelegram(eventType, username, details) {
+          fetch(WORKER_URL + '/api/notify-telegram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              eventType: eventType,
+              username: username || 'Khách Hàng',
+              details: details || ''
+            })
+          }).catch(() => {});
+        },
+
+        async checkWarranty() {
+          let uname = this.username.trim().replace('@', '');
+          if (!uname) {
+            this.errorMessage = 'Vui lòng nhập Username Locket!';
+            return;
+          }
+          if (uname.includes('locket.cam/')) {
+            const m = uname.match(/locket\.cam\/(@?[a-zA-Z0-9_.-]+)/);
+            if (m && m[1]) uname = m[1].replace('@', '');
+          }
+          this.username = uname;
+          this.errorMessage = '';
+          this.loading = true;
+          this.locketUser = null;
+
+          try {
+            // Quét thông tin Avatar & Tên Locket thật từ Locket Worker
+            try {
+              const lookupRes = await fetch('https://twilight-mountain-96b6.caovannamutt.workers.dev/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'info', username: uname })
+              });
+              const lookupData = await lookupRes.json();
+              if (lookupData.success || lookupData.name || lookupData.avatar) {
+                this.locketUser = lookupData;
+              }
+            } catch(e) {}
+
+            const res = await fetch(WORKER_URL + '/api/check-warranty', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: uname })
+            });
+            const data = await res.json();
+
+            if (data.success && data.eligible) {
+              this.verifiedOrder = data.order || {};
+              this.step = 2;
+            } else {
+              this.errorMessage = data.message || 'Không tìm thấy lịch sử mua hàng cho tài khoản này!';
+            }
+          } catch(e) {
+            this.errorMessage = 'Lỗi kết nối máy chủ: ' + e.message;
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async claimWarranty() {
+          if (!this.username) return;
+          this.claiming = true;
+          try {
+            // 1. Kick Gold trực tiếp từ trình duyệt
+            const kickRes = await fetch('https://twilight-mountain-96b6.caovannamutt.workers.dev/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'kick', username: this.username })
+            });
+            const kickData = await kickRes.json().catch(() => ({ success: kickRes.ok }));
+
+            if (kickData.success || kickRes.ok) {
+              // 2. Đồng thời ghi đơn bảo hành vào backend KV & Telegram Notification
+              fetch(WORKER_URL + '/api/claim-warranty', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: this.username })
+              }).catch(() => {});
+
+              this.notifyTelegram('warranty_claim', this.username, 'Tài khoản đã được kích hoạt lại Locket Gold miễn phí 0đ thành công!');
+              this.generateVipLink();
+              this.step = 3;
+            } else {
+              alert('❌ Lỗi kích hoạt Locket Gold: ' + (kickData.error || kickData.message || 'Không thể nâng Gold'));
+            }
+          } catch(e) {
+            alert('❌ Lỗi kết nối máy chủ Locket: ' + e.message);
+          } finally {
+            this.claiming = false;
+          }
+        },
+
+        generateVipLink() {
+          const rawName = (this.username || 'Khách VIP').trim();
+          const ttlMinutes = 60;
+          const exp = Date.now() + ttlMinutes * 60 * 1000;
+          const payload = {
+            name: rawName,
+            ttlMinutes: ttlMinutes,
+            exp: exp,
+            ip: null,
+            ua: null
+          };
+
+          let encoded = '';
+          try {
+            encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+          } catch (e) {
+            encoded = btoa(JSON.stringify(payload));
+          }
+
+          this.vipLink = location.origin + '/CAUHINH/download2.html?data=' + encodeURIComponent(encoded);
+
+          if (this._vipTimer) clearInterval(this._vipTimer);
+          const updateTimer = () => {
+            const remain = exp - Date.now();
+            if (remain <= 0) {
+              this.vipCountdown = '❌ Hết hạn';
+              if (this._vipTimer) clearInterval(this._vipTimer);
+              return;
+            }
+            const m = Math.floor(remain / (1000 * 60));
+            const s = Math.floor((remain % (1000 * 60)) / 1000);
+            this.vipCountdown = `⏳ Sống: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          };
+          updateTimer();
+          this._vipTimer = setInterval(updateTimer, 1000);
+        },
+
+        copyVipLink() {
+          if (!this.vipLink) return;
+          this.notifyTelegram('dns_download', this.username, 'Khách hàng sao chép Link Cấu Hình VIP DNS');
+          navigator.clipboard?.writeText(this.vipLink).then(() => alert('Đã sao chép link cấu hình!'));
+        }
+      };
+    }
+  </script>
+</body>
+</html>

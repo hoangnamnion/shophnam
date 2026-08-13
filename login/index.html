@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0" name="viewport"/>
+    <title>Đăng nhập / Đăng ký | Locket Gold</title>
+    <link href="/assets/images/favicon.ico" rel="icon" type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --gold: #fbba00;
+            --gold-dark: #e5aa00;
+            --gold-light: rgba(251,186,0,0.12);
+            --bg: #fafafa;
+            --card-bg: rgba(255,255,255,0.88);
+            --card-border: rgba(255,255,255,0.7);
+            --input-bg: rgba(248,249,250,0.6);
+            --input-border: #e5e7eb;
+            --text: #111827;
+            --text-muted: #6b7280;
+            --text-label: #374151;
+            --shadow-card: 0 24px 64px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-btn: 0 6px 20px rgba(251,186,0,0.4);
+            --radius: 24px;
+        }
+        html.dark {
+            --bg: #09090b;
+            --card-bg: rgba(18,18,20,0.85);
+            --card-border: rgba(255,255,255,0.06);
+            --input-bg: rgba(39,39,42,0.6);
+            --input-border: #3f3f46;
+            --text: #f4f4f5;
+            --text-muted: #9ca3af;
+            --text-label: #d4d4d8;
+            --shadow-card: 0 24px 64px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+
+        /* Background decoration */
+        .bg-dots {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image: radial-gradient(circle, #fbba00 1px, transparent 1px);
+            background-size: 28px 28px;
+            opacity: 0.07;
+        }
+        html.dark .bg-dots { opacity: 0.12; }
+        .bg-blob-l {
+            position: fixed; left: -80px; top: 0; width: 360px; height: 360px;
+            background: radial-gradient(circle, rgba(251,186,0,0.25) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+        .bg-blob-r {
+            position: fixed; right: -60px; bottom: -40px; width: 420px; height: 420px;
+            background: radial-gradient(circle, rgba(249,115,22,0.18) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Card wrapper */
+        .wrapper {
+            width: 100%; max-width: 420px;
+            position: relative; z-index: 10;
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(28px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Logo area */
+        .logo-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-area a { display: inline-block; transition: transform 0.2s; }
+        .logo-area a:hover { transform: scale(1.08); }
+        .logo-area img { width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(251,186,0,0.4)); margin-bottom: 10px; }
+        .logo-badge {
+            display: inline-block;
+            font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+            color: #b45309;
+            background: rgba(251,186,0,0.12);
+            border: 1px solid rgba(251,186,0,0.3);
+            padding: 4px 14px; border-radius: 100px;
+        }
+        html.dark .logo-badge { color: #fbbf24; background: rgba(251,186,0,0.08); border-color: rgba(251,186,0,0.2); }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 28px 28px 24px;
+            box-shadow: var(--shadow-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Tab bar */
+        .tab-bar {
+            display: flex;
+            background: rgba(0,0,0,0.05);
+            border-radius: 14px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+        html.dark .tab-bar { background: rgba(255,255,255,0.05); }
+
+        .tab-btn {
+            flex: 1; border: none; border-radius: 10px;
+            padding: 11px 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            transition: all 0.25s ease;
+            background: transparent;
+            color: var(--text-muted);
+        }
+        .tab-btn:hover:not(.active) {
+            background: rgba(251,186,0,0.08);
+            color: #b45309;
+        }
+        html.dark .tab-btn:hover:not(.active) { color: #fbbf24; }
+        .tab-btn.active {
+            background: var(--gold);
+            color: #1a1a1a;
+            box-shadow: 0 4px 14px rgba(251,186,0,0.35);
+        }
+
+        /* Panel */
+        .panel { display: none; }
+        .panel.show { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Panel header */
+        .panel-title { font-size: 20px; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+        .panel-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+
+        /* Form */
+        .form-group { margin-bottom: 14px; }
+        .form-label {
+            display: block;
+            font-size: 13px; font-weight: 600; color: var(--text-label);
+            margin-bottom: 6px;
+        }
+        .label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .forgot-link { font-size: 12px; font-weight: 600; color: var(--gold-dark); text-decoration: none; transition: opacity 0.2s; }
+        .forgot-link:hover { opacity: 0.75; }
+        html.dark .forgot-link { color: #fbbf24; }
+
+        .input-wrap { position: relative; }
+        .input-field {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
+            border-radius: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px; color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .input-field::placeholder { color: #9ca3af; }
+        .input-field:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(251,186,0,0.18);
+            background: rgba(255,255,255,0.95);
+        }
+        html.dark .input-field:focus { background: rgba(39,39,42,0.9); }
+        .input-field.with-icon { padding-right: 46px; }
+
+        .pw-toggle-btn {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            font-size: 16px; line-height: 1; padding: 4px;
+            color: #9ca3af; transition: color 0.2s;
+        }
+        .pw-toggle-btn:hover { color: var(--gold-dark); }
+
+        /* Remember row */
+        .remember-row {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; padding: 4px 0; margin-bottom: 4px;
+        }
+        .remember-row input { width: 15px; height: 15px; accent-color: var(--gold); cursor: pointer; }
+
+        /* Button */
+        .btn-submit {
+            width: 100%; padding: 14px;
+            background: var(--gold);
+            border: none; border-radius: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; font-weight: 900;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            color: #1a1a1a;
+            cursor: pointer;
+            box-shadow: var(--shadow-btn);
+            transition: all 0.25s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-submit:hover:not(:disabled) {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(251,186,0,0.45);
+        }
+        .btn-submit:active:not(:disabled) { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* Spinner */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner {
+            display: inline-block; width: 15px; height: 15px;
+            border: 2px solid rgba(26,26,26,0.2);
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+            vertical-align: middle;
+        }
+
+        /* Message boxes */
+        .msg-box {
+            margin-top: 12px; padding: 11px 14px; border-radius: 12px;
+            font-size: 13px; font-weight: 600; text-align: center;
+            display: none;
+        }
+        .msg-box.show { display: block; animation: fadeIn 0.2s ease; }
+        .msg-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #dc2626; }
+        html.dark .msg-error { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #f87171; }
+        .msg-success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: #16a34a; }
+        html.dark .msg-success { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.25); color: #4ade80; }
+
+        /* Footer link */
+        .panel-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+        .switch-btn {
+            background: none; border: none; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-size: 13px;
+            font-weight: 700; color: #b45309;
+            text-decoration: underline; text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+        .switch-btn:hover { color: var(--gold-dark); }
+        html.dark .switch-btn { color: #fbbf24; }
+
+        /* Back link */
+        .back-link {
+            display: block; text-align: center; margin-top: 18px;
+            font-size: 13px; font-weight: 600; color: var(--text-muted);
+            text-decoration: none; transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--gold-dark); }
+
+        /* Divider */
+        .divider { height: 1px; background: var(--input-border); margin: 20px 0; }
+
+        /* Dark mode toggle */
+        .darkmode-btn {
+            position: fixed; top: 16px; right: 16px; z-index: 100;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+        .darkmode-btn:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+    <div style="position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url('/assets/images/background-hero.webp');background-size:cover;background-position:center;background-repeat:no-repeat;"></div>
+    <div class="bg-dots"></div>
+    <div class="bg-blob-l"></div>
+    <div class="bg-blob-r"></div>
+
+    <button class="darkmode-btn" id="darkBtn" onclick="toggleDark()" title="Chế độ sáng/tối">🌙</button>
+
+    <div class="wrapper">
+        <!-- Logo -->
+        <div class="logo-area">
+            <a href="/">
+                <img alt="Locket Gold" src="/assets/images/logo-locket.png"/>
+            </a>
+            <div><span class="logo-badge">✦ Locket Gold Shop ✦</span></div>
+        </div>
+
+        <!-- Card -->
+        <div class="card">
+            <!-- Tab bar -->
+            <div class="tab-bar">
+                <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">🔑 Đăng nhập</button>
+                <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">✨ Đăng ký</button>
+            </div>
+
+            <!-- ===== LOGIN PANEL ===== -->
+            <div id="panelLogin" class="panel show">
+                <p class="panel-title">Chào mừng trở lại! 👋</p>
+                <p class="panel-sub">Đăng nhập để quản lý và nâng cấp Locket Gold của bạn.</p>
+
+                <form id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label class="form-label" for="loginUsername">Tên đăng nhập</label>
+                        <input type="text" id="loginUsername" class="input-field" placeholder="Nhập username" autocomplete="username" required/>
+                    </div>
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label class="form-label" for="loginPassword" style="margin:0">Mật khẩu</label>
+                            <a href="#" class="forgot-link">Quên mật khẩu?</a>
+                        </div>
+                        <div class="input-wrap">
+                            <input type="password" id="loginPassword" class="input-field with-icon" placeholder="••••••••" autocomplete="current-password" required/>
+                            <button type="button" class="pw-toggle-btn" onclick="togglePw('loginPassword',this)">👁️</button>
+                        </div>
+                    </div>
+                    <label class="remember-row">
+                        <input type="checkbox" id="rememberMe" checked/>
+                        Ghi nhớ đăng nhập
+                    </label>
+                    <button type="submit" id="loginBtn" class="btn-submit">Đăng Nhập</button>
+                </form>
+
+                <div id="loginError" class="msg-box msg-error"></div>
+
+                <div class="panel-footer">
+                    Chưa có tài khoản?
+                    <button class="switch-btn" onclick="switchTab('register')">Đăng ký ngay →</button>
+                </div>
+            </div>
+
+            <!-- ===== REGISTER PANEL ===== -->
+            <div id="panelRegister" class="panel">
+                <p class="panel-title">Tạo tài khoản mới 🎉</p>
+                <p class="panel-sub">Đăng ký để nhận ưu đãi và mua Locket Gold nhanh chóng.</p>
+
+                <form id="registerForm" novalidate>
+                    <div class="form-group">
+                        <label class="form-label" for="regUsername">Tên đăng nhập</label>
+                        <input type="text" id="regUsername" class="input-field" placeholder="Viết liền không dấu" autocomplete="username" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="regEmail">Địa chỉ Email</label>
+                        <input type="email" id="regEmail" class="input-field" placeholder="your@email.com" autocomplete="email" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="regPassword">Mật khẩu</label>
+                        <div class="input-wrap">
+                            <input type="password" id="regPassword" class="input-field with-icon" placeholder="••••••••" autocomplete="new-password" required/>
+                            <button type="button" class="pw-toggle-btn" onclick="togglePw('regPassword',this)">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" id="registerBtn" class="btn-submit">Tạo Tài Khoản</button>
+                </form>
+
+                <div id="registerError" class="msg-box msg-error"></div>
+                <div id="registerSuccess" class="msg-box msg-success"></div>
+
+                <div class="panel-footer">
+                    Đã có tài khoản?
+                    <button class="switch-btn" onclick="switchTab('login')">Đăng nhập →</button>
+                </div>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">← Quay về trang chủ</a>
+    </div>
+
+    <script>
+    const WORKER_URL = 'https://shopbanhanglkduongbinh.caovannamutt.workers.dev';
+
+    // ── Dark mode ──
+    function toggleDark() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+    }
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('darkBtn').textContent = '☀️';
+    }
+
+    // ── Tab switch ──
+    function switchTab(tab) {
+        const isLogin = tab === 'login';
+        document.getElementById('tabLogin').classList.toggle('active', isLogin);
+        document.getElementById('tabRegister').classList.toggle('active', !isLogin);
+        document.getElementById('panelLogin').className = 'panel' + (isLogin ? ' show' : '');
+        document.getElementById('panelRegister').className = 'panel' + (!isLogin ? ' show' : '');
+        ['loginError','registerError','registerSuccess'].forEach(id => {
+            document.getElementById(id).classList.remove('show');
+        });
+    }
+
+    // URL param ?tab=register
+    if (new URLSearchParams(window.location.search).get('tab') === 'register') switchTab('register');
+
+    // ── Password toggle ──
+    function togglePw(id, btn) {
+        const inp = document.getElementById(id);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.textContent = inp.type === 'password' ? '👁️' : '🔒';
+    }
+
+    // ── Helper: show/hide msg ──
+    function showMsg(id, text) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.classList.add('show');
+    }
+    function hideMsg(id) { document.getElementById(id).classList.remove('show'); }
+
+    // ── LOGIN ──
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const user = document.getElementById('loginUsername').value.trim();
+        const pass = document.getElementById('loginPassword').value.trim();
+        const btn  = document.getElementById('loginBtn');
+        hideMsg('loginError');
+        const old = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+        btn.disabled = true;
+        try {
+            const res  = await fetch(WORKER_URL + '/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:user, password:pass}) });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.success) {
+                if (data.token) localStorage.setItem('token', data.token);
+                let uObj = data.user || { username: user };
+                if (typeof uObj === 'string') uObj = { username: uObj };
+                localStorage.setItem('user', JSON.stringify(uObj));
+                localStorage.setItem('user_password', pass);
+                if (document.getElementById('rememberMe').checked) {
+                    localStorage.setItem('saved_user_username', user);
+                    localStorage.setItem('saved_user_password', pass);
+                } else {
+                    localStorage.removeItem('saved_user_username');
+                    localStorage.removeItem('saved_user_password');
+                }
+                btn.innerHTML = '✓ Thành công!';
+                btn.style.background = '#22c55e';
+                btn.style.boxShadow = '0 6px 20px rgba(34,197,94,0.4)';
+                const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+                let targetPage;
+                if (uObj.username === 'admin' || uObj.role === 'admin') {
+                    targetPage = '/Livestream';
+                } else if (redirectParam) {
+                    targetPage = redirectParam;
+                } else {
+                    targetPage = '/';
+                }
+                setTimeout(() => { window.location.href = targetPage; }, 900);
+            } else {
+                // Check fallback for admin login via API endpoint /api/admin-login
+                const adminRes = await fetch(WORKER_URL + '/api/admin-login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:user, password:pass}) }).catch(() => null);
+                const adminData = await adminRes?.json().catch(() => null);
+                if (adminRes?.ok && adminData?.success) {
+                    const adminObj = adminData.user || { username: 'admin', name: 'Quản Trị Viên (Admin)', role: 'admin' };
+                    localStorage.setItem('user', JSON.stringify(adminObj));
+                    btn.innerHTML = '✓ Thành công Admin!';
+                    btn.style.background = '#22c55e';
+                    setTimeout(() => { window.location.href = '/Livestream'; }, 900);
+                    return;
+                }
+                showMsg('loginError', (data?.message || adminData?.message) || 'Tài khoản hoặc mật khẩu không chính xác');
+                btn.disabled = false; btn.innerHTML = old;
+            }
+        } catch {
+            showMsg('loginError', 'Lỗi kết nối. Vui lòng thử lại sau.');
+            btn.disabled = false; btn.innerHTML = old;
+        }
+    });
+
+    // ── REGISTER ──
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const user  = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const pass  = document.getElementById('regPassword').value.trim();
+        const btn   = document.getElementById('registerBtn');
+        hideMsg('registerError'); hideMsg('registerSuccess');
+        const old = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+        btn.disabled = true;
+        try {
+            const res  = await fetch(WORKER_URL + '/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:user, email:email, password:pass}) });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.success) {
+                showMsg('registerSuccess', '🎉 Đăng ký thành công! Đang chuyển sang đăng nhập...');
+                btn.innerHTML = '✓ Xong!'; btn.style.background = '#22c55e';
+                setTimeout(() => switchTab('login'), 1500);
+            } else {
+                showMsg('registerError', (data?.message) || 'Tài khoản đã tồn tại hoặc xảy ra lỗi');
+                btn.disabled = false; btn.innerHTML = old;
+            }
+        } catch {
+            showMsg('registerError', 'Lỗi kết nối. Vui lòng thử lại sau.');
+            btn.disabled = false; btn.innerHTML = old;
+        }
+    });
+
+    // ── Auto-fill saved credentials ──
+    window.addEventListener('DOMContentLoaded', () => {
+        const u = localStorage.getItem('saved_user_username');
+        const p = localStorage.getItem('saved_user_password');
+        if (u) document.getElementById('loginUsername').value = u;
+        if (p) document.getElementById('loginPassword').value = p;
+    });
+    </script>
+</body>
+</html>

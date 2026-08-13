@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
+  <title>Nâng Cấp Locket Gold | LocketGold</title>
+  <link href="/assets/css/app-Bjnb32xO.css" rel="stylesheet"/>
+  <link href="/assets/css/style.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Step indicator */
+    .step-bar { display: flex; align-items: center; gap: 0; user-select: none; }
+    .step-node {
+      display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; position: relative; z-index: 2;
+    }
+    .step-circle {
+      width: 44px; height: 44px; border-radius: 50%; border: 2.5px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; color: #9ca3af;
+      background: rgba(255, 255, 255, 0.95); transition: all .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    }
+    .dark .step-circle { background: #18181b; border-color: #3f3f46; color: #71717a; }
+    
+    .step-node.active .step-circle {
+      border-color: #f59e0b; color: #d97706; background: #fff;
+      transform: scale(1.12);
+      box-shadow: 0 0 24px rgba(245,158,11,0.4), 0 0 0 4px rgba(245,158,11,0.18);
+    }
+    .dark .step-node.active .step-circle {
+      background: #27272a; color: #fbbf24; border-color: #fbbf24;
+      box-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 0 4px rgba(245,158,11,0.2);
+    }
+    
+    .step-node.done .step-circle {
+      background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #f59e0b; color: white;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+    }
+    
+    .step-label { font-size: 12px; font-weight: 700; color: #9ca3af; white-space: nowrap; transition: all .3s; }
+    .step-node.active .step-label { color: #d97706; font-weight: 800; }
+    .dark .step-node.active .step-label { color: #fbbf24; }
+    .step-node.done .step-label { color: #f59e0b; font-weight: 700; }
+
+    .step-line {
+      flex: 1; height: 3px; background: #e5e7eb; margin-top: -24px; z-index: 1; transition: all .4s ease;
+      border-radius: 4px;
+    }
+    .dark .step-line { background: #3f3f46; }
+    .step-line.done { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    /* Plan badge */
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
+      border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 20px;
+      padding: 10px 20px; font-weight: 700;
+      box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .plan-badge:hover { transform: translateY(-2px); }
+    .dark .plan-badge {
+      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1));
+      border-color: rgba(245,158,11,0.4); shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Glass Card Container */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 25px 60px -15px rgba(245, 158, 11, 0.18), 0 0 0 1px rgba(245, 158, 11, 0.1);
+      border-radius: 28px;
+    }
+    .dark .glass-card {
+      background: rgba(24, 24, 27, 0.88);
+      border-color: rgba(63, 63, 70, 0.6);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(245, 158, 11, 0.15);
+    }
+
+    /* Profile card */
+    .profile-card {
+      display: flex; align-items: center; gap: 16px; padding: 18px;
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.5), rgba(253, 230, 138, 0.25));
+      border: 1.5px solid rgba(245, 158, 11, 0.3);
+      border-radius: 22px; margin-top: 16px;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.8);
+    }
+    .dark .profile-card {
+      background: linear-gradient(135deg, rgba(39, 39, 42, 0.8), rgba(24, 24, 27, 0.6));
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+    .profile-avatar {
+      width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+      border: 3px solid #f59e0b; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Copy button */
+    .copy-btn {
+      background: rgba(243, 244, 246, 0.9); border: 1px solid rgba(229, 231, 235, 0.8);
+      border-radius: 9px; padding: 6px 11px; cursor: pointer; font-size: 12px; font-weight: 700;
+      color: #4b5563; transition: all .2s; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .copy-btn:hover { background: #f59e0b; border-color: #f59e0b; color: white; transform: translateY(-1px); }
+    .dark .copy-btn { background: #27272a; border-color: #3f3f46; color: #a1a1aa; }
+    .dark .copy-btn:hover { background: #f59e0b; border-color: #f59e0b; color: white; }
+
+    /* Status pill */
+    .status-pill {
+      border-radius: 16px; padding: 14px 18px; font-size: 14px; font-weight: 600;
+      line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .s-ok   { background: rgba(34,197,94,.12);  border: 1.5px solid rgba(34,197,94,.3);  color: #15803d; }
+    .s-err  { background: rgba(239,68,68,.12);  border: 1.5px solid rgba(239,68,68,.3);  color: #dc2626; }
+    .s-wait { background: rgba(245,158,11,.12); border: 1.5px solid rgba(245,158,11,.3); color: #d97706; }
+    .dark .s-ok   { color: #86efac; background: rgba(34,197,94,.15); }
+    .dark .s-err  { color: #fca5a5; background: rgba(239,68,68,.15); }
+    .dark .s-wait { color: #fde047; background: rgba(245,158,11,.15); }
+
+    /* Spin animation */
+    .spin { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success burst */
+    @keyframes popIn {
+      0% { transform: scale(.7); opacity: 0; }
+      80% { transform: scale(1.04); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+    /* QR info rows */
+    .info-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; font-size: 13.5px; }
+    .info-row:not(:last-child) { border-bottom: 1px solid rgba(243, 244, 246, 0.8); }
+    .dark .info-row:not(:last-child) { border-bottom-color: rgba(63, 63, 70, 0.5); }
+    .info-row .label { color: #6b7280; font-size: 13px; font-weight: 500; }
+    .dark .info-row .label { color: #a1a1aa; }
+    .info-row .value { font-weight: 800; }
+
+    /* Header glass styling */
+    .glass-header {
+      background: rgba(255, 253, 235, 0.85) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+    }
+    .dark .glass-header {
+      background: rgba(18, 18, 20, 0.85) !important;
+    }
+  </style>
+</head>
+<body class="bg-[#FFFCEB] dark:bg-zinc-950 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300 min-h-screen flex flex-col justify-between relative overflow-x-hidden" x-data="upgradePage()" x-init="init()">
+  <style>
+    /* Styling for the toast notification that appears when not logged in */
+    .locket-toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        padding: 12px 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 10000001;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 90%;
+        width: 320px;
+    }
+    html.dark .locket-toast {
+        background: rgba(24, 24, 27, 0.95);
+        border-color: rgba(245, 158, 11, 0.25);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    .locket-toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    .locket-toast-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(245, 158, 11, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f59e0b;
+        font-size: 18px;
+    }
+    .locket-toast-text {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a1a1a;
+        line-height: 1.4;
+    }
+    html.dark .locket-toast-text { color: #f4f4f5; }
+    
+    /* Overlay khi chặn UI (chưa đăng nhập) */
+    .locket-toast-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 10000000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        visibility: hidden;
+    }
+    html.dark .locket-toast-overlay {
+        background: rgba(0, 0, 0, 0.8);
+    }
+    .locket-toast-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+  </style>
+
+  <!-- HTML cho Overlay & Toast -->
+  <div class="locket-toast-overlay" id="authGuardOverlay"></div>
+  <div class="locket-toast" id="authGuardToast">
+    <div class="locket-toast-icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div class="locket-toast-text">
+      Bạn cần đăng nhập trước để tiến hành nâng cấp Locket!
+    </div>
+  </div>
+
+  <script>
+    // Auth Guard — yêu cầu đăng nhập để vào trang
+    (function() {
+      try {
+        var user = localStorage.getItem('user');
+        if (!user) {
+          triggerLoginRedirect();
+        }
+      } catch(e) {
+        triggerLoginRedirect();
+      }
+
+      function triggerLoginRedirect() {
+        // Chặn luồng hiển thị HTML phía dưới
+        document.addEventListener("DOMContentLoaded", function() {
+            var overlay = document.getElementById('authGuardOverlay');
+            var toast = document.getElementById('authGuardToast');
+            if (overlay && toast) {
+                overlay.classList.add('active');
+                
+                // Tránh lỗi scroll
+                document.body.style.overflow = 'hidden'; 
+                
+                // Hiện toast
+                setTimeout(function() {
+                    toast.classList.add('show');
+                }, 100);
+
+                // Lấy params hiện tại (như ?plan=abc&price=123...) để lưu lại trước khi văng sang form login
+                var currentQuery = location.search; // Contains '?' if params exist
+                var fallbackUrl = '/upgrade/' + currentQuery;
+
+                // Sau 2 giây thì redirect
+                setTimeout(function() {
+                    window.location.replace('/login/?redirect=' + encodeURIComponent(fallbackUrl));
+                }, 2000);
+            } else {
+                window.location.replace('/login/?redirect=' + encodeURIComponent('/upgrade/'));
+            }
+        });
+      }
+    })();
+  </script>
+
+  <!-- Ambient light blobs -->
+  <div class="fixed top-10 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-amber-300/30 dark:bg-amber-500/10 rounded-full blur-[100px] pointer-events-none z-[-2]"></div>
+  <div class="fixed bottom-0 right-0 w-[400px] h-[400px] bg-yellow-400/20 dark:bg-amber-600/10 rounded-full blur-[90px] pointer-events-none z-[-2]"></div>
+
+  <!-- Background Image & Overlay -->
+  <div class="fixed inset-0 z-[-2] pointer-events-none bg-cover bg-bottom bg-no-repeat opacity-50 dark:opacity-30 scale-105" style="background-image:url('/assets/images/background-hero.webp')"></div>
+  <div class="fixed inset-0 z-[-1] pointer-events-none bg-gradient-to-b from-[#FFFCEB]/60 via-[#FFFCEB]/40 to-[#FFFCEB]/80 dark:from-zinc-950/80 dark:via-zinc-950/60 dark:to-zinc-950/90"></div>
+
+  <!-- Header -->
+  <header class="glass-header fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 sm:px-8 border-b border-amber-500/15 dark:border-zinc-800/80 shadow-sm">
+    <a href="/" class="flex items-center gap-2 shrink-0 group">
+      <img alt="Locket Gold" class="w-9 h-9 object-contain group-hover:scale-105 transition-transform" src="/assets/images/logo-locket.png"/>
+      <img alt="Locket Gold" class="h-8 object-contain" src="/assets/images/logo-chuky.png"/>
+    </a>
+    
+    <div class="flex items-center gap-2 bg-amber-400/15 dark:bg-amber-400/10 border border-amber-400/30 px-3.5 py-1 rounded-full shadow-inner">
+      <span class="text-amber-500 text-sm">⭐</span>
+      <span class="text-xs sm:text-sm font-extrabold text-amber-700 dark:text-amber-300">Nâng Cấp Locket Gold</span>
+    </div>
+
+    <a href="/#pricing" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-zinc-800/80 border border-gray-200/80 dark:border-zinc-700 text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-amber-400 hover:text-gray-950 hover:border-amber-400 transition-all shadow-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Quay lại</span>
+    </a>
+  </header>
+
+  <!-- Main Content Center Container -->
+  <main class="pt-24 pb-20 px-4 flex-1 flex flex-col justify-center items-center w-full relative z-10">
+    <div class="max-w-md sm:max-w-lg w-full mx-auto">
+
+      <!-- Step bar -->
+      <div class="step-bar mb-7 px-4 sm:px-6">
+        <div class="step-node" :class="{ active: step===1, done: step>1 }">
+          <div class="step-circle">
+            <template x-if="step > 1"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></template>
+            <template x-if="step <= 1"><span>1</span></template>
+          </div>
+          <span class="step-label">Kiểm tra</span>
+        </div>
+        <div class="step-line" :class="{ done: step > 1 }"></div>
+        <div class="step-node" :class="{ active: step===2, done: step>2 }">
+          <div class="step-circle">
+            <template x-if="step > 2"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></template>
+            <template x-if="step <= 2"><span>2</span></template>
+          </div>
+          <span class="step-label">Thanh toán</span>
+        </div>
+        <div class="step-line" :class="{ done: step > 2 }"></div>
+        <div class="step-node" :class="{ active: step===3, done: step>3 }">
+          <div class="step-circle">
+            <template x-if="step >= 3"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></template>
+            <template x-if="step < 3"><span>3</span></template>
+          </div>
+          <span class="step-label">Hoàn tất</span>
+        </div>
+      </div>
+
+      <!-- Plan summary badge -->
+      <div class="flex justify-center mb-6" x-show="plan.name" x-transition>
+        <div class="plan-badge text-amber-900 dark:text-amber-200">
+          <template x-if="user?.avatar">
+            <img :src="user.avatar" class="w-9 h-9 rounded-xl object-cover border-2 border-amber-400 shrink-0 shadow-sm"/>
+          </template>
+          <template x-if="!user?.avatar">
+            <div class="w-9 h-9 rounded-xl bg-amber-400/30 dark:bg-amber-400/20 flex items-center justify-center text-xl shrink-0">⭐</div>
+          </template>
+          <div>
+            <div class="text-sm font-black tracking-tight" x-text="plan.name"></div>
+            <div class="text-xs font-semibold text-amber-800/80 dark:text-amber-300/80 flex items-center gap-1.5 mt-0.5">
+              <span x-text="plan.duration"></span>
+              <span>&bull;</span>
+              <span class="text-red-600 dark:text-red-400 font-black text-sm" x-text="fmtPrice(plan.finalPrice || plan.price)"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── STEP 1: Username check ─── -->
+      <div x-show="step === 1" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+        <div class="glass-card p-6 sm:p-8">
+          <div class="text-center sm:text-left mb-6">
+            <h2 class="text-xl font-black tracking-tight text-gray-900 dark:text-white mb-1.5 flex items-center justify-center sm:justify-start gap-2">
+              <span>📱</span> Nhập Username Locket
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Hệ thống sẽ xác thực tài khoản của bạn tự động.</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 mb-5">
+            <div class="relative flex-1">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 font-black text-sm flex items-center justify-center pointer-events-none">@</span>
+              <input
+                x-model="username"
+                @keydown.enter="lookup()"
+                class="w-full pl-12 pr-4 py-3.5 bg-gray-50/80 dark:bg-zinc-800/80 border border-gray-200 dark:border-zinc-700 rounded-2xl text-base font-bold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/20 transition-all text-gray-900 dark:text-white placeholder:font-normal placeholder:text-gray-400"
+                placeholder="username locket của bạn..."
+                autocomplete="off"
+                :disabled="looking"
+              />
+            </div>
+            <button
+              @click="lookup()"
+              :disabled="looking || !username.trim()"
+              class="px-6 py-3.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-gray-950 font-black text-sm rounded-2xl border-0 cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-amber-400/25 flex items-center justify-center shrink-0 min-w-[110px]"
+            >
+              <span x-show="!looking">Kiểm tra</span>
+              <svg x-show="looking" class="spin w-5 h-5 text-gray-950" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <!-- Status -->
+          <div x-show="status.text" class="status-pill mb-5" :class="'s-' + status.type" x-text="status.text"></div>
+
+          <!-- Profile preview card -->
+          <div x-show="user" class="profile-card" x-transition>
+            <img class="profile-avatar shrink-0" :src="user?.avatar || '/assets/images/avatar-default.jpg'" alt="Avatar"/>
+            <div class="flex-1 min-w-0">
+              <div class="font-black text-base truncate text-gray-900 dark:text-white" x-text="user?.name || username"></div>
+              <div class="text-xs font-bold text-amber-600 dark:text-amber-400">@<span x-text="user?.username || username"></span></div>
+              <div class="text-xs text-gray-400 font-mono mt-1">UID: <span class="font-semibold" x-text="user?.uid || '—'"></span></div>
+            </div>
+            <div class="shrink-0 w-9 h-9 bg-green-500 text-white rounded-full flex items-center justify-center shadow-md shadow-green-500/30">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <!-- CTA Button -->
+          <div x-show="user" class="mt-6 space-y-3">
+            <template x-if="isWarrantyEligible">
+              <button
+                @click="claimWarrantyFree()"
+                class="w-full py-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-black text-base rounded-2xl border-0 cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-xl shadow-green-500/30 flex items-center justify-center gap-2.5 animate-pulse"
+              >
+                <i class="fa-solid fa-shield-halved text-xl"></i>
+                <span>Nâng Gold Miễn Phí (0đ - Đã Mua Gói)</span>
+              </button>
+            </template>
+
+            <button
+              @click="goToStep2()"
+              class="w-full py-3.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-gray-950 font-black text-base rounded-2xl border-0 cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-xl shadow-amber-400/30 flex items-center justify-center gap-2.5"
+              x-transition
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Thanh Toán Gói Mới / Mua Thêm</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── STEP 2: Payment QR & Wallet ─── -->
+      <div x-show="step === 2" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+        <div class="glass-card overflow-hidden">
+
+          <!-- Header -->
+          <div class="px-6 py-4 border-b border-gray-100 dark:border-zinc-800/80 flex items-center justify-between bg-white/40 dark:bg-zinc-800/40">
+            <button @click="step=1; clearStatus()" class="text-xs sm:text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1.5 font-bold border-0 bg-transparent cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Thay đổi tài khoản</span>
+            </button>
+            <div x-show="qrExpiry > 0" class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full">
+              <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+              <span class="text-xs font-black text-red-600 dark:text-red-400 font-mono" x-text="fmtCountdown(qrExpiry)"></span>
+            </div>
+          </div>
+
+          <div class="p-6 sm:p-7">
+            <!-- User confirm summary -->
+            <div class="flex items-center gap-3.5 mb-6 p-4 bg-amber-500/10 border border-amber-500/25 rounded-2xl">
+              <img class="w-11 h-11 rounded-full border-2 border-amber-400 object-cover shadow-sm" :src="user?.avatar || '/assets/images/avatar-default.jpg'" alt="Avatar"/>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-black truncate text-gray-900 dark:text-white" x-text="user?.name || username"></div>
+                <div class="text-xs font-bold text-amber-600 dark:text-amber-400">@<span x-text="user?.username"></span></div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Gói đăng ký</div>
+                <div class="text-sm font-black text-amber-600 dark:text-amber-400" x-text="plan.name"></div>
+              </div>
+            </div>
+
+            <!-- ── THANH TOÁN BẰNG VÍ ── -->
+            <div class="mb-6 rounded-2xl border-2 border-dashed border-amber-300 dark:border-amber-700/80 bg-gradient-to-br from-amber-50/80 via-yellow-50/50 to-transparent dark:from-amber-950/30 dark:via-zinc-900/40 p-4 sm:p-5">
+              <div class="flex items-center justify-between mb-3.5">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-gray-950 shadow-md shadow-amber-400/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div>
+                    <div class="text-xs font-bold text-amber-900 dark:text-amber-300">Số dư ví LocketGold</div>
+                    <div class="text-lg font-black text-amber-600 dark:text-amber-400" x-text="walletLoading ? '...' : fmtPrice(walletBalance)"></div>
+                  </div>
+                </div>
+                <a href="/profile?action=deposit" class="text-xs font-black text-amber-600 dark:text-amber-400 hover:text-amber-700 underline flex items-center gap-1">
+                  <span>Nạp thêm</span>
+                  <span>→</span>
+                </a>
+              </div>
+
+              <!-- Đủ tiền -->
+              <template x-if="walletBalance >= (plan.finalPrice || plan.price) && !walletLoading">
+                <button
+                  @click="payWithWallet()"
+                  :disabled="walletPaying || payDone"
+                  class="w-full py-3.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-gray-950 font-black text-sm rounded-xl border-0 cursor-pointer transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <template x-if="!walletPaying">
+                    <span class="flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <span>Thanh toán bằng ví (<span x-text="fmtPrice(plan.finalPrice || plan.price)"></span>)</span>
+                    </span>
+                  </template>
+                  <template x-if="walletPaying">
+                    <span class="flex items-center gap-2">
+                      <svg class="spin w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/></svg>
+                      <span>Đang xử lý...</span>
+                    </span>
+                  </template>
+                </button>
+              </template>
+
+              <!-- Thiếu tiền -->
+              <template x-if="walletBalance < (plan.finalPrice || plan.price) && !walletLoading">
+                <div class="text-center pt-1">
+                  <p class="text-xs text-amber-800 dark:text-amber-300 font-semibold mb-2.5">
+                    Số dư ví chưa đủ (cần nạp thêm <span class="font-black text-red-600 dark:text-red-400" x-text="fmtPrice((plan.finalPrice || plan.price) - walletBalance)"></span>)
+                  </p>
+                  <a href="/profile?action=deposit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-zinc-800 border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 font-bold text-xs rounded-xl hover:bg-amber-50 dark:hover:bg-zinc-700 transition-all shadow-sm">
+                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round"/></svg>
+                    <span>Nạp tiền vào ví</span>
+                  </a>
+                </div>
+              </template>
+
+              <div class="flex items-center gap-3 mt-4">
+                <div class="flex-1 h-px bg-amber-200/80 dark:bg-zinc-800"></div>
+                <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">hoặc quét mã qr ngân hàng</span>
+                <div class="flex-1 h-px bg-amber-200/80 dark:bg-zinc-800"></div>
+              </div>
+            </div>
+
+            <!-- QR Code Box -->
+            <div class="text-center mb-6">
+              <p class="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-3">Mã QR VietQR Tự Động Duyệt</p>
+              <div class="relative inline-block p-3 bg-white rounded-2xl border border-gray-200/80 shadow-md">
+                <template x-if="qrImg">
+                  <img :src="qrImg" alt="VietQR" class="w-52 h-52 mx-auto rounded-xl object-contain"/>
+                </template>
+                <template x-if="!qrImg">
+                  <div class="w-52 h-52 mx-auto rounded-xl bg-gray-50 flex items-center justify-center">
+                    <svg class="spin w-8 h-8 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/></svg>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Bank Details Table -->
+            <div class="border border-gray-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden mb-5 shadow-sm">
+              <div class="info-row bg-gray-50/70 dark:bg-zinc-800/50">
+                <span class="label">Ngân hàng</span>
+                <span class="value text-gray-900 dark:text-gray-100" x-text="payment.bank || '—'"></span>
+              </div>
+              <div class="info-row">
+                <span class="label">Số tài khoản</span>
+                <div class="flex items-center gap-2">
+                  <span class="value text-gray-900 dark:text-gray-100 font-mono text-sm" x-text="payment.accNo || '—'"></span>
+                  <button class="copy-btn" @click="copyText(payment.accNo)" x-show="payment.accNo">
+                    <i class="far fa-copy"></i>
+                    <span>Sao chép</span>
+                  </button>
+                </div>
+              </div>
+              <div class="info-row bg-gray-50/70 dark:bg-zinc-800/50">
+                <span class="label">Chủ tài khoản</span>
+                <span class="value text-gray-900 dark:text-gray-100 uppercase" x-text="payment.accName || '—'"></span>
+              </div>
+              <div class="info-row">
+                <span class="label">Số tiền</span>
+                <span class="value text-red-600 dark:text-red-400 font-black text-base" x-text="fmtPrice(payment.amount || plan.finalPrice || plan.price)"></span>
+              </div>
+              <div class="info-row bg-amber-400/10 dark:bg-amber-400/5">
+                <span class="label text-amber-800 dark:text-amber-300 font-bold">Nội dung CK</span>
+                <div class="flex items-center gap-2">
+                  <span class="value text-amber-600 dark:text-amber-400 font-mono text-sm font-black" x-text="payment.content || '—'"></span>
+                  <button class="copy-btn" style="background:#fef3c7; border-color:#fde68a; color:#92400e;" @click="copyText(payment.content)" x-show="payment.content">
+                    <i class="far fa-copy"></i>
+                    <span>Sao chép</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status pill -->
+            <div x-show="status.text" class="status-pill mb-4" :class="'s-' + status.type" x-text="status.text"></div>
+
+            <!-- Wait / Success indicator -->
+            <div x-show="!payDone" class="flex items-center justify-center gap-2.5 py-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-700 dark:text-amber-300 text-sm font-bold">
+              <svg class="spin w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/></svg>
+              <span>Đang chờ chuyển khoản thanh toán...</span>
+            </div>
+            <div x-show="payDone" class="flex items-center justify-center gap-2.5 py-3.5 bg-green-500/15 border border-green-500/30 rounded-2xl text-green-700 dark:text-green-300 text-sm font-black shadow-sm">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Thanh toán thành công! Đang tự động nâng cấp...</span>
+            </div>
+
+            <!-- Warning Notice -->
+            <div class="mt-4 p-3.5 bg-red-500/10 border border-red-500/25 rounded-2xl text-center">
+              <p class="text-xs text-red-600 dark:text-red-400 font-extrabold mb-1">⚠️ LƯU Ý QUAN TRỌNG</p>
+              <p class="text-xs text-red-600/90 dark:text-red-400/90 font-medium">Tuyệt đối <strong>KHÔNG</strong> thay đổi <strong>Số tiền</strong> và <strong>Nội dung CK</strong> để hệ thống tự động xử lý ngay lập tức!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── STEP 3: Success Screen ─── -->
+      <div x-show="step === 3" x-transition:enter="transition ease-out duration-400 transform" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="text-center">
+        <div class="glass-card p-8 sm:p-10 pop-in">
+          <div class="relative w-24 h-24 mx-auto mb-6">
+            <img :src="user?.avatar || '/assets/images/avatar-default.jpg'" alt="Avatar" class="w-24 h-24 rounded-3xl object-cover shadow-xl shadow-amber-400/35 border-4 border-amber-400/80 p-0.5 bg-white dark:bg-zinc-800"/>
+            <div class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-green-500 border-2 border-white dark:border-zinc-900 text-white flex items-center justify-center shadow-md">
+              <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black mb-2 text-gray-900 dark:text-white tracking-tight">Nâng Cấp Thành Công!</h2>
+          <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-6">Tài khoản <strong class="text-amber-600 dark:text-amber-400" x-text="'@'+(user?.username||'')"></strong> đã được nâng lên gói <strong class="text-gray-900 dark:text-white" x-text="plan.name"></strong></p>
+
+          <div class="bg-gradient-to-br from-amber-50/80 to-amber-100/30 dark:from-zinc-800/80 dark:to-zinc-800/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-5 mb-7 text-left space-y-3 shadow-inner">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Tên tài khoản</span>
+              <span class="font-bold text-gray-900 dark:text-white" x-text="user?.name || '—'"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Username</span>
+              <span class="font-bold text-amber-600 dark:text-amber-400" x-text="'@'+(user?.username||'—')"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Gói kích hoạt</span>
+              <span class="font-black text-gray-900 dark:text-white" x-text="plan.name"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Thời hạn</span>
+              <span class="font-bold text-gray-900 dark:text-white" x-text="plan.duration"></span>
+            </div>
+            <div class="pt-2 border-t border-amber-200/60 dark:border-zinc-700/60 flex justify-between text-sm">
+              <span class="text-gray-500 dark:text-gray-400 font-medium">Đã thanh toán</span>
+              <span class="font-black text-red-600 dark:text-red-400 text-base" x-text="fmtPrice(payment.amount || plan.finalPrice || plan.price)"></span>
+            </div>
+            <div class="pt-3 border-t border-amber-200/60 dark:border-zinc-700/60">
+              <div class="flex items-center justify-between text-xs mb-2.5">
+                <span class="text-amber-800 dark:text-amber-300 font-bold flex items-center gap-1.5">
+                  <span class="text-sm">🔑</span> Link Cấu Hình VIP (Sống 60 Phút)
+                </span>
+                <span class="text-[11px] font-extrabold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800" x-text="vipCountdown"></span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" @click="copyVipLink()" class="py-2.5 px-3 bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                  <i class="far fa-copy"></i>
+                  <span>Copy Link</span>
+                </button>
+                <a :href="vipLink" target="_blank" class="py-2.5 px-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all no-underline shadow-sm">
+                  <i class="fas fa-download"></i>
+                  <span>Tải Cấu Hình</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="/" class="flex-1 py-4 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-gray-950 font-black text-sm rounded-2xl text-center no-underline hover:-translate-y-0.5 transition-all block shadow-lg shadow-amber-400/25">
+              ← Về Trang Chủ
+            </a>
+            <a href="https://zalo.me/0388765217" target="_blank" rel="noopener" class="flex-1 py-4 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-800 dark:text-gray-200 font-bold text-sm rounded-2xl text-center no-underline hover:bg-gray-50 dark:hover:bg-zinc-700 transition-all block shadow-sm">
+              💬 Liên Hệ Zalo Hỗ Trợ
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:9999;background:#18181b;color:#fff;padding:12px 24px;border-radius:16px;font-size:14px;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,0.15)"></div>
+
+<script>
+const API      = 'https://locketgold.caovannamutt.workers.dev/';
+const PAY_API  = 'https://locketduongbinhshop.vercel.app';
+const PAY_BANK = 'MB';            
+const PAY_ACC  = '0567355688888';
+const PAY_NAME = 'DO DUONG BINH';
+
+function upgradePage() {
+  return {
+    step: 1,
+    username: '',
+    user: null,
+    looking: false,
+    isWarrantyEligible: false,
+    status: { type: '', text: '' },
+    plan: { name: '', price: 0, finalPrice: 0, duration: '', planId: '' },
+    payment: { bank: '', accNo: '', accName: '', amount: 0, content: '', qr: '' },
+    qrImg: '',
+    qrExpiry: 0,
+    payDone: false,
+    _pollTimer: null,
+    _countTimer: null,
+    // Ví tiền
+    walletBalance: 0,
+    walletLoading: false,
+    walletPaying: false,
+    // VIP DNS Profile Link (60 phút)
+    vipLink: '',
+    vipCountdown: '',
+    _vipTimer: null,
+
+    init() {
+      // Đọc plan từ URL params
+      const p = new URLSearchParams(location.search);
+      this.plan = {
+        name:       p.get('plan')     || 'Locket Gold',
+        price:      Number(p.get('price'))  || 0,
+        finalPrice: Number(p.get('final'))  || Number(p.get('price')) || 0,
+        duration:   p.get('duration') || '',
+        planId:     p.get('planId')   || ''
+      };
+      // Pre-fill username nếu có
+      this.username = p.get('username') || '';
+      if (this.username) this.lookup();
+      // Load số dư ví
+      this.loadWalletBalance();
+    },
+
+    async loadWalletBalance() {
+      let username = '';
+      // Đọc từ localStorage trước
+      try {
+        const uStr = localStorage.getItem('user');
+        if (uStr) {
+          const u = JSON.parse(uStr);
+          username = u.username || '';
+          if (u.balance != null) this.walletBalance = Number(u.balance) || 0;
+        }
+      } catch(e) {}
+
+      const token = localStorage.getItem('token') || '';
+      try {
+        this.walletLoading = true;
+        let apiUrl = 'https://shopbanhanglkduongbinh.caovannamutt.workers.dev/api/wallet';
+        if (username) apiUrl += '?username=' + encodeURIComponent(username);
+
+        const headers = {};
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch(apiUrl, { headers });
+        const data = await res.json();
+        if (data.success) {
+          this.walletBalance = Number(data.balance) || 0;
+          // Cập nhật lại localStorage
+          try {
+            const uStr = localStorage.getItem('user');
+            if (uStr) {
+              const u = JSON.parse(uStr);
+              u.balance = this.walletBalance;
+              localStorage.setItem('user', JSON.stringify(u));
+            }
+          } catch(e) {}
+        }
+      } catch(e) {}
+      finally { this.walletLoading = false; }
+    },
+
+    setStatus(type, text) { this.status = { type, text }; },
+    clearStatus() { this.status = { type: '', text: '' }; },
+
+    fmtPrice(v) {
+      if (!v) return '—';
+      return Number(v).toLocaleString('vi-VN') + '₫';
+    },
+
+    fmtCountdown(secs) {
+      const m = String(Math.floor(secs / 60)).padStart(2, '0');
+      const s = String(secs % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    },
+
+    async lookup() {
+      const username = this.username.trim().toLowerCase();
+      if (!username) { this.setStatus('err', 'Vui lòng nhập username.'); return; }
+
+      this.looking = true;
+      this.user = null;
+      this.clearStatus();
+      this.setStatus('wait', '🔍 Đang kiểm tra tài khoản...');
+
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'info', username })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || data.message || 'Không tìm thấy tài khoản.');
+        this.user = data;
+        await this.checkWarrantyStatus(username);
+      } catch (e) {
+        this.setStatus('err', '❌ ' + e.message);
+      } finally {
+        this.looking = false;
+      }
+    },
+
+    async checkWarrantyStatus(username) {
+      try {
+        const res = await fetch('https://shopbanhanglkduongbinh.caovannamutt.workers.dev/api/check-warranty', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (data.success && data.eligible) {
+          this.isWarrantyEligible = true;
+          this.setStatus('ok', `🌟 Tài khoản @${username} đã từng mua gói! Bạn được Nâng lại Gold 0đ Miễn Phí.`);
+        } else {
+          this.isWarrantyEligible = false;
+          this.setStatus('ok', '✅ Đã xác minh tài khoản. Nhấn "Tiến Hành Thanh Toán" để tiếp tục.');
+        }
+      } catch(e) {
+        this.isWarrantyEligible = false;
+        this.setStatus('ok', '✅ Đã xác minh tài khoản. Nhấn "Tiến Hành Thanh Toán" để tiếp tục.');
+      }
+    },
+
+    async claimWarrantyFree() {
+      if (!this.user || !this.user.username) return;
+      this.setStatus('wait', '⏳ Đang kích hoạt bảo hành Gold 0đ...');
+      try {
+        // Kick trực tiếp từ trình duyệt đến API Locket Worker y hệt doUpgrade()
+        const kickRes = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'kick', username: this.user.username })
+        });
+        const kickData = await kickRes.json().catch(() => ({ success: kickRes.ok }));
+
+        if (kickData.success || kickRes.ok) {
+          // Lưu vết đơn bảo hành
+          fetch('https://shopbanhanglkduongbinh.caovannamutt.workers.dev/api/claim-warranty', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: this.user.username })
+          }).catch(() => {});
+
+          this.step = 3;
+          this.generateVipLink();
+        } else {
+          this.setStatus('err', '❌ ' + (kickData.error || kickData.message || 'Không thể nâng Gold 0đ'));
+        }
+      } catch(e) {
+        this.setStatus('err', '❌ Lỗi kết nối: ' + e.message);
+      }
+    },
+
+    async goToStep2() {
+      if (!this.user) return;
+      this.step = 2;
+      this.clearStatus();
+      this.payDone = false;
+      await this.initPayment();
+    },
+
+    async initPayment() {
+      const amount  = this.plan.finalPrice || this.plan.price;
+      const suffix  = Math.floor(1000 + Math.random() * 9000);
+      const memo    = `LK KH ${suffix}`.toUpperCase();
+
+      this.payment = {
+        bank:    'MB Bank (MB)',
+        accNo:   PAY_ACC,
+        accName: PAY_NAME,
+        amount:  amount,
+        content: memo
+      };
+
+      // Build VietQR
+      this.qrImg = `https://img.vietqr.io/image/${PAY_BANK}-${PAY_ACC}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(PAY_NAME)}`;
+
+      // Countdown 5 phút
+      this.qrExpiry = 300;
+      clearInterval(this._countTimer);
+      this._countTimer = setInterval(() => {
+        if (this.qrExpiry > 0) this.qrExpiry--;
+        else clearInterval(this._countTimer);
+      }, 1000);
+
+      // Polling payment từ backend
+      this.startPolling(memo, amount);
+    },
+
+    startPolling(memo, amount) {
+      clearInterval(this._pollTimer);
+      let elapsed = 0;
+      this._pollTimer = setInterval(async () => {
+        elapsed += 5;
+        if (elapsed > 300) { clearInterval(this._pollTimer); return; } // stop after 5 min
+        try {
+          const res = await fetch(`${PAY_API}/api/payment/check`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': 'mPPpN7Ke2b6U83o27RFJG2U5TnkyAmXwT5PbTkvI' },
+            body: JSON.stringify({ memo, amount, username: this.user.username, planId: this.plan.planId })
+          });
+          const data = await res.json();
+          if (data.paid || data.success) {
+            clearInterval(this._pollTimer);
+            clearInterval(this._countTimer);
+            this.payDone = true;
+            await this.doUpgrade();
+          }
+        } catch {}
+      }, 5000); // poll every 5s
+    },
+
+    async doUpgrade() {
+      this.setStatus('wait', '⏳ Đang nâng cấp Gold...');
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'kick', username: this.user.username })
+        });
+        const data = await res.json().catch(() => ({ success: res.ok }));
+
+        if (data.success || res.ok) {
+          this.step = 3;
+          this.generateVipLink();
+        } else {
+          this.setStatus('err', '❌ ' + (data.error || data.message || 'Nâng cấp thất bại. Liên hệ Zalo hỗ trợ.'));
+        }
+      } catch (e) {
+        this.setStatus('err', '❌ Lỗi kết nối: ' + e.message);
+      }
+    },
+
+    async payWithWallet() {
+      if (this.walletPaying) return;
+      const amount = this.plan.finalPrice || this.plan.price;
+      if (this.walletBalance < amount) {
+        this.setStatus('err', '❌ Số dư ví không đủ. Vui lòng nạp thêm tiền vào ví.');
+        return;
+      }
+      if (!this.user || !this.user.username) {
+        this.setStatus('err', '❌ Vui lòng chọn và xác minh tài khoản Locket trước.');
+        return;
+      }
+
+      let loggedUser = '';
+      try {
+        const uStr = localStorage.getItem('user');
+        if (uStr) {
+          const u = JSON.parse(uStr);
+          loggedUser = u.username || '';
+        }
+      } catch(e) {}
+
+      const token = localStorage.getItem('token') || '';
+      const orderId = "LG" + Date.now().toString(36).toUpperCase().slice(-6);
+
+      this.walletPaying = true;
+      this.clearStatus();
+      this.setStatus('wait', '⏳ Đang trừ tiền ví & kích hoạt Locket Gold...');
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch('https://shopbanhanglkduongbinh.caovannamutt.workers.dev/api/pay-wallet', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            orderId: orderId,
+            amount: amount,
+            username: this.user.username,
+            plan: this.plan.name,
+            user: loggedUser
+          })
+        });
+
+        const data = await res.json().catch(() => ({ success: false, message: 'Lỗi phản hồi từ máy chủ' }));
+
+        const isDeducted = data.success || (data.message && data.message.includes("Trừ tiền ví thành công"));
+
+        if (isDeducted) {
+          const newBal = Number(data.newBalance ?? (this.walletBalance - amount)) || 0;
+          this.walletBalance = newBal;
+          try {
+            const uStr = localStorage.getItem('user');
+            if (uStr) {
+              const u = JSON.parse(uStr);
+              u.balance = newBal;
+              localStorage.setItem('user', JSON.stringify(u));
+            }
+          } catch(e) {}
+
+          this.payDone = true;
+          if (this._pollTimer) clearInterval(this._pollTimer);
+          if (this._countTimer) clearInterval(this._countTimer);
+
+          await this.doUpgrade();
+        } else {
+          this.setStatus('err', '❌ ' + (data.message || data.error || 'Trừ tiền ví thất bại. Liên hệ hỗ trợ.'));
+        }
+      } catch (e) {
+        this.setStatus('err', '❌ Lỗi kết nối ví: ' + e.message);
+      } finally {
+        this.walletPaying = false;
+      }
+    },
+
+    generateVipLink() {
+      const rawName = (this.user?.name || this.user?.username || 'Khách VIP').trim();
+      const ttlMinutes = 60;
+      const exp = Date.now() + ttlMinutes * 60 * 1000;
+      const payload = {
+        name: rawName,
+        ttlMinutes: ttlMinutes,
+        exp: exp,
+        ip: null,
+        ua: null
+      };
+
+      let encoded = '';
+      try {
+        encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+      } catch (e) {
+        encoded = btoa(JSON.stringify(payload));
+      }
+
+      this.vipLink = location.origin + '/CAUHINH/download2.html?data=' + encodeURIComponent(encoded);
+
+      if (this._vipTimer) clearInterval(this._vipTimer);
+      const updateTimer = () => {
+        const remain = exp - Date.now();
+        if (remain <= 0) {
+          this.vipCountdown = '❌ Hết hạn';
+          if (this._vipTimer) clearInterval(this._vipTimer);
+          return;
+        }
+        const m = Math.floor(remain / (1000 * 60));
+        const s = Math.floor((remain % (1000 * 60)) / 1000);
+        this.vipCountdown = `⏳ Sống: ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      };
+      updateTimer();
+      this._vipTimer = setInterval(updateTimer, 1000);
+    },
+
+    copyVipLink() {
+      if (!this.vipLink) return;
+      this.copyText(this.vipLink);
+    },
+
+    copyText(text) {
+      if (!text) return;
+      navigator.clipboard?.writeText(text).then(() => showToast('Đã sao chép!')).catch(() => {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast('Đã sao chép!');
+      });
+    }
+  };
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.opacity = '1';
+  setTimeout(() => {
+    t.style.transition = 'opacity .4s';
+    t.style.opacity = '0';
+    setTimeout(() => { t.style.display = 'none'; t.style.transition = ''; }, 400);
+  }, 1800);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | LocketGold</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f59e0b;
+      --gold-dark: #d97706;
+      --gold-light: #fffbeb;
+      --gold-border: #fde68a;
+      --gold-glow: rgba(245, 158, 11, 0.18);
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --card-alt: #f1f5f9;
+      --bd: #e2e8f0;
+      --txt: #0f172a;
+      --muted: #64748b;
+      --ind: #2563eb;
+      --ind-light: #eff6ff;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 30px -4px rgba(0, 0, 0, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 158, 11, 0.07), transparent); pointer-events: none; }
+
+    /* SIDEBAR */
+    .sidebar { position: fixed; top: 0; left: 0; width: 230px; height: 100vh; background: var(--card); border-right: 1px solid var(--bd); display: flex; flex-direction: column; z-index: 100; transition: transform .3s cubic-bezier(0.4,0,0.2,1); box-shadow: 4px 0 24px rgba(0,0,0,0.02); }
+    .sidebar-logo { padding: 22px 20px; border-bottom: 1px solid var(--bd); display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1.05rem; letter-spacing: -0.3px; color: var(--txt); }
+    .sidebar-logo .icon { width: 36px; height: 36px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; box-shadow: 0 4px 12px var(--gold-glow); }
+    .sidebar-logo .badge { font-size: .65rem; background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.2); color: var(--red); padding: 3px 8px; border-radius: 8px; font-weight: 800; margin-left: auto; letter-spacing: 0.5px; }
+
+    .nav-links { padding: 16px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; font-size: .88rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .2s ease; border: 1px solid transparent; background: transparent; width: 100%; text-align: left; font-family: inherit; }
+    .nav-link:hover { background: var(--card-alt); color: var(--txt); transform: translateX(2px); }
+    .nav-link.active { background: var(--gold-light); color: var(--gold-dark); border-color: var(--gold-border); font-weight: 800; box-shadow: 0 2px 8px rgba(245,158,11,0.08); }
+    .nav-link i { width: 20px; text-align: center; font-size: 1rem; opacity: 0.85; }
+    .nav-link.active i { opacity: 1; color: var(--gold-dark); }
+
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--bd); background: #fafafa; }
+    .admin-chip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--bd); box-shadow: var(--shadow-sm); }
+    .admin-chip .avatar { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #f59e0b, #f97316); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.9rem; font-weight: 800; }
+    .admin-chip .name { font-size: .85rem; font-weight: 800; color: var(--txt); line-height: 1.2; }
+    .admin-chip .role { font-size: .72rem; color: var(--muted); font-weight: 500; }
+    .btn-logout { margin-top: 8px; width: 100%; padding: 10px; border-radius: 10px; border: 1px solid rgba(239,68,68,0.2); background: var(--red-light); color: var(--red); font-size: .83rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-logout:hover { background: #fee2e2; border-color: rgba(239,68,68,0.4); transform: translateY(-1px); }
+
+    /* MAIN LAYOUT */
+    .main-content { margin-left: 230px; min-height: 100vh; padding: 24px 32px 40px; }
+    
+    /* TOPBAR */
+    .topbar { position: sticky; top: 0; z-index: 30; background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--bd); padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; margin: -24px -32px 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+    .topbar-title { font-size: 1.1rem; font-weight: 900; color: var(--txt); letter-spacing: -0.3px; display: flex; align-items: center; gap: 10px; }
+    .admin-tag { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #047857; background: #ecfdf5; padding: 6px 14px; border-radius: 100px; border: 1px solid #a7f3d0; }
+    .admin-tag .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; }
+    .mobile-toggle-btn { display: none; width: 38px; height: 38px; border-radius: 10px; background: var(--card); border: 1px solid var(--bd); align-items: center; justify-content: center; font-size: 16px; color: var(--txt); cursor: pointer; }
+
+    /* PAGE HEADERS */
+    .page-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+    .page-header h2 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.4px; color: var(--txt); }
+    .page-header p { color: var(--muted); font-size: .88rem; margin-top: 4px; font-weight: 500; }
+
+    /* STATS GRID */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--card); border: 1px solid var(--bd); border-radius: 18px; padding: 20px 22px; box-shadow: var(--shadow-sm); transition: all 0.25s ease; position: relative; overflow: hidden; }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(245,158,11,0.3); }
+    .stat-label { font-size: .78rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .stat-label i { font-size: 1rem; }
+    .stat-val { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; color: var(--txt); line-height: 1; }
+    .stat-sub { font-size: .78rem; color: var(--muted); margin-top: 8px; font-weight: 500; }
+
+    .stat-card.gold { border-color: rgba(245,158,11,0.25); background: linear-gradient(135deg, #ffffff, #fffbeb); }
+    .stat-card.gold .stat-val { color: var(--gold-dark); }
+    .stat-card.gold .stat-label i { color: var(--gold); }
+
+    .stat-card.green { border-color: rgba(16,185,129,0.25); background: linear-gradient(135deg, #ffffff, #ecfdf5); }
+    .stat-card.green .stat-val { color: #047857; }
+    .stat-card.green .stat-label i { color: var(--green); }
+
+    .stat-card.blue { border-color: rgba(37,99,235,0.25); background: linear-gradient(135deg, #ffffff, #eff6ff); }
+    .stat-card.blue .stat-val { color: #1d4ed8; }
+    .stat-card.blue .stat-label i { color: var(--ind); }
+
+    .stat-card.red { border-color: rgba(239,68,68,0.25); background: linear-gradient(135deg, #ffffff, #fef2f2); }
+    .stat-card.red .stat-val { color: #b91c1c; }
+    .stat-card.red .stat-label i { color: var(--red); }
+
+    /* SECTION CARD & TABLES */
+    .section-card { background: var(--card); border: 1px solid var(--bd); border-radius: 20px; overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-sm); transition: box-shadow .2s; }
+    .section-card:hover { box-shadow: var(--shadow-md); }
+    .section-head { padding: 18px 24px; border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between; background: #ffffff; flex-wrap: wrap; gap: 12px; }
+    .section-head h3 { font-size: 1.05rem; font-weight: 800; color: var(--txt); display: flex; align-items: center; gap: 8px; }
+
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; text-align: left; }
+    th { padding: 14px 18px; background: #f8fafc; font-size: .73rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid var(--bd); }
+    td { padding: 14px 18px; border-bottom: 1px solid #f1f5f9; color: var(--txt); vertical-align: middle; font-weight: 500; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 100px; font-size: .74rem; font-weight: 800; letter-spacing: 0.2px; }
+    .badge-user { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+    .badge-admin { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+    .badge-green, .badge.success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
+    .badge-red, .badge.failed { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+    .badge.pending { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+
+    /* TOOLBAR & BUTTONS */
+    .toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+    .search-box-wrap { position: relative; flex: 1; min-width: 240px; }
+    .search-box-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .9rem; }
+    .search-box { width: 100%; background: #ffffff; border: 1.5px solid var(--bd); border-radius: 12px; padding: 10px 14px 10px 38px; color: var(--txt); font-size: .88rem; font-family: inherit; outline: none; transition: all .2s; }
+    .search-box:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+    .search-box::placeholder { color: var(--muted); }
+
+    .btn { padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: .85rem; cursor: pointer; border: none; font-family: inherit; transition: all .2s ease; display: inline-flex; align-items: center; gap: 8px; justify-content: center; box-shadow: var(--shadow-sm); }
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn:active { transform: translateY(0); }
+    .btn-sm { padding: 7px 13px; font-size: .78rem; border-radius: 9px; }
+    .btn-ind { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; }
+    .btn-gold, .gold-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; box-shadow: 0 4px 14px var(--gold-glow); }
+    .btn-red { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .btn-red:hover { background: #fee2e2; }
+    .btn-green { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
+    .btn-green:hover { background: #d1fae5; }
+    .btn-ghost { background: #ffffff; border: 1px solid var(--bd); color: var(--muted); }
+    .btn-ghost:hover { background: #f8fafc; color: var(--txt); border-color: #cbd5e1; }
+
+    /* FORM CONTROLS */
+    .form-inp { width: 100%; padding: 10px 14px; background: #ffffff; border: 1.5px solid var(--bd); border-radius: 12px; font-family: inherit; font-size: .88rem; color: var(--txt); outline: none; transition: border-color .2s; }
+    .form-inp:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+
+    /* BLUR PASS REVEAL */
+    .blur-pass { filter: blur(4px); transition: filter 0.2s; cursor: pointer; user-select: none; font-family: monospace; font-size: .88rem; background: #f1f5f9; padding: 3px 8px; border-radius: 6px; display: inline-block; vertical-align: middle; border: 1px solid #e2e8f0; }
+    td .blur-pass { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .blur-pass:hover { filter: blur(0); user-select: text; background: #fffbeb; border-color: #fde68a; color: #b45309; }
+
+    /* MODALS & OVERLAYS */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+    .overlay.show, .overlay.active { display: flex; animation: fadeIn .2s ease; }
+    .modal { background: #ffffff; border: 1px solid var(--bd); border-radius: 24px; padding: 32px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: var(--shadow-lg); }
+    .modal-close { position: absolute; top: 20px; right: 20px; width: 32px; height: 32px; border-radius: 10px; background: var(--bg); border: none; color: var(--muted); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .modal-close:hover { background: #fee2e2; color: var(--red); }
+    .modal h3 { font-size: 1.25rem; font-weight: 900; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; color: var(--txt); }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: .88rem; border-bottom: 1px dashed var(--bd); }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-lbl { color: var(--muted); font-weight: 600; }
+    .detail-val { font-weight: 800; color: var(--txt); }
+
+    /* TOAST */
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+    .toast { background: rgba(15, 23, 42, 0.95); color: #fff; padding: 14px 22px; border-radius: 14px; font-size: .88rem; font-weight: 700; box-shadow: var(--shadow-lg); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 12px; pointer-events: auto; animation: toastIn .3s cubic-bezier(0.16,1,0.3,1); }
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.error { border-left: 4px solid var(--red); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-12px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    /* LOGIN SCREEN */
+    #login-gate { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: radial-gradient(circle at top right, rgba(245,158,11,0.12), transparent 50%), radial-gradient(circle at bottom left, rgba(37,99,235,0.08), transparent 50%); }
+    .login-card { background: #ffffff; border: 1px solid var(--bd); border-radius: 24px; padding: 40px 36px; width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow-lg); }
+    .login-card .logo { font-size: 48px; margin-bottom: 12px; display: inline-block; filter: drop-shadow(0 4px 12px rgba(245,158,11,0.3)); }
+    .login-card h1 { font-size: 1.4rem; font-weight: 900; margin-bottom: 6px; color: var(--txt); }
+    .login-card p { color: var(--muted); font-size: .88rem; margin-bottom: 24px; }
+    .login-input { width: 100%; padding: 12px 16px; background: #f8fafc; border: 1.5px solid var(--bd); border-radius: 12px; font-family: inherit; font-size: .95rem; color: var(--txt); margin-bottom: 12px; outline: none; transition: all .2s; }
+    .login-input:focus { border-color: var(--gold); background: #ffffff; box-shadow: 0 0 0 3px var(--gold-glow); }
+    .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; border-radius: 14px; font-size: 1rem; font-weight: 800; font-family: inherit; cursor: pointer; transition: all .2s; box-shadow: 0 4px 16px var(--gold-glow); }
+    .login-btn:hover { opacity: .95; transform: translateY(-1px); }
+    .login-err { color: var(--red); font-size: .85rem; margin-top: 12px; display: none; font-weight: 700; }
+
+    /* KICK & FORMS */
+    .kick-form { padding: 24px; }
+    .kick-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+    .kick-input-wrap { flex: 1; min-width: 200px; }
+    .kick-input-wrap label { font-size: .78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+    .kick-result { margin-top: 14px; padding: 14px 16px; border-radius: 12px; font-size: .88rem; font-weight: 700; display: none; }
+    .kick-result.ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
+    .kick-result.err { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); font-size: .9rem; font-weight: 600; }
+    .empty-state i { font-size: 2.2rem; margin-bottom: 12px; display: block; opacity: .4; }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn .25s ease; }
+
+    /* RESPONSIVE STACKED CARDS FOR MOBILE */
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.4); backdrop-filter: blur(4px); z-index: 95; }
+    .sidebar-overlay.show { display: block; }
+    .mobile-topbar { display: none; }
+
+    @media(max-width: 768px) {
+      body { overflow-x: hidden; }
+      .main-content { margin-left: 0; padding: 20px 14px; padding-top: 80px; width: 100%; max-width: 100vw; overflow-x: hidden; }
+      .sidebar { transform: translateX(-100%); width: 260px; }
+      .sidebar.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.15); }
+      .mobile-topbar { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: #ffffff; border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 90; box-shadow: var(--shadow-sm); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .search-box-wrap { width: 100%; }
+
+      /* Responsive Mobile Table Card View */
+      table, thead, tbody, th, td, tr { display: block; width: 100%; }
+      thead tr { display: none; }
+      tr { background: #ffffff; border: 1px solid var(--bd); border-radius: 16px; margin-bottom: 14px; padding: 14px; box-shadow: var(--shadow-sm); }
+      td { display: flex; justify-content: space-between; align-items: center; border: none; border-bottom: 1px dashed #f1f5f9; padding: 10px 0; font-size: .88rem; text-align: right; gap: 10px; }
+      td:last-child { border-bottom: 0; padding-bottom: 0; justify-content: flex-end; margin-top: 6px; }
+      td::before { content: attr(data-label); font-weight: 800; color: var(--muted); text-transform: uppercase; font-size: .72rem; letter-spacing: 0.5px; text-align: left; }
+      .table-wrap { overflow: visible; background: transparent; border: none; padding: 0; }
+      .section-card { background: transparent; border: none; box-shadow: none; overflow: visible; }
+      .section-card .section-head { display: none; }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- LOGIN GATE -->
+<div id="login-gate">
+  <div class="login-card">
+    <div class="logo">🔐</div>
+    <h1>Admin Login</h1>
+    <p>Khu vực dành riêng cho nhà quản trị</p>
+    <input type="password" id="admin-pass" class="login-input" placeholder="Mật khẩu admin..." onkeydown="if(event.key==='Enter') doLogin()">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin: 6px 0 16px; font-size:13px; color:var(--text-muted);">
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none;">
+        <input type="checkbox" id="remember-admin" checked style="accent-color:var(--gold); cursor:pointer; width:16px; height:16px;"> Ghi nhớ đăng nhập
+      </label>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Đăng nhập</button>
+    <div class="login-err" id="login-err">Mật khẩu không đúng!</div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="admin-app" style="display:none; flex-direction:row; min-height:100vh;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">⭐</div>
+      LocketGold
+      <span class="badge" style="font-size:.6rem;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.15);color:#dc2626;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:auto">ADMIN</span>
+    </div>
+    <nav class="nav-links">
+      <button class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')" id="nav-dashboard">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </button>
+      <button class="nav-link" data-page="orders" onclick="showPage('orders')" id="nav-orders">
+        <i class="fa-solid fa-receipt"></i> Đơn hàng
+      </button>
+      <button class="nav-link" data-page="users" onclick="showPage('users')" id="nav-users">
+        <i class="fa-solid fa-users"></i> Người dùng
+      </button>
+      <button class="nav-link" data-page="txs" onclick="showPage('txs')" id="nav-txs">
+        <i class="fa-solid fa-credit-card"></i> Giao dịch
+      </button>
+      <button class="nav-link" data-page="kick" onclick="showPage('kick')" id="nav-kick">
+        <i class="fa-solid fa-bolt"></i> Kick Gold
+      </button>
+      <a class="nav-link" href="/" target="_blank" style="text-decoration:none">
+        <i class="fa-solid fa-store"></i> Xem Shop
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-chip">
+        <div>
+          <div class="name">👑 Admin</div>
+          <div class="role">Quản trị viên</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile topbar -->
+  <div class="mobile-topbar">
+    <div class="sidebar-logo" style="border:none;padding:0">
+      <div class="icon" style="width:28px;height:28px;font-size:.75rem">⭐</div>
+      <span style="font-weight:900;margin-left:8px;font-size:.9rem">LocketGold</span>
+      <span class="badge" style="font-size:.55rem;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.15);color:#dc2626;padding:2px 6px;border-radius:8px;font-weight:700;margin-left:6px">ADMIN</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="toggleMobileSidebar()" style="padding:6px 12px;font-size:1rem"><i class="fa-solid fa-bars"></i></button>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <div class="topbar">
+      <div class="topbar-title">
+        <button class="mobile-toggle-btn" onclick="toggleMobileSidebar()" aria-label="Menu Mobile">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <span id="topbar-title">Dashboard</span>
+      </div>
+      <div class="admin-tag"><span class="dot"></span> Admin đang hoạt động</div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h2>📊 Tổng quan hệ thống</h2>
+          <p id="dashboard-time">Đang tải...</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card gold">
+          <div class="stat-label"><i class="fa-solid fa-coins"></i> Doanh thu</div>
+          <div class="stat-val" id="stat-revenue">–</div>
+          <div class="stat-sub">Tổng tiền nhận</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label"><i class="fa-solid fa-circle-check"></i> Thành công</div>
+          <div class="stat-val" id="stat-success">–</div>
+          <div class="stat-sub">Đơn đã kích hoạt</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label"><i class="fa-solid fa-clock"></i> Chờ TT</div>
+          <div class="stat-val" id="stat-pending">–</div>
+          <div class="stat-sub">Chờ thanh toán</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label"><i class="fa-solid fa-circle-xmark"></i> Thất bại</div>
+          <div class="stat-val" id="stat-failed">–</div>
+          <div class="stat-sub">Lỗi / Hoàn tiền</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label"><i class="fa-solid fa-users"></i> Người dùng</div>
+          <div class="stat-val" id="stat-users">–</div>
+          <div class="stat-sub">Tài khoản đăng ký</div>
+        </div>
+      </div>
+
+      <!-- Recent orders in dashboard -->
+      <div class="section-card">
+        <div class="section-head">
+          <h3>📋 Đơn hàng gần nhất</h3>
+          <button class="btn btn-ghost btn-sm" onclick="loadOrders()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+        </div>
+        <div class="table-wrap">
+          <table id="dash-table">
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Username Locket</th>
+                <th>Gói</th>
+                <th>Số tiền</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+              </tr>
+            </thead>
+            <tbody id="dash-tbody">
+              <tr><td colspan="6" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS PAGE -->
+    <div class="page" id="page-orders">
+      <div class="page-header">
+        <div>
+          <h2>📦 Quản lý đơn hàng</h2>
+          <p>Xem và quản lý tất cả đơn hàng kích hoạt</p>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-head">
+          <h3>📦 Tất cả đơn hàng</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-left:auto;">
+            <input type="text" id="order-search-inp" class="form-inp" placeholder="🔍 Tìm mã đơn / username..." oninput="filterAdminOrders()" style="width:200px;">
+            <select id="order-filter-select" class="form-inp" onchange="filterAdminOrders()" style="width:150px; cursor:pointer;">
+              <option value="all">Tất cả trạng thái</option>
+              <option value="success">✅ Thành công</option>
+              <option value="pending">⏳ Chờ TT</option>
+              <option value="failed">❌ Thất bại</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="loadOrders()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã đơn</th>
+                <th>Username</th>
+                <th>Gói</th>
+                <th>Tiền</th>
+                <th>P.Thức</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody">
+              <tr><td colspan="8" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS PAGE -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <div>
+          <h2>👥 Quản lý người dùng</h2>
+          <p>Xem thông tin chi tiết, mật khẩu, tài khoản & chỉnh sửa số dư khách hàng</p>
+        </div>
+        <button class="btn btn-gold" onclick="promptCreateUser()"><i class="fa-solid fa-user-plus"></i> Thêm tài khoản mới</button>
+      </div>
+      
+      <div class="toolbar">
+        <div class="search-box-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input class="search-box" id="user-search-inp" placeholder="Tìm kiếm theo username, email, tên..." oninput="filterAdminUsers()">
+        </div>
+        <button class="btn btn-ghost" onclick="loadUsers()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+      </div>
+
+      <div class="section-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Tài khoản</th>
+                <th>Mật khẩu</th>
+                <th>Tên</th>
+                <th>Số dư</th>
+                <th>Tổng nạp</th>
+                <th>Tổng chi</th>
+                <th style="text-align:right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="8" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- KICK MANUAL PAGE -->
+    <div class="page" id="page-kick">
+      <div class="page-header">
+        <h2>Kick Gold thủ công</h2>
+        <p>Nhập username Locket để kích hoạt Gold trực tiếp từ admin</p>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <h3>⚡ Kick Gold ngay</h3>
+        </div>
+        <div class="kick-form">
+          <div class="kick-row">
+            <div class="kick-input-wrap">
+              <label>Username Locket</label>
+              <input type="text" class="form-inp" id="kick-uname" placeholder="Nhập username..." autocomplete="off">
+            </div>
+            <button class="gold-btn" id="kick-btn" onclick="adminKick()">
+              <i class="fa-solid fa-bolt"></i> Kick Gold
+            </button>
+          </div>
+          <div class="kick-result" id="kick-result"></div>
+        </div>
+      </div>
+
+      <!-- Kick history -->
+      <div class="section-card">
+        <div class="section-head">
+          <h3>📋 Lịch sử kick</h3>
+          <button class="refresh-btn" onclick="loadKickHistory()"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Username</th><th>Tên</th><th>Thời gian</th><th>Kết quả</th></tr>
+            </thead>
+            <tbody id="kick-history-tbody">
+              <tr><td colspan="4" class="empty-state">Chưa có lịch sử</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS PAGE -->
+    <div class="page" id="page-txs">
+      <div class="page-header">
+        <h2>💳 Giao dịch & Nạp tiền</h2>
+        <p>Lịch sử giao dịch kích hoạt đơn hàng & nạp tiền từ khách hàng</p>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
+        <div class="stat-card green">
+          <div class="stat-label"><i class="fa-solid fa-receipt"></i> Tổng số giao dịch</div>
+          <div class="stat-val" id="stat-tx-count">0</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label"><i class="fa-solid fa-coins"></i> Tổng tiền nạp/nhận</div>
+          <div class="stat-val" id="stat-tx-total">0đ</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head" style="flex-wrap:wrap; gap:12px;">
+          <h3>🧾 Lịch sử giao dịch</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-left:auto;">
+            <input type="text" id="tx-search-inp" class="form-inp" placeholder="🔍 Tìm mã GD / username..." oninput="filterAdminTx()" style="padding:6px 12px; font-size:12px; width:200px;">
+            <button class="refresh-btn" onclick="loadTransactions()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã Đơn / GD</th>
+                <th>Username Locket</th>
+                <th>Gói / Mô tả</th>
+                <th>Số tiền</th>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody id="tx-tbody">
+              <tr><td colspan="6" class="empty-state">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /admin-app -->
+
+<!-- ══ SET BALANCE MODAL ══ -->
+<div class="overlay" id="bal-overlay" onclick="closeOverlayIfBg(event, 'bal-overlay')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOverlay('bal-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <h3><i class="fa-solid fa-coins" style="color:var(--gold-dark)"></i> Chỉnh sửa số dư ví</h3>
+    
+    <div style="background:#f8fafc; border:1px solid var(--bd); border-radius:16px; padding:16px; margin-bottom:18px">
+      <div class="detail-row"><span class="detail-lbl">Tài khoản:</span><span class="detail-val" id="bal-modal-uname">@username</span></div>
+      <div class="detail-row"><span class="detail-lbl">Số dư hiện tại:</span><span class="detail-val" style="color:var(--gold-dark);" id="bal-modal-current">0đ</span></div>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <button id="op-add" class="btn btn-sm btn-gold" style="flex:1;" onclick="setBalOp('add')"><i class="fa-solid fa-plus"></i> Cộng tiền</button>
+      <button id="op-deduct" class="btn btn-sm btn-red" style="flex:1;" onclick="setBalOp('deduct')"><i class="fa-solid fa-minus"></i> Trừ tiền</button>
+      <button id="op-set" class="btn btn-sm btn-ghost" style="flex:1;" onclick="setBalOp('set')"><i class="fa-solid fa-equals"></i> Đặt thẳng</button>
+    </div>
+
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px; font-weight:700; color:var(--muted); display:block; margin-bottom:6px;" id="bal-op-label">Số tiền cộng thêm (VNĐ)</label>
+      <input type="number" id="bal-modal-amount" class="form-inp" placeholder="0" min="0" value="50000">
+    </div>
+
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px;">
+      <button type="button" class="btn btn-sm btn-ghost" onclick="setQuickBal(10000)">+10k</button>
+      <button type="button" class="btn btn-sm btn-ghost" onclick="setQuickBal(50000)">+50k</button>
+      <button type="button" class="btn btn-sm btn-ghost" onclick="setQuickBal(100000)">+100k</button>
+      <button type="button" class="btn btn-sm btn-ghost" onclick="setQuickBal(500000)">+500k</button>
+      <button type="button" class="btn btn-sm btn-ghost" onclick="setQuickBal(1000000)">+1 triệu</button>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-ghost" style="padding:10px 18px;" onclick="closeOverlay('bal-overlay')">Hủy bỏ</button>
+      <button class="btn btn-gold" style="flex:1;" onclick="doSubmitSetBalance()"><i class="fa-solid fa-check"></i> Xác nhận thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ USER DETAIL MODAL ══ -->
+<div class="overlay" id="detail-overlay" onclick="closeOverlayIfBg(event, 'detail-overlay')">
+  <div class="modal" style="max-width:520px">
+    <button class="modal-close" onclick="closeOverlay('detail-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <h3><i class="fa-solid fa-id-card" style="color:var(--ind)"></i> Chi tiết tài khoản người dùng</h3>
+    <div id="detail-modal-body" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<!-- ══ DELETE USER CONFIRM MODAL ══ -->
+<div class="overlay" id="del-overlay" onclick="closeOverlayIfBg(event, 'del-overlay')">
+  <div class="modal" style="max-width:400px; text-align:center;">
+    <button class="modal-close" onclick="closeOverlay('del-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <div style="font-size:44px; margin-bottom:12px;">⚠️</div>
+    <h3>Xác nhận xóa người dùng</h3>
+    <p style="color:var(--muted); font-size:13px; margin:8px 0 20px; line-height:1.5;">
+      Bạn có chắc chắn muốn xóa tài khoản <strong id="del-modal-uname" style="color:var(--txt)">@user</strong>?<br>
+      Dữ liệu ví và tài khoản sẽ bị xóa hoàn toàn khỏi máy chủ.
+    </p>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="closeOverlay('del-overlay')">Hủy bỏ</button>
+      <button class="btn btn-red" style="flex:1;" onclick="doConfirmDeleteUser()"><i class="fa-solid fa-trash"></i> Đồng ý xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREATE USER MODAL ══ -->
+<div class="overlay" id="create-user-overlay" onclick="closeOverlayIfBg(event, 'create-user-overlay')">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeOverlay('create-user-overlay')"><i class="fa-solid fa-xmark"></i></button>
+    <h3><i class="fa-solid fa-user-plus" style="color:var(--gold)"></i> Thêm người dùng mới</h3>
+    
+    <div style="display:flex; flex-direction:column; gap:14px; margin:16px 0 22px;">
+      <div>
+        <label class="form-label">Tên tài khoản (Username)*</label>
+        <input type="text" id="new-user-name" class="form-inp" placeholder="Nhập username (viết liền không dấu)..." autocomplete="off">
+      </div>
+      <div>
+        <label class="form-label">Mật khẩu khởi tạo*</label>
+        <input type="text" id="new-user-pass" class="form-inp" placeholder="Nhập mật khẩu..." autocomplete="off">
+      </div>
+      <div>
+        <label class="form-label">Email (Có thể bỏ qua)</label>
+        <input type="email" id="new-user-email" class="form-inp" placeholder="user@gmail.com" autocomplete="off">
+      </div>
+      <div>
+        <label class="form-label">Số dư ví ban đầu (VNĐ)</label>
+        <input type="number" id="new-user-bal" class="form-inp" placeholder="0" min="0" value="0">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-ghost" style="padding:10px 18px;" onclick="closeOverlay('create-user-overlay')">Hủy bỏ</button>
+      <button class="btn btn-gold" style="flex:1;" onclick="doSubmitCreateUser()"><i class="fa-solid fa-check"></i> Tạo tài khoản ngay</button>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<script>
+  const WORKER_URL = 'https://shopbanhanglkduongbinh.caovannamutt.workers.dev';
+  const LOCKET_WORKER = 'https://twilight-mountain-96b6.caovannamutt.workers.dev/';
+  const ADMIN_KEY_LOCAL = 'admin_session_key';
+
+  let adminToken = null;
+  let kickHistory = [];
+
+  // ── LOGIN ──
+  async function doLogin() {
+    const passInput = document.getElementById('admin-pass');
+    const pass = passInput ? passInput.value.trim() : '';
+    const errEl = document.getElementById('login-err');
+    const btn = document.querySelector('.login-btn');
+
+    if (!pass) {
+      if (errEl) {
+        errEl.textContent = '⚠️ Vui lòng nhập mật khẩu admin!';
+        errEl.style.display = 'block';
+        setTimeout(() => errEl.style.display = 'none', 3000);
+      }
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đăng nhập...';
+      btn.style.opacity = '0.7';
+    }
+
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.ok && data && data.success) {
+        adminToken = data.token;
+        sessionStorage.setItem(ADMIN_KEY_LOCAL, adminToken);
+        const remember = document.getElementById('remember-admin')?.checked;
+        if (remember) {
+          localStorage.setItem(ADMIN_KEY_LOCAL, adminToken);
+          localStorage.setItem('admin_pass_remembered', pass);
+        } else {
+          localStorage.removeItem(ADMIN_KEY_LOCAL);
+          localStorage.removeItem('admin_pass_remembered');
+        }
+        showAdminApp();
+      } else {
+        if (errEl) {
+          errEl.textContent = '❌ ' + ((data && data.message) ? data.message : 'Mật khẩu admin không đúng!');
+          errEl.style.display = 'block';
+          setTimeout(() => errEl.style.display = 'none', 4000);
+        }
+      }
+    } catch(e) {
+      if (errEl) {
+        errEl.textContent = '❌ Lỗi kết nối máy chủ: ' + e.message;
+        errEl.style.display = 'block';
+        setTimeout(() => errEl.style.display = 'none', 4000);
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Đăng nhập';
+        btn.style.opacity = '1';
+      }
+    }
+  }
+
+  function doLogout() {
+    sessionStorage.removeItem(ADMIN_KEY_LOCAL);
+    localStorage.removeItem(ADMIN_KEY_LOCAL);
+    adminToken = null;
+    document.getElementById('admin-app').style.display = 'none';
+    document.getElementById('login-gate').style.display = 'flex';
+  }
+
+  function showAdminApp() {
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('admin-app').style.display = 'block';
+    document.getElementById('dashboard-time').textContent = 'Cập nhật lần cuối: ' + new Date().toLocaleString('vi-VN');
+    loadOrders();
+    loadUsers();
+    loadTransactions();
+  }
+
+  // Auto-login from session or persistent storage (Chống load lại trang phải nhập mật khẩu)
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedPass = localStorage.getItem('admin_pass_remembered');
+    if (savedPass && document.getElementById('admin-pass')) {
+      document.getElementById('admin-pass').value = savedPass;
+    }
+
+    const tok = sessionStorage.getItem(ADMIN_KEY_LOCAL) || localStorage.getItem(ADMIN_KEY_LOCAL);
+    if (tok) { 
+      adminToken = tok; 
+      showAdminApp(); 
+    }
+  });
+
+  // ── MOBILE NAVIGATION ──
+  function toggleMobileSidebar() {
+    const sb = document.querySelector('.sidebar');
+    const bd = document.getElementById('sidebar-backdrop');
+    if (sb) sb.classList.toggle('open');
+    if (bd) bd.classList.toggle('show');
+  }
+
+  // ── PAGES ──
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (document.getElementById('nav-' + name)) document.getElementById('nav-' + name).classList.add('active');
+    
+    // Auto-close sidebar on mobile
+    if (window.innerWidth <= 768) {
+      document.querySelector('.sidebar')?.classList.remove('open');
+      document.getElementById('sidebar-backdrop')?.classList.remove('show');
+    }
+
+    if (name === 'kick') loadKickHistory();
+    if (name === 'users') loadUsers();
+    if (name === 'txs') loadTransactions();
+  }
+
+  let cachedOrders = [];
+
+  // ── LOAD ORDERS ──
+  async function loadOrders() {
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-orders', {
+        headers: { 'X-Admin-Key': adminToken }
+      });
+      if (res.status === 401) { showToast('Phiên đăng nhập hết hạn!', 'error'); doLogout(); return; }
+      const data = await res.json();
+      const orders = data.orders || [];
+      cachedOrders = orders;
+
+      // Stats
+      const revenue = orders.filter(o => o.status === 'success').reduce((s, o) => s + (o.amount || 0), 0);
+      const success = orders.filter(o => o.status === 'success').length;
+      const pending = orders.filter(o => o.status === 'pending').length;
+      const failed = orders.filter(o => o.status === 'failed').length;
+
+      document.getElementById('stat-revenue').textContent = revenue.toLocaleString('vi-VN') + 'đ';
+      document.getElementById('stat-success').textContent = success;
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-failed').textContent = failed;
+
+      // Dashboard 5 recent table
+      const tbody5 = renderOrderRows(orders.slice(0, 5), false);
+      document.getElementById('dash-tbody').innerHTML = tbody5 || '<tr><td colspan="6" class="empty-state">Chưa có đơn hàng nào</td></tr>';
+
+      filterAdminOrders();
+    } catch(e) {
+      ['dash-tbody','orders-tbody'].forEach(id => {
+        document.getElementById(id).innerHTML = `<tr><td colspan="8" class="empty-state">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+      });
+    }
+  }
+
+  function filterAdminOrders() {
+    const query = (document.getElementById('order-search-inp')?.value || '').toLowerCase().trim();
+    const status = document.getElementById('order-filter-select')?.value || 'all';
+
+    let filtered = cachedOrders.filter(o => {
+      const matchQuery = !query || (o.username && o.username.toLowerCase().includes(query)) || (o.orderId && o.orderId.toLowerCase().includes(query));
+      const matchStatus = status === 'all' || o.status === status;
+      return matchQuery && matchStatus;
+    });
+
+    const tbodyFull = renderOrderRows(filtered, true);
+    document.getElementById('orders-tbody').innerHTML = tbodyFull || '<tr><td colspan="8" class="empty-state">Không tìm thấy đơn hàng phù hợp</td></tr>';
+  }
+
+  function renderOrderRows(orders, full) {
+    if (!orders.length) return '';
+    return orders.map(o => {
+      const time = o.created_at ? new Date(o.created_at).toLocaleString('vi-VN', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
+      const badge = o.status === 'success' ? '<span class="badge success">✅ Thành công</span>'
+        : o.status === 'pending' ? '<span class="badge pending">⏳ Chờ TT</span>'
+        : '<span class="badge failed">❌ Thất bại</span>';
+      const actions = full ? `<button class="btn btn-sm btn-gold" onclick="adminKickById('${o.username}')" title="Kick Gold thủ công"><i class="fa-solid fa-bolt"></i> Kick</button>` : '';
+      return `<tr>
+        <td data-label="Mã đơn" style="font-family:monospace;font-size:12px;color:var(--muted)">${o.orderId || '—'}</td>
+        <td data-label="Username"><strong>@${o.username || '—'}</strong></td>
+        <td data-label="Gói">${o.planName || o.plan || '—'}</td>
+        <td data-label="Số tiền" style="color:var(--gold-dark);font-weight:800">${(o.amount||0).toLocaleString('vi-VN')}đ</td>
+        ${full ? `<td data-label="P.Thức">${o.payMethod === 'wallet' ? '👜 Ví' : '📱 SePay'}</td>` : ''}
+        <td data-label="Trạng thái">${badge}</td>
+        <td data-label="Thời gian" style="color:var(--muted);font-size:12px">${time}</td>
+        ${full ? `<td data-label="Thao tác">${actions}</td>` : ''}
+      </tr>`;
+    }).join('');
+  }
+
+  // ── KICK GOLD (Trực tiếp gọi Locket Worker theo API hi.js) ──
+  async function adminKick() {
+    const uname = document.getElementById('kick-uname').value.trim().replace('@', '');
+    if (!uname) return showToast('Vui lòng nhập Username Locket!', 'error');
+
+    const btn = document.getElementById('kick-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kick...';
+
+    const resultEl = document.getElementById('kick-result');
+    resultEl.style.display = 'none';
+
+    try {
+      // Gọi trực tiếp Locket Worker theo chuẩn API trong hi.js
+      const res = await fetch(LOCKET_WORKER, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'kick', username: uname })
+      });
+      
+      const data = await res.json();
+
+      if (data.success) {
+        resultEl.className = 'kick-result ok';
+        resultEl.textContent = `✅ Kick Gold thành công! ${data.name || uname} (@${data.username || uname}) đã được nâng cấp Gold.`;
+        kickHistory.unshift({ username: uname, name: data.name || uname, time: new Date().toISOString(), ok: true });
+        showToast(`Kích hoạt Locket Gold thành công cho @${uname}!`, 'success');
+      } else {
+        const err = data.error === 'User not found' ? 'Không tìm thấy tài khoản Locket này!' : 
+                    data.error === 'Firebase failed' ? 'Đăng nhập Locket Server thất bại!' : 
+                    (data.error || data.message || 'Lỗi không thể nâng cấp Gold cho tài khoản này!');
+        throw new Error(err);
+      }
+    } catch(e) {
+      resultEl.className = 'kick-result err';
+      resultEl.textContent = '❌ Kick thất bại: ' + e.message;
+      kickHistory.unshift({ username: uname, name: '—', time: new Date().toISOString(), ok: false });
+      showToast('❌ Kick thất bại: ' + e.message, 'error');
+    }
+
+    resultEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Kick Gold';
+    renderKickHistory();
+  }
+
+  async function adminKickById(uname) {
+    document.getElementById('kick-uname').value = uname;
+    showPage('kick');
+    setTimeout(adminKick, 200);
+  }
+
+  function loadKickHistory() { renderKickHistory(); }
+
+  function renderKickHistory() {
+    const tbody = document.getElementById('kick-history-tbody');
+    if (!kickHistory.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Chưa có lịch sử</td></tr>';
+      return;
+    }
+    tbody.innerHTML = kickHistory.map(h => {
+      const time = new Date(h.time).toLocaleString('vi-VN');
+      return `<tr>
+        <td><strong>@${h.username}</strong></td>
+        <td>${h.name}</td>
+        <td style="color:var(--text-muted);font-size:12px">${time}</td>
+        <td>${h.ok ? '<span class="badge success">✅ OK</span>' : '<span class="badge failed">❌ Lỗi</span>'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── USER MANAGEMENT, MODALS & BALANCE ──
+  let cachedUsers = [];
+
+  async function loadUsers() {
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-users', {
+        headers: { 'X-Admin-Key': adminToken }
+      });
+      if (res.status === 401) { showToast('Phiên đăng nhập hết hạn!', 'error'); doLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        cachedUsers = data.users || [];
+        if (document.getElementById('stat-users')) document.getElementById('stat-users').textContent = data.total || cachedUsers.length;
+        if (document.getElementById('users-total-count')) document.getElementById('users-total-count').textContent = data.total || cachedUsers.length;
+        filterAdminUsers();
+      } else {
+        throw new Error(data.error || data.message || 'Lỗi không xác định từ máy chủ');
+      }
+    } catch(e) {
+      if (document.getElementById('users-tbody')) {
+        document.getElementById('users-tbody').innerHTML = `<tr><td colspan="8" class="empty-state">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+      }
+    }
+  }
+
+  function filterAdminUsers() {
+    const tbody = document.getElementById('users-tbody');
+    if (!tbody) return;
+    const query = (document.getElementById('user-search-inp')?.value || '').toLowerCase().trim();
+    let filtered = cachedUsers.filter(u => !query || (u.username && u.username.toLowerCase().includes(query)) || (u.email && u.email.toLowerCase().includes(query)));
+    
+    if (!filtered.length) {
+      if (!cachedUsers.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fa-solid fa-users"></i><br>Chưa có tài khoản nào</td></tr>`;
+      } else {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Không tìm thấy người dùng phù hợp</td></tr>';
+      }
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(u => {
+      const bal = (u.balance || 0).toLocaleString('vi-VN');
+      const totalDep = (u.totalDeposit || 0).toLocaleString('vi-VN');
+      const totalSpent = (u.totalSpent || 0).toLocaleString('vi-VN');
+      return `<tr>
+        <td data-label="Role"><span class="badge badge-user"><i class="fa-solid fa-user"></i> User</span></td>
+        <td data-label="Tài khoản">
+          <div style="line-height:1.35">
+            <strong style="color:var(--txt); font-size:.9rem;">${u.username}</strong>
+            <br><span style="color:var(--muted); font-size:.78rem;">${u.email || '—'}</span>
+          </div>
+        </td>
+        <td data-label="Mật khẩu"><span class="blur-pass" title="Rê chuột để xem mật khẩu">${u.password || '—'}</span></td>
+        <td data-label="Tên"><strong>${u.username}</strong></td>
+        <td data-label="Số dư" style="color:var(--gold-dark); font-weight:800">${bal}đ</td>
+        <td data-label="Tổng nạp" style="color:var(--green); font-weight:700">${totalDep}đ</td>
+        <td data-label="Tổng chi" style="color:var(--red); font-weight:700">${totalSpent}đ</td>
+        <td data-label="Thao tác">
+          <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end">
+            <button class="btn btn-sm btn-ind" onclick="openDetailModal('${u.username}')"><i class="fa-solid fa-eye"></i> Chi tiết</button>
+            <button class="btn btn-sm btn-gold" onclick="openBalModal('${u.username}',${u.balance || 0})"><i class="fa-solid fa-coins"></i> Sửa tiền</button>
+            <button class="btn btn-sm btn-red" onclick="openDelModal('${u.username}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function toggleTablePass(btn) {
+    const mask = btn.parentElement.querySelector('.pass-mask');
+    const real = btn.parentElement.querySelector('.pass-real');
+    if (real.style.display === 'none') {
+      real.style.display = 'inline';
+      mask.style.display = 'none';
+      btn.textContent = '🔒';
+    } else {
+      real.style.display = 'none';
+      mask.style.display = 'inline';
+      btn.textContent = '👁️';
+    }
+  }
+
+  /* Set Balance Modal Logic */
+  let activeBalUser = null;
+  let activeBalCurrent = 0;
+  let activeBalOp = 'add';
+
+  function openBalModal(uname, currentBal) {
+    activeBalUser = uname;
+    activeBalCurrent = currentBal || 0;
+    activeBalOp = 'add';
+    document.getElementById('bal-modal-uname').textContent = '@' + uname;
+    document.getElementById('bal-modal-current').textContent = activeBalCurrent.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('bal-modal-amount').value = 50000;
+    setBalOp('add');
+    openOverlay('bal-overlay');
+  }
+
+  function setBalOp(op) {
+    activeBalOp = op;
+    const btnAdd = document.getElementById('op-add');
+    const btnDeduct = document.getElementById('op-deduct');
+    const btnSet = document.getElementById('op-set');
+    const lbl = document.getElementById('bal-op-label');
+
+    if (btnAdd) btnAdd.style.opacity = op === 'add' ? '1' : '0.5';
+    if (btnDeduct) btnDeduct.style.opacity = op === 'deduct' ? '1' : '0.5';
+    if (btnSet) btnSet.style.opacity = op === 'set' ? '1' : '0.5';
+
+    if (lbl) {
+      if (op === 'add') lbl.textContent = 'Số tiền cộng thêm (VNĐ)';
+      else if (op === 'deduct') lbl.textContent = 'Số tiền trừ bớt (VNĐ)';
+      else lbl.textContent = 'Đặt thẳng số dư mới (VNĐ)';
+    }
+  }
+
+  async function doSubmitSetBalance() {
+    if (!activeBalUser) return;
+    const amountStr = document.getElementById('bal-modal-amount').value;
+    const amount = parseInt(amountStr, 10);
+    if (isNaN(amount) || amount < 0) return showToast('Số tiền không hợp lệ!', 'error');
+
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-set-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminToken },
+        body: JSON.stringify({ username: activeBalUser, amount, op: activeBalOp })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message, 'success');
+        closeOverlay('bal-overlay');
+        loadUsers();
+      } else {
+        showToast(data.message || 'Lỗi cập nhật', 'error');
+      }
+    } catch(e) {
+      showToast('Lỗi kết nối: ' + e.message, 'error');
+    }
+  }
+
+  async function openDetailModal(uname) {
+    const user = cachedUsers.find(u => u.username === uname);
+    if (!user) return;
+
+    const time = user.createdAt ? new Date(user.createdAt).toLocaleString('vi-VN') : '—';
+    let html = `
+      <div class="detail-row"><span class="detail-lbl">Username:</span><span class="detail-val">@${user.username}</span></div>
+      <div class="detail-row"><span class="detail-lbl">Email:</span><span class="detail-val">${user.email || '—'}</span></div>
+      <div class="detail-row"><span class="detail-lbl">Mật khẩu:</span><span class="detail-val" style="font-family:monospace; color:var(--gold-dark);">${user.password || '—'}</span></div>
+      <div class="detail-row"><span class="detail-lbl">Số dư ví:</span><span class="detail-val" style="color:var(--green); font-size:16px;">${(user.balance || 0).toLocaleString('vi-VN')}đ</span></div>
+      <div class="detail-row"><span class="detail-lbl">Ngày tạo:</span><span class="detail-val">${time}</span></div>
+
+      <div style="margin-top:16px; border-top:1px solid #e2e8f0; padding-top:12px">
+        <h4 style="font-size:13px; font-weight:800; color:var(--txt); margin-bottom:8px"><i class="fa-solid fa-receipt" style="color:var(--gold-dark)"></i> Lịch sử giao dịch cá nhân</h4>
+        <div id="user-detail-tx-list" style="max-height:180px; overflow-y:auto; font-size:12px; border:1px solid #f1f5f9; border-radius:10px; padding:8px; background:#f8fafc">
+          <div style="text-align:center; color:var(--muted); padding:10px"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button class="btn btn-gold" style="flex:1;" onclick="closeOverlay('detail-overlay'); openBalModal('${user.username}', ${user.balance || 0})"><i class="fa-solid fa-coins"></i> Nạp / Sửa tiền ví</button>
+        <button class="btn btn-red" onclick="closeOverlay('detail-overlay'); openDelModal('${user.username}')"><i class="fa-solid fa-trash"></i> Xóa tài khoản</button>
+      </div>
+    `;
+    document.getElementById('detail-modal-body').innerHTML = html;
+    openOverlay('detail-overlay');
+
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-user-transactions?username=' + encodeURIComponent(uname), {
+        headers: { 'X-Admin-Key': adminToken }
+      });
+      const data = await res.json();
+      const listEl = document.getElementById('user-detail-tx-list');
+      if (listEl) {
+        if (data.success && data.txs && data.txs.length > 0) {
+          listEl.innerHTML = data.txs.map(t => {
+            const isDep = t.type === 'deposit';
+            const color = isDep ? '#047857' : '#b45309';
+            const sign = isDep ? '+' : '-';
+            const dateStr = t.time ? new Date(t.time).toLocaleString('vi-VN') : '—';
+            const targetStr = (t.targetUser && !(t.title || '').includes(t.targetUser)) ? ' cho @' + t.targetUser : '';
+            return `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed #e2e8f0;">
+              <div>
+                <strong style="color:${color}">${isDep ? '🟢 Nạp tiền' : '🔴 Mua gói'}</strong>: ${t.title || ''}${targetStr}
+                <br><span style="color:var(--muted); font-size:11px">${dateStr}</span>
+              </div>
+              <div style="font-weight:800; color:${color}">${sign}${(t.amount||0).toLocaleString('vi-VN')}đ</div>
+            </div>`;
+          }).join('');
+        } else {
+          listEl.innerHTML = '<div style="text-align:center; color:var(--muted); padding:10px">Chưa có giao dịch nào</div>';
+        }
+      }
+    } catch(e) {
+      const listEl = document.getElementById('user-detail-tx-list');
+      if (listEl) listEl.innerHTML = '<div style="text-align:center; color:var(--red); padding:10px">Lỗi tải lịch sử</div>';
+    }
+  }
+
+  /* Delete User Modal Logic */
+  let activeDelUser = null;
+  function openDelModal(uname) {
+    activeDelUser = uname;
+    document.getElementById('del-modal-uname').textContent = '@' + uname;
+    openOverlay('del-overlay');
+  }
+
+  async function doConfirmDeleteUser() {
+    if (!activeDelUser) return;
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminToken },
+        body: JSON.stringify({ username: activeDelUser })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message, 'success');
+        closeOverlay('del-overlay');
+        loadUsers();
+      } else {
+        showToast(data.message || 'Lỗi xóa tài khoản', 'error');
+      }
+    } catch(e) {
+      showToast('Lỗi kết nối: ' + e.message, 'error');
+    }
+  }
+
+  // ── OVERLAYS & TOAST HELPERS ──
+  function openOverlay(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('show', 'active');
+  }
+
+  function closeOverlay(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show', 'active');
+  }
+
+  function closeOverlayIfBg(e, id) {
+    if (e.target && e.target.classList.contains('overlay')) {
+      closeOverlay(id);
+    }
+  }
+
+  function showToast(msg, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return alert(msg);
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+    toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-12px) scale(0.95)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  function setQuickBal(amt) {
+    const inp = document.getElementById('bal-modal-amount');
+    if (inp) inp.value = amt;
+  }
+
+  function promptCreateUser() {
+    if (document.getElementById('new-user-name')) document.getElementById('new-user-name').value = '';
+    if (document.getElementById('new-user-pass')) document.getElementById('new-user-pass').value = '';
+    if (document.getElementById('new-user-email')) document.getElementById('new-user-email').value = '';
+    if (document.getElementById('new-user-bal')) document.getElementById('new-user-bal').value = 0;
+    openOverlay('create-user-overlay');
+  }
+
+  async function doSubmitCreateUser() {
+    const uname = document.getElementById('new-user-name')?.value.trim();
+    const pass = document.getElementById('new-user-pass')?.value.trim();
+    const email = document.getElementById('new-user-email')?.value.trim();
+    const balStr = document.getElementById('new-user-bal')?.value;
+    const balance = parseInt(balStr || "0", 10);
+
+    if (!uname || !pass) {
+      return showToast('Vui lòng nhập Username và Mật khẩu khởi tạo!', 'error');
+    }
+
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-create-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminToken },
+        body: JSON.stringify({ username: uname, password: pass, email, balance })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message, 'success');
+        closeOverlay('create-user-overlay');
+        loadUsers();
+      } else {
+        showToast(data.message || 'Lỗi tạo tài khoản', 'error');
+      }
+    } catch(e) {
+      showToast('Lỗi kết nối: ' + e.message, 'error');
+    }
+  }
+
+  // ── TRANSACTIONS PAGE LOGIC ──
+  let cachedTx = [];
+
+  async function loadTransactions() {
+    try {
+      const res = await fetch(WORKER_URL + '/api/admin-transactions', {
+        headers: { 'X-Admin-Key': adminToken }
+      });
+      if (res.status === 401) { showToast('Phiên đăng nhập hết hạn!', 'error'); doLogout(); return; }
+      const data = await res.json();
+      if (data.success) {
+        cachedTx = data.txs || [];
+        if (document.getElementById('stat-tx-count')) document.getElementById('stat-tx-count').textContent = data.totalCount || cachedTx.length;
+        if (document.getElementById('stat-tx-total')) document.getElementById('stat-tx-total').textContent = (data.totalAmount || 0).toLocaleString('vi-VN') + 'đ';
+        filterAdminTx();
+      } else {
+        throw new Error(data.error || data.message || 'Lỗi không xác định từ máy chủ');
+      }
+    } catch(e) {
+      if (document.getElementById('tx-tbody')) {
+        document.getElementById('tx-tbody').innerHTML = `<tr><td colspan="6" class="empty-state">Lỗi tải giao dịch: ${e.message}</td></tr>`;
+      }
+    }
+  }
+
+  function filterAdminTx() {
+    const tbody = document.getElementById('tx-tbody');
+    if (!tbody) return;
+    const query = (document.getElementById('tx-search-inp')?.value || '').toLowerCase().trim();
+    let filtered = cachedTx.filter(t => !query || (t.orderId && t.orderId.toLowerCase().includes(query)) || (t.username && t.username.toLowerCase().includes(query)));
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Chưa có giao dịch nào</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(t => {
+      const time = t.created_at ? new Date(t.created_at).toLocaleString('vi-VN') : '—';
+      const badge = t.status === 'success' ? '<span class="badge success">✅ Thành công</span>'
+        : t.status === 'pending' ? '<span class="badge pending">⏳ Chờ TT</span>'
+        : '<span class="badge failed">❌ Thất bại</span>';
+      return `<tr>
+        <td><strong>#${t.orderId || '—'}</strong></td>
+        <td>@${t.username || '—'}</td>
+        <td>${t.plan ? t.plan.toUpperCase() : 'Locket Gold'}</td>
+        <td style="font-weight:800; color:var(--text);">${(t.amount || 0).toLocaleString('vi-VN')}đ</td>
+        <td style="color:var(--text-muted); font-size:12px;">${time}</td>
+        <td>${badge}</td>
+      </tr>`;
+    }).join('');
+  }
+</script>
+</body>
+</html>

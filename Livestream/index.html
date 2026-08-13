@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
+  <title>Livestream Admin Nâng Gold Free | LocketGold</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="/assets/css/app-Bjnb32xO.css" rel="stylesheet"/>
+  <link href="/assets/css/style.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    img { max-width: 100%; }
+
+    /* Step indicator */
+    .step-bar { display: flex; align-items: center; gap: 0; user-select: none; }
+    .step-node {
+      display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; position: relative; z-index: 2;
+    }
+    .step-circle {
+      width: 44px; height: 44px; border-radius: 50%; border: 2.5px solid #e5e7eb;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px; color: #9ca3af;
+      background: rgba(255, 255, 255, 0.95); transition: all .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+    }
+    .dark .step-circle { background: #18181b; border-color: #3f3f46; color: #71717a; }
+    
+    .step-node.active .step-circle {
+      border-color: #f59e0b; color: #d97706; background: #fff;
+      transform: scale(1.12);
+      box-shadow: 0 0 24px rgba(245,158,11,0.4), 0 0 0 4px rgba(245,158,11,0.18);
+    }
+    .dark .step-node.active .step-circle {
+      background: #27272a; color: #fbbf24; border-color: #fbbf24;
+      box-shadow: 0 0 24px rgba(245,158,11,0.35), 0 0 0 4px rgba(245,158,11,0.2);
+    }
+    
+    .step-node.done .step-circle {
+      background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #f59e0b; color: white;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+    }
+    
+    .step-label { font-size: 12px; font-weight: 700; color: #9ca3af; white-space: nowrap; transition: all .3s; }
+    .step-node.active .step-label { color: #d97706; font-weight: 800; }
+    .dark .step-node.active .step-label { color: #fbbf24; }
+    .step-node.done .step-label { color: #f59e0b; font-weight: 700; }
+
+    .step-line {
+      flex: 1; height: 3px; background: #e5e7eb; margin-top: -24px; z-index: 1; transition: all .4s ease;
+      border-radius: 4px;
+    }
+    .dark .step-line { background: #3f3f46; }
+    .step-line.done { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    /* Plan badge */
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
+      border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 20px;
+      padding: 10px 20px; font-weight: 700;
+      box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.25);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .plan-badge:hover { transform: translateY(-2px); }
+    .dark .plan-badge {
+      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1));
+      border-color: rgba(245,158,11,0.4);
+    }
+
+    /* Glass Card Container */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 25px 60px -15px rgba(245, 158, 11, 0.18), 0 0 0 1px rgba(245, 158, 11, 0.1);
+      border-radius: 28px;
+    }
+    .dark .glass-card {
+      background: rgba(24, 24, 27, 0.88);
+      border-color: rgba(63, 63, 70, 0.6);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(245, 158, 11, 0.15);
+    }
+
+    /* Profile card */
+    .profile-card {
+      display: flex; align-items: center; gap: 16px; padding: 18px;
+      background: linear-gradient(135deg, rgba(254, 243, 199, 0.5), rgba(253, 230, 138, 0.25));
+      border: 1.5px solid rgba(245, 158, 11, 0.3);
+      border-radius: 22px; margin-top: 16px;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.8);
+    }
+    .dark .profile-card {
+      background: linear-gradient(135deg, rgba(39, 39, 42, 0.8), rgba(24, 24, 27, 0.6));
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+    .profile-avatar {
+      width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+      border: 3px solid #f59e0b; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Status pill */
+    .status-pill {
+      border-radius: 16px; padding: 14px 18px; font-size: 14px; font-weight: 600;
+      line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .s-ok   { background: rgba(34,197,94,.12);  border: 1.5px solid rgba(34,197,94,.3);  color: #15803d; }
+    .s-err  { background: rgba(239,68,68,.12);  border: 1.5px solid rgba(239,68,68,.3);  color: #dc2626; }
+    .s-wait { background: rgba(245,158,11,.12); border: 1.5px solid rgba(245,158,11,.3); color: #d97706; }
+    .dark .s-ok   { color: #86efac; background: rgba(34,197,94,.15); }
+    .dark .s-err  { color: #fca5a5; background: rgba(239,68,68,.15); }
+    .dark .s-wait { color: #fde047; background: rgba(245,158,11,.15); }
+
+    /* Spin animation */
+    .spin { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success burst */
+    @keyframes popIn {
+      0% { transform: scale(.7); opacity: 0; }
+      80% { transform: scale(1.04); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+    .glass-header {
+      background: rgba(255, 253, 235, 0.85) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+    }
+    .dark .glass-header {
+      background: rgba(18, 18, 20, 0.85) !important;
+    }
+  </style>
+</head>
+<body class="bg-[#FFFCEB] dark:bg-zinc-950 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300 min-h-screen flex flex-col justify-between relative overflow-x-hidden" x-data="livestreamPage()" x-init="init()">
+
+  <!-- Ambient light blobs -->
+  <div class="fixed top-10 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-amber-300/30 dark:bg-amber-500/10 rounded-full blur-[100px] pointer-events-none z-[-2]"></div>
+  <div class="fixed bottom-0 right-0 w-[400px] h-[400px] bg-yellow-400/20 dark:bg-amber-600/10 rounded-full blur-[90px] pointer-events-none z-[-2]"></div>
+
+  <!-- Background Image & Overlay -->
+  <div class="fixed inset-0 z-[-2] pointer-events-none bg-cover bg-bottom bg-no-repeat opacity-50 dark:opacity-30 scale-105" style="background-image:url('/assets/images/background-hero.webp')"></div>
+  <div class="fixed inset-0 z-[-1] pointer-events-none bg-gradient-to-b from-[#FFFCEB]/60 via-[#FFFCEB]/40 to-[#FFFCEB]/80 dark:from-zinc-950/80 dark:via-zinc-950/60 dark:to-zinc-950/90"></div>
+
+  <!-- Header -->
+  <header class="glass-header fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4 sm:px-8 border-b border-amber-500/15 dark:border-zinc-800/80 shadow-sm">
+    <a href="/" class="flex items-center gap-2 shrink-0 group">
+      <img alt="Locket Gold" class="w-9 h-9 object-contain group-hover:scale-105 transition-transform" style="max-height:36px;" src="/assets/images/logo-locket.png"/>
+      <img alt="Locket Gold" class="h-8 object-contain" style="max-height:32px;" src="/assets/images/logo-chuky.png"/>
+    </a>
+    
+    <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 bg-amber-400/15 dark:bg-amber-400/10 border border-amber-400/30 px-3.5 py-1 rounded-full shadow-inner">
+      <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+      <span class="text-xs sm:text-sm font-extrabold text-amber-700 dark:text-amber-300">Livestream Admin Gold</span>
+    </div>
+
+
+  </header>
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="pt-24 pb-16 px-4 sm:px-6 w-full max-w-7xl mx-auto flex-1">
+
+    <!-- 🔒 NON-ADMIN VIEW (SECURITY LOCK CARD) -->
+    <template x-if="!isAdmin">
+      <div class="max-w-xl mx-auto glass-card p-6 sm:p-10 text-center pop-in my-6 sm:my-8 border border-red-200 dark:border-red-500/20 shadow-[0_12px_40px_rgba(239,68,68,0.12)]">
+        <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-6 sm:mb-8">
+          <img src="/assets/images/bugcat.gif" alt="Bugcat" class="w-24 h-24 sm:w-28 sm:h-28 object-contain filter drop-shadow-xl animate-bounce">
+          <div class="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 bg-gradient-to-br from-red-500 to-rose-600 text-white w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full shadow-lg border-[3px] border-white dark:border-zinc-800">
+            <i class="fa-solid fa-lock text-xs sm:text-sm"></i>
+          </div>
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-500 dark:from-red-400 dark:to-rose-400 mb-2.5 sm:mb-3 tracking-tight leading-tight px-1">
+          500k tau mở tính năng này 😂
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 text-[13px] sm:text-sm font-medium leading-relaxed mb-7 sm:mb-8 px-2 sm:px-4">
+          Tính năng Livestream &amp; Công cụ Kích Hoạt Gold Miễn Phí (0đ) hiện chỉ dành riêng cho Quản trị viên Shop. Vui lòng đăng nhập tài khoản Admin để truy cập.
+        </p>
+
+        <div class="w-full relative">
+          <a href="/login" class="w-full py-3.5 sm:py-4 px-6 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 border border-amber-400/50 text-gray-950 font-black text-sm rounded-2xl text-center no-underline transition-all hover:scale-[1.02] active:scale-95 block shadow-xl shadow-amber-500/25">
+            🔑 Đăng Nhập Admin
+          </a>
+        </div>
+      </div>
+    </template>
+
+    <!-- ⚡ ADMIN VIEW (3-COLUMN LAYOUT) -->
+    <template x-if="isAdmin">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT SIDEBAR (Desktop) -->
+        <div class="hidden lg:flex flex-col gap-5 lg:col-span-3 sticky top-24">
+          
+          <!-- Left Card 1: Mascot & SVIP Badge -->
+          <div class="glass-card p-5 text-center relative overflow-hidden border border-amber-400/30">
+            <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div>
+            <img src="/assets/images/1782188761_svip-9.gif" alt="SVIP Badge" class="h-10 mx-auto object-contain mb-3 drop-shadow-md"/>
+            <h3 class="font-black text-base text-gray-900 dark:text-white uppercase tracking-tight">Kích Hoạt Live SVIP</h3>
+            <p class="text-xs text-amber-600 dark:text-amber-400 font-extrabold mt-0.5">Tốc độ xử lý siêu tốc 0.5s</p>
+            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-around text-xs">
+              <div>
+                <span class="block text-gray-400 font-medium">Hôm nay</span>
+                <span class="font-black text-emerald-600 dark:text-emerald-400 text-sm font-mono" x-text="ordersCount + '+ Đơn'"></span>
+              </div>
+              <div class="w-px h-6 bg-gray-200 dark:bg-zinc-800"></div>
+              <div>
+                <span class="block text-gray-400 font-medium">Trạng thái</span>
+                <span class="font-black text-amber-500 text-sm">🟢 Online</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Left Card 2: Clean QR Code Card -->
+          <div class="glass-card p-4 overflow-hidden border border-amber-400/30 text-center shadow-lg transition-all hover:border-amber-400/60">
+            <div class="flex items-center justify-center gap-1.5 mb-3 text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+              <i class="fa-solid fa-qrcode"></i> Mã QR Locket Admin
+            </div>
+            <div class="rounded-2xl overflow-hidden border border-amber-200/60 dark:border-zinc-700/60 shadow-md bg-white">
+              <img src="/assets/images/12345 (1).jpg" alt="Mã QR Admin" class="w-full h-auto object-cover rounded-2xl transition-transform duration-500 hover:scale-105"/>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CENTER COLUMN (Main Wizard Container) -->
+        <div class="col-span-12 lg:col-span-6 w-full max-w-xl mx-auto space-y-6">
+
+          <!-- Live Status Bar -->
+          <div class="glass-card p-4 rounded-2xl flex items-center justify-between border border-amber-400/30">
+            <div class="flex items-center gap-3">
+              <div class="bg-red-600 text-white text-xs font-black px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                <span>LIVE</span>
+              </div>
+              <span class="text-xs font-bold text-gray-700 dark:text-gray-300">
+                👁️ <span class="font-mono font-black text-amber-600 dark:text-amber-400" x-text="viewers.toLocaleString()"></span> đang xem
+              </span>
+            </div>
+            <button @click="logout()" class="text-xs font-extrabold text-red-500 hover:underline">
+              Đăng xuất Admin
+            </button>
+          </div>
+
+          <!-- 2 Step progress bar -->
+          <div class="step-bar mb-6 px-2">
+            <div class="step-node" :class="{ active: step===1, done: step>1 }">
+              <div class="step-circle">
+                <template x-if="step > 1"><i class="fa-solid fa-check"></i></template>
+                <template x-if="step <= 1"><span>1</span></template>
+              </div>
+              <span class="step-label">Tài khoản</span>
+            </div>
+            <div class="step-line" :class="{ done: step > 1 }"></div>
+            <div class="step-node" :class="{ active: step===2, done: step>2 }">
+              <div class="step-circle">
+                <template x-if="step >= 2"><i class="fa-solid fa-check"></i></template>
+                <template x-if="step < 2"><span>2</span></template>
+              </div>
+              <span class="step-label">Hoàn tất</span>
+            </div>
+          </div>
+
+          <!-- Plan summary badge -->
+          <div class="flex justify-center mb-6">
+            <div class="plan-badge text-amber-900 dark:text-amber-200">
+              <template x-if="user?.avatar">
+                <img :src="user.avatar" class="w-9 h-9 rounded-xl object-cover border-2 border-amber-400 shrink-0 shadow-sm"/>
+              </template>
+              <template x-if="!user?.avatar">
+                <div class="w-9 h-9 rounded-xl bg-amber-400/30 dark:bg-amber-400/20 flex items-center justify-center text-xl shrink-0">⭐</div>
+              </template>
+              <div>
+                <div class="text-sm font-black tracking-tight" x-text="plan.name"></div>
+                <div class="text-xs font-semibold text-green-700 dark:text-green-400 flex items-center gap-1.5 mt-0.5">
+                  <span x-text="plan.duration"></span>
+                  <span>&bull;</span>
+                  <span class="font-black text-sm text-amber-100 bg-red-500 px-2 py-0.5 rounded-full uppercase shadow-sm">Free 2 PHÚT</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 1: USERNAME LOOKUP -->
+          <div x-show="step === 1" x-transition>
+            <div class="glass-card p-6 sm:p-8">
+              <div class="text-center sm:text-left mb-6">
+                <h2 class="text-xl font-black tracking-tight text-gray-900 dark:text-white mb-1.5 flex items-center justify-center sm:justify-start gap-2">
+                  <span>📱</span> Nhập Username Locket Khách
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Hệ thống sẽ xác thực tài khoản của khách tự động.</p>
+              </div>
+
+              <div class="flex flex-col sm:flex-row gap-3 mb-5">
+                <div class="relative flex-1">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 font-black text-sm flex items-center justify-center pointer-events-none">@</span>
+                  <input
+                    x-model="username"
+                    @keydown.enter="lookup()"
+                    class="w-full pl-12 pr-4 py-3.5 bg-gray-50/80 dark:bg-zinc-800/80 border border-gray-200 dark:border-zinc-700 rounded-2xl text-base font-bold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/20 transition-all text-gray-900 dark:text-white placeholder:font-normal placeholder:text-gray-400"
+                    placeholder="username locket..."
+                  />
+                </div>
+                <button
+                  @click="lookup()"
+                  :disabled="looking"
+                  class="py-3.5 px-6 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  <template x-if="looking">
+                    <span class="flex items-center gap-2">
+                      <i class="fa-solid fa-spinner fa-spin"></i> Checking...
+                    </span>
+                  </template>
+                  <template x-if="!looking">
+                    <span>Kiểm tra</span>
+                  </template>
+                </button>
+              </div>
+
+              <!-- Status Notification -->
+              <template x-if="status.text">
+                <div class="status-pill mb-5" :class="'s-' + status.type" x-text="status.text"></div>
+              </template>
+
+              <!-- Profile Details Card when found -->
+              <template x-if="user">
+                <div class="profile-card pop-in">
+                  <img :src="user.avatar || '/assets/images/avatar-default.jpg'" class="profile-avatar" alt="Avatar"/>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-black text-base text-gray-900 dark:text-white truncate" x-text="user.name || ('@' + user.username)"></div>
+                    <div class="text-xs font-bold text-amber-600 dark:text-amber-400 truncate" x-text="'@' + user.username"></div>
+                    <div class="mt-1 flex items-center gap-2">
+                      <template x-if="user.is_gold || user.premium">
+                        <span class="bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 text-[11px] font-black px-2 py-0.5 rounded-md border border-amber-300">⭐ GOLD ACTIVE</span>
+                      </template>
+                      <template x-if="!user.is_gold &amp;&amp; !user.premium">
+                        <span class="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 text-[11px] font-extrabold px-2 py-0.5 rounded-md">FREE ACCOUNT</span>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Action button for Free Upgrade -->
+              <div class="mt-6" x-show="user">
+                <button
+                  @click="doFreeUpgrade()"
+                  :disabled="activating"
+                  class="w-full py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 text-white font-black text-base rounded-2xl shadow-xl shadow-emerald-500/25 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <template x-if="!activating">
+                    <span class="flex items-center gap-2">
+                      ⚡ KÍCH HOẠT LOCKET GOLD FREE NGAY
+                    </span>
+                  </template>
+                  <template x-if="activating">
+                    <span class="flex items-center gap-2">
+                      <i class="fa-solid fa-spinner fa-spin"></i> Đang nâng Gold...
+                    </span>
+                  </template>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- STEP 2: SUCCESS RECEIPT -->
+          <div x-show="step === 2" x-transition class="text-center">
+            <div class="glass-card p-6 sm:p-8 pop-in">
+              <div class="relative w-20 h-20 mx-auto mb-4">
+                <img :src="user?.avatar || '/assets/images/avatar-default.jpg'" alt="Avatar" class="w-20 h-20 rounded-2xl object-cover shadow-xl shadow-amber-400/35 border-2 border-amber-400 p-0.5 bg-white dark:bg-zinc-800"/>
+                <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 text-white flex items-center justify-center shadow-md">
+                  <i class="fa-solid fa-check text-xs"></i>
+                </div>
+              </div>
+              <h2 class="text-2xl font-black mb-1 text-gray-900 dark:text-white tracking-tight">Kích Hoạt Thành Công!</h2>
+              <p class="text-gray-500 dark:text-gray-400 text-xs font-medium mb-5">Tài khoản <strong class="text-amber-600 dark:text-amber-400" x-text="'@'+(user?.username||'')"></strong> đã được kích hoạt Gold 2 PHÚT tự động.</p>
+
+              <div class="bg-gradient-to-br from-amber-50/80 to-amber-100/30 dark:from-zinc-800/80 dark:to-zinc-800/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-4 mb-5 text-left space-y-2.5 text-xs shadow-inner">
+                <div class="flex justify-between">
+                  <span class="text-gray-500 dark:text-gray-400 font-medium">Tên hiển thị</span>
+                  <span class="font-bold text-gray-900 dark:text-white" x-text="user?.name || '—'"></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500 dark:text-gray-400 font-medium">Username</span>
+                  <span class="font-bold text-amber-600 dark:text-amber-400" x-text="'@'+(user?.username||'—')"></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500 dark:text-gray-400 font-medium">Thời hạn</span>
+                  <span class="font-bold text-gray-900 dark:text-white" x-text="plan.duration"></span>
+                </div>
+                <div class="pt-2 border-t border-amber-200/60 dark:border-zinc-700/60 flex justify-between text-xs">
+                  <span class="text-gray-500 dark:text-gray-400 font-medium">Trạng Thái Nâng Cấp</span>
+                  <span class="font-black text-emerald-600 dark:text-emerald-400 uppercase bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full border border-emerald-500/20">TEST 2 PHÚT</span>
+                </div>
+              </div>
+
+              <button @click="resetWizard()" class="w-full py-3.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-amber-500/25 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer">
+                🚀 Kích Hoạt Tiếp Khách Khác
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT SIDEBAR (Desktop - Clean Showcase Image Card) -->
+        <div class="hidden lg:flex flex-col gap-5 lg:col-span-3 sticky top-24">
+          
+          <div class="glass-card p-4 overflow-hidden border border-amber-400/30 text-center shadow-xl shadow-amber-500/10 transition-all hover:border-amber-400/60">
+            <div class="flex items-center justify-center gap-1.5 mb-3 text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+              <i class="fa-solid fa-crown"></i> Locket Gold VIP
+            </div>
+            <div class="rounded-2xl overflow-hidden border border-amber-200/60 dark:border-zinc-700/60 shadow-md bg-white">
+              <img src="/assets/images/12345 (2).jpg" alt="Locket Gold VIP" class="w-full h-auto object-cover rounded-2xl transition-transform duration-500 hover:scale-105"/>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </template>
+  </main>
+
+  <script>
+    const API = 'https://twilight-mountain-96b6.caovannamutt.workers.dev/';
+    const WORKER_STATS = 'https://shopbanhanglkduongbinh.caovannamutt.workers.dev/api/stats';
+    const WORKER_INC = 'https://shopbanhanglkduongbinh.caovannamutt.workers.dev/api/increment-stats';
+
+    function livestreamPage() {
+      return {
+        isAdmin: false,
+        viewers: 1542,
+        ordersCount: 342,
+        step: 1,
+        username: '',
+        looking: false,
+        user: null,
+        activating: false,
+        status: { type: '', text: '' },
+        plan: { name: 'Locket Gold', duration: 'Free' },
+
+        init() {
+          const userStr = localStorage.getItem('user');
+          if (userStr) {
+            try {
+              const u = JSON.parse(userStr);
+              if (u && (u.username === 'admin' || u.role === 'admin')) {
+                this.isAdmin = true;
+              }
+            } catch (e) { this.isAdmin = false; }
+          }
+
+          // Fetch real-time Cloud Worker order stats
+          this.fetchLiveStats();
+          setInterval(() => this.fetchLiveStats(), 10000);
+
+          // Random viewer fluctuations
+          setInterval(() => {
+            if (this.isAdmin) this.viewers += Math.floor(Math.random() * 9) - 4;
+          }, 3000);
+        },
+
+        async fetchLiveStats() {
+          try {
+            const res = await fetch(WORKER_STATS);
+            const data = await res.json();
+            if (data && data.totalOrders) {
+              this.ordersCount = data.totalOrders;
+            }
+          } catch(e) {}
+        },
+
+        logout() {
+          localStorage.removeItem('user');
+          this.isAdmin = false;
+        },
+
+        setStatus(type, text) { this.status = { type, text }; },
+        clearStatus() { this.status = { type: '', text: '' }; },
+
+        async lookup() {
+          const username = this.username.trim().toLowerCase();
+          if (!username) { this.setStatus('err', 'Vui lòng nhập username.'); return; }
+
+          this.looking = true;
+          this.user = null;
+          this.clearStatus();
+          this.setStatus('wait', '🔍 Đang kiểm tra tài khoản khách...');
+
+          try {
+            const res = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'info', username })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || data.message || 'Không tìm thấy tài khoản.');
+            this.user = data;
+            this.setStatus('ok', '✅ Đã xác minh tài khoản khách. Bấm Tiến Hành Kích Hoạt để hoàn tất.');
+          } catch (e) {
+            this.setStatus('err', '❌ ' + e.message);
+          } finally {
+            this.looking = false;
+          }
+        },
+
+        async doFreeUpgrade() {
+          if (!this.user || !this.user.username) return;
+          this.activating = true;
+          this.setStatus('wait', '⏳ Đang xử lý kích hoạt Gold tự động 0đ...');
+
+          try {
+            const res = await fetch(API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'kick', username: this.user.username })
+            });
+            const data = await res.json().catch(() => ({ success: res.ok }));
+
+            if (data.success || res.ok) {
+              this.step = 2;
+              // Increment real-time order counter on Cloud Worker!
+              fetch(WORKER_INC, { method: 'POST' }).then(() => this.fetchLiveStats()).catch(() => {});
+            } else {
+              this.setStatus('err', '❌ Kích hoạt thất bại: ' + (data.error || data.message || 'Lỗi server.'));
+            }
+          } catch (e) {
+            this.setStatus('err', '❌ Lỗi kết nối: ' + e.message);
+          } finally {
+            this.activating = false;
+          }
+        },
+
+        resetWizard() {
+          this.step = 1;
+          this.username = '';
+          this.user = null;
+          this.clearStatus();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
