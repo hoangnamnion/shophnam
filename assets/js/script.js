@@ -235,8 +235,8 @@
 
     const PAY_API = 'https://locketduongbinhshop.vercel.app';
     const PAY_BANK = 'MB';
-    const PAY_ACC = '0567355688888';
-    const PAY_NAME = 'DO DUONG BINH';
+    const PAY_ACC = '338935';
+    const PAY_NAME = 'CAO VAN NAM';
 
     function startQrCountdown() {
         let timeLeft = 300; // 5 phút
@@ -417,17 +417,45 @@
             return;
         }
 
-        let userCode = 'KH';
-        try {
-            const uStr = localStorage.getItem('user');
-            if (uStr) {
-                const u = JSON.parse(uStr);
-                userCode = u.username || u.name || u.email || 'KH';
-            }
-        } catch(e) {}
+        function sanitizeBankMemo(str) {
+            if (!str) return '';
+            return str.normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[đĐ]/g, 'D')
+                .replace(/[^a-zA-Z0-9]/g, '')
+                .toUpperCase();
+        }
 
-        const randSuffix = Math.floor(1000 + Math.random() * 9000);
-        const memo = `LK ${userCode} ${randSuffix}`.toUpperCase();
+        const locketUser = window.verifiedLocketUser;
+        const locketUserRaw = (locketUser && locketUser.username) ? locketUser.username : locketUsername;
+        const cleanUsername = sanitizeBankMemo(locketUserRaw) || 'USER';
+
+        let rawName = '';
+        if (locketUser && locketUser.name) {
+            rawName = locketUser.name;
+        } else {
+            try {
+                const uStr = localStorage.getItem('user');
+                if (uStr) {
+                    const u = JSON.parse(uStr);
+                    rawName = u.name || u.username || '';
+                }
+            } catch(e) {}
+        }
+
+        let cleanName = '';
+        if (rawName) {
+            const parts = rawName.trim().split(/\s+/);
+            cleanName = sanitizeBankMemo(parts[parts.length - 1]);
+        }
+        if (!cleanName) cleanName = 'KH';
+
+        let memo = '';
+        if (cleanName && cleanName !== 'KH' && cleanName !== cleanUsername) {
+            memo = `${cleanName} ${cleanUsername}`;
+        } else {
+            memo = cleanUsername;
+        }
         const amount = currentFinalAmount || currentAmount;
 
         const payBankEl = document.getElementById('payBank');

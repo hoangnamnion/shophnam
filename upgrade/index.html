@@ -670,8 +670,8 @@
 const API      = 'https://locketgold.caovannamutt.workers.dev/';
 const PAY_API  = 'https://locketduongbinhshop.vercel.app';
 const PAY_BANK = 'MB';            
-const PAY_ACC  = '0567355688888';
-const PAY_NAME = 'DO DUONG BINH';
+const PAY_ACC  = '338935';
+const PAY_NAME = 'CAO VAN NAM';
 
 function upgradePage() {
   return {
@@ -854,8 +854,33 @@ function upgradePage() {
 
     async initPayment() {
       const amount  = this.plan.finalPrice || this.plan.price;
-      const suffix  = Math.floor(1000 + Math.random() * 9000);
-      const memo    = `LK KH ${suffix}`.toUpperCase();
+
+      function sanitizeBankMemo(str) {
+        if (!str) return '';
+        return str.normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[đĐ]/g, 'D')
+          .replace(/[^a-zA-Z0-9]/g, '')
+          .toUpperCase();
+      }
+
+      let rawName = (this.user && this.user.name) ? this.user.name : (this.username || '');
+      let cleanName = '';
+      if (rawName) {
+        const parts = rawName.trim().split(/\s+/);
+        cleanName = sanitizeBankMemo(parts[parts.length - 1]);
+      }
+      if (!cleanName) cleanName = 'KH';
+
+      const userRaw = (this.user && this.user.username) ? this.user.username : this.username;
+      const cleanUsername = sanitizeBankMemo(userRaw) || 'USER';
+
+      let memo = '';
+      if (cleanName && cleanName !== 'KH' && cleanName !== cleanUsername) {
+        memo = `${cleanName} ${cleanUsername}`;
+      } else {
+        memo = cleanUsername;
+      }
 
       this.payment = {
         bank:    'MB Bank (MB)',
