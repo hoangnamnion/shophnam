@@ -91,7 +91,7 @@ MIIDCTCCAfGgAwIBAgIBATANBgkqhkiG9w0BAQsFADA/MRcwFQYDVQQDEw5Mb2NrZXRQcm94eSBD
         <key>DNSProtocol</key>
         <string>HTTPS</string>
         <key>ServerURL</key>
-        <string>https://dns.nodns.vn/dns-query</string>
+        <string>https://103.82.26.44/dns-query</string>
         <key>SupplementalMatchDomains</key>
         <array>
           <string>api.revenuecat.com</string>
