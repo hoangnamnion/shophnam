@@ -80,6 +80,11 @@ MIIDBzCCAe+gAwIBAgIUN2C/L/EBuG+ZQH8el1i2OHmNu+IwDQYJKoZIhvcNAQELBQAwMzEWMBQGA1UE
         <string>https://103.82.26.44/dns-query</string>
         <key>SupplementalMatchDomains</key>
         <array>
+          <string>api.revenuecat.com</string>
+          <string>revenuecat.com</string>
+          <string>firebaseremoteconfig.googleapis.com</string>
+          <string>firebaseremoteconfigrealtime.googleapis.com</string>
+          <string>firebaselogging.googleapis.com</string>
         </array>
       </dict>
     </dict>
