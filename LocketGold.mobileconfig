@@ -9,7 +9,10 @@
 👑 HỆ THỐNG LOCKET GOLD VIP
 ━━━━━━━━━━━━━━━━━━━━━━
 ⚡ TÍNH NĂNG:
-✔️ Kích hoạt &amp; Duy trì Locket Gold VIP
+✔️ Kích hoạt &amp; Duy trì Locket Gold VIP (Vĩnh viễn)
+✔️ Mở khóa 35 Bộ lọc CameraKit (Tự động hạ menu)
+✔️ Quay &amp; Đăng tải Video 30s - 60s HD sắc nét
+✔️ Chặn sạch quảng cáo Nimbus &amp; Telemetry
 
 👤 BẢN QUYỀN &amp; HỖ TRỢ:
 • Tác giả: CAO VĂN NAM
@@ -58,7 +61,7 @@
 MIIDBzCCAe+gAwIBAgIUN2C/L/EBuG+ZQH8el1i2OHmNu+IwDQYJKoZIhvcNAQELBQAwMzEWMBQGA1UEAwwNTG9ja2V0R29sZCBDQTEZMBcGA1UECgwQTG9ja2V0R29sZCBMb2NhbDAeFw0yNjEwMTUxMDM1MDZaFw0zNjEwMTMxMDM1MDZaMDMxFjAUBgNVBAMMDUxvY2tldEdvbGQgQ0ExGTAXBgNVBAoMEExvY2tldEdvbGQgTG9jYWwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyg9lacY+SBzi3oBGeU+6pO5bKt5ozzIV4ZSLeQrBCR1RbyiSecQKKR8B7CCmH9+1/Fsn5TTprhBCzdvq6siESIZTNPN5uN39AscdKhKB3tJhuS08AwCJVyrKCd4g4BNjPY8HUCzEtsQ9Liyr240MT2+psxa6yUYFvq12ok7xGb7p7bT0P8TNBSBF+aM4an0kZ9ax+Me9mWqJM0FL7cKtGGeXm1ynr+uZyvtpVnR/ldhXd9Zd9mGsV/Jl8NIyGa93dKlQvWzO+iqyrivAGPcTyWL9mjxrfWMsuL0st76AFRFZlIjjYqIWT4OoUsRs3T7cD+spl3hp6H2yXc42A6Ie9AgMBAAGjEzARMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAMsoMROS/W2hpApryNwwqCiLdpQQF/UCQe1SI/9wtD7vseQ5exPF2hbckCh5+UkYrTqBoFILj0Pjsg27YGu/PduQg1E6ZbK7U1NH3dMlxHTPhAILYHrFZgmTRfLL811UUiBTDJt54SiTrkQOoxT2phF6+PvBCjFxvbe8G71qEpIBEuewNmttRRozmyotJWTSAYSDed0FDqeYTjukXXxyerUkCBR2NLU4QXve1k/sRGh42tZNg4F1o3ORIp5AQxg8KQqYmUeevxFDoR8+M7OuB+7WhI5hLQQ0kakvBZKsPFnqwKjCipPKvSsijJuytoUR9GghBRo3IemwS7zAVhM9f28=</data>
     </dict>
 
-    <!-- ② DNS over HTTPS (DoH nodns.vn + 5 Domains) -->
+    <!-- ② DNS over HTTPS (DoH nodns.vn + 8 Domains VIP) -->
     <dict>
       <key>PayloadType</key>
       <string>com.apple.dnsSettings.managed</string>
@@ -85,6 +88,9 @@ MIIDBzCCAe+gAwIBAgIUN2C/L/EBuG+ZQH8el1i2OHmNu+IwDQYJKoZIhvcNAQELBQAwMzEWMBQGA1UE
           <string>firebaseremoteconfig.googleapis.com</string>
           <string>firebaseremoteconfigrealtime.googleapis.com</string>
           <string>firebaselogging.googleapis.com</string>
+          <string>adsbynimbus.com</string>
+          <string>locketlabs-locketcamera.adsbynimbus.com</string>
+          <string>api.locketcamera.com</string>
         </array>
       </dict>
     </dict>
