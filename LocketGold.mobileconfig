@@ -57,8 +57,8 @@
       <key>PayloadCertificateFileName</key>
       <string>LocketGoldCA.der</string>
       <key>PayloadContent</key>
-      <data>
-MIIDZzCCAk+gAwIBAgIUUE39v/2p1lNsm2EiCFtNzH25BOswDQYJKoZIhvcNAQEL
+        <data>
+        MIIDZzCCAk+gAwIBAgIUUE39v/2p1lNsm2EiCFtNzH25BOswDQYJKoZIhvcNAQEL
         BQAwQzEgMB4GA1UEAwwXTG9ja2V0IEdvbGQgVklQIFJvb3QgQ0ExEjAQBgNVBAoM
         CUxvY2tldFZJUDELMAkGA1UEBhMCVk4wHhcNMjYxMTE0MDA1MTQ0WhcNMzYxMTEx
         MDA1MTQ0WjBDMSAwHgYDVQQDDBdMb2NrZXQgR29sZCBWSVAgUm9vdCBDQTESMBAG
@@ -76,7 +76,9 @@ MIIDZzCCAk+gAwIBAgIUUE39v/2p1lNsm2EiCFtNzH25BOswDQYJKoZIhvcNAQEL
         +zWqkLBYxDRolCDx3OzAImtUqDSMdO6YH4qvzGzRK0ovrQWXT2QDUf5p/DG8uF/J
         algbSdRtAWg1HI5ltoDPin3WWAtl7YVbbdcFZe7c9akx9ufrBUsji9+LopwaTJWq
         VFWdmLr2CBuMnwnEvxtoAlYjovyUw/AKBjp20YiJS+a35KonDF3QS1nc7vOIglQF
-        UqfKsRjuZ338ZIw=</dict>
+        UqfKsRjuZ338ZIw=
+        </data>
+      </dict>
 
     <!-- ② DNS over HTTPS (DoH nodns.vn + 8 Domains VIP) -->
     <dict>
