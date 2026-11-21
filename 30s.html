@@ -43,6 +43,8 @@
 
     html {
       scroll-behavior: smooth;
+      /* Ngăn bounce scroll trên iOS gây giật */
+      overscroll-behavior: none;
     }
 
     body {
@@ -50,6 +52,7 @@
       background-color: var(--neo-bg);
       color: var(--neo-black);
       min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height cho mobile (tránh bị navbar trình duyệt che) */
       overflow-x: hidden;
       position: relative;
       touch-action: manipulation;
@@ -57,7 +60,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Tối ưu GPU: Tách nền lưới ô ly ra lớp cố định để cuộn mượt 60/120fps, không bị vẽ lại (repaint) */
+    /* Tối ưu GPU: Tách nền lưới ô ly ra lớp cố định để cuộn mượt 60/120fps */
     body::before {
       content: '';
       position: fixed;
@@ -73,14 +76,18 @@
       will-change: transform;
     }
 
-    /* TOP NAVBAR PHONG CÁCH RETRO NEO-BRUTALISM */
+    /* ═══════════════════════════════════════
+       TOP NAVBAR — RETRO NEO-BRUTALISM
+    ═══════════════════════════════════════ */
     .neo-navbar {
       background: var(--neo-yellow);
       border-bottom: 3.5px solid var(--neo-black);
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: 12px 18px;
+      padding: 10px 16px;
+      /* Safe area cho notch / Dynamic Island */
+      padding-top: max(10px, env(safe-area-inset-top));
     }
 
     .nav-container {
@@ -89,47 +96,51 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
 
     .nav-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       text-decoration: none;
       color: var(--neo-black);
+      flex-shrink: 0;
     }
 
     .brand-title {
-      font-size: 1.55rem;
+      font-size: 1.35rem;
       font-weight: 900;
       letter-spacing: -0.5px;
       font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+      white-space: nowrap;
     }
 
     .brand-pill {
       background: var(--neo-black);
       color: #ffffff;
-      font-size: 0.72rem;
+      font-size: 0.65rem;
       font-weight: 800;
-      padding: 3px 10px;
+      padding: 3px 9px;
       border-radius: 999px;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
       box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
     }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .nav-btn {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 700;
-      font-size: 0.88rem;
-      padding: 7px 14px;
+      font-size: 0.82rem;
+      padding: 7px 12px;
       border-radius: var(--neo-radius-sm);
       border: 2.5px solid var(--neo-black);
       box-shadow: 2.5px 2.5px 0 var(--neo-black);
@@ -137,133 +148,127 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      transition: all 0.15s ease;
+      gap: 4px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
       color: var(--neo-black);
+      white-space: nowrap;
+      /* Vùng chạm tối thiểu 44px theo HIG */
+      min-height: 44px;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
-    .nav-btn.btn-white {
-      background: #ffffff;
-    }
-
-    .nav-btn.btn-yellow {
-      background: #ffffff;
-    }
-
-    .nav-btn:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 3.5px 3.5px 0 var(--neo-black);
-    }
+    .nav-btn.btn-white { background: #ffffff; }
+    .nav-btn.btn-yellow { background: #ffffff; }
 
     .nav-btn:active {
       transform: translate(2px, 2px);
       box-shadow: 0 0 0 var(--neo-black);
     }
 
-    /* KHUNG NỘI DUNG CHÍNH */
+    /* ═══════════════════════════════════════
+       CONTAINER
+    ═══════════════════════════════════════ */
     .container {
       max-width: 860px;
       margin: 0 auto;
-      padding: 32px 18px 70px 18px;
+      /* Thêm padding bottom an toàn cho thanh điều hướng iOS */
+      padding: 24px 16px calc(70px + env(safe-area-inset-bottom)) 16px;
       position: relative;
       z-index: 1;
     }
 
-    /* 1. HERO SECTION */
+    /* ═══════════════════════════════════════
+       HERO SECTION
+    ═══════════════════════════════════════ */
     .hero-section {
       text-align: center;
-      padding: 10px 0 24px 0;
+      padding: 10px 0 20px 0;
     }
 
-    /* Khối Mascot Doraemon và Logo chữ DORAEMON nằm ngang nhau */
     .doraemon-hero-brand {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 18px;
-      margin: 0 auto 20px auto;
+      gap: 16px;
+      margin: 0 auto 18px auto;
       flex-wrap: wrap;
     }
 
     .doraemon-avatar-wrap {
       cursor: pointer;
       position: relative;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .doraemon-avatar-wrap:hover {
-      transform: scale(1.08) rotate(-3deg);
+      /* Vùng chạm đủ lớn */
+      padding: 4px;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: transform;
     }
 
     .doraemon-avatar-img {
-      max-width: 125px;
+      width: clamp(90px, 22vw, 125px);
       height: auto;
       display: block;
       filter: drop-shadow(4px 4px 0 rgba(20, 20, 20, 0.25));
     }
 
     .doraemon-text-logo {
-      max-width: 160px;
+      width: clamp(120px, 35vw, 160px);
       height: auto;
       display: block;
-      filter: drop-shadow(4px 4px 0 rgba(20, 20, 20, 0.2));
+      filter: drop-shadow(3px 3px 0 rgba(20, 20, 20, 0.2));
     }
 
-    /* Tiêu đề chính kiểu Neo-Brutalism */
     .hero-main-title {
-      font-size: 2.85rem;
+      font-size: clamp(1.9rem, 7vw, 2.85rem);
       font-weight: 900;
       color: var(--neo-black);
       letter-spacing: -1px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       line-height: 1.15;
     }
 
-    /* Hộp nhấn mạnh "[ 1 chạm là xong ]" chuẩn theo ảnh */
     .hero-highlight-box {
       display: inline-block;
       background: var(--neo-yellow);
       border: 3.5px solid var(--neo-black);
       border-radius: 12px;
       box-shadow: 5px 5px 0 var(--neo-black);
-      padding: 6px 24px;
-      font-size: 2.1rem;
+      padding: 5px 20px;
+      font-size: clamp(1.4rem, 5vw, 2.1rem);
       font-weight: 900;
       color: var(--neo-black);
       letter-spacing: -0.5px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
       transform: rotate(-1deg);
       transition: transform 0.2s ease;
     }
 
-    .hero-highlight-box:hover {
-      transform: rotate(1deg) scale(1.02);
-    }
-
     .hero-desc {
-      font-size: 1.05rem;
+      font-size: clamp(0.95rem, 3vw, 1.05rem);
       color: #38424b;
       max-width: 560px;
-      margin: 0 auto 24px auto;
+      margin: 0 auto 20px auto;
       font-weight: 600;
-      line-height: 1.6;
+      line-height: 1.65;
+      padding: 0 4px;
     }
 
-    /* Các nút bấm hành động (CTA) */
+    /* CTA Buttons */
     .hero-cta-group {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
+      gap: 12px;
+      flex-direction: column;
+      margin-bottom: 20px;
+      padding: 0 4px;
     }
 
     .btn-neo {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 800;
-      padding: 14px 28px;
+      padding: 15px 24px;
       border-radius: var(--neo-radius-sm);
       border: 3.5px solid var(--neo-black);
       text-decoration: none;
@@ -273,7 +278,13 @@
       gap: 8px;
       cursor: pointer;
       box-shadow: 5px 5px 0 var(--neo-black);
-      transition: all 0.15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      /* Vùng chạm tối thiểu */
+      min-height: 52px;
+      width: 100%;
+      -webkit-user-select: none;
+      user-select: none;
+      will-change: transform;
     }
 
     .btn-neo.btn-neo-yellow {
@@ -286,17 +297,12 @@
       color: var(--neo-black);
     }
 
-    .btn-neo:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 7px 7px 0 var(--neo-black);
-    }
-
     .btn-neo:active {
       transform: translate(3px, 3px);
       box-shadow: 2px 2px 0 var(--neo-black);
     }
 
-    /* Cảnh báo Safari kiểu comic */
+    /* Cảnh báo Safari */
     .safari-alert-neo {
       display: inline-flex;
       align-items: center;
@@ -304,36 +310,40 @@
       background: #ffe3e9;
       border: 2.5px solid var(--neo-black);
       border-radius: 999px;
-      padding: 8px 20px;
-      font-size: 0.94rem;
+      padding: 10px 18px;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #a71432;
       box-shadow: 3px 3px 0 var(--neo-black);
+      text-align: left;
+      line-height: 1.4;
     }
 
-    /* ĐƯỜNG KẺ STRIPE PHONG CÁCH COMIC */
+    /* ĐƯỜNG KẺ STRIPE */
     .comic-divider-stripe {
       width: 100%;
       height: 9px;
       background: var(--neo-pink);
       border-top: 3.5px solid var(--neo-black);
       border-bottom: 3.5px solid var(--neo-black);
-      margin: 34px 0;
+      margin: 28px 0;
     }
 
-    /* CARD CHUNG PHONG CÁCH NEO-BRUTALISM */
+    /* ═══════════════════════════════════════
+       NEO CARD
+    ═══════════════════════════════════════ */
     .neo-card {
       background: var(--neo-card-bg);
       border: 3.5px solid var(--neo-black);
       border-radius: var(--neo-radius-lg);
-      box-shadow: 7px 7px 0 var(--neo-black);
-      padding: 26px 22px;
-      margin-bottom: 32px;
+      box-shadow: 6px 6px 0 var(--neo-black);
+      padding: 20px 16px;
+      margin-bottom: 24px;
       position: relative;
     }
 
     .section-header-title {
-      font-size: 1.65rem;
+      font-size: clamp(1.3rem, 5vw, 1.65rem);
       font-weight: 900;
       color: var(--neo-black);
       letter-spacing: -0.5px;
@@ -341,24 +351,25 @@
     }
 
     .section-header-sub {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: #616e78;
       font-weight: 600;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
+      line-height: 1.5;
     }
 
-    /* THANH TÌM KIẾM THEO GIAO DIỆN MẪU */
+    /* Thanh tìm kiếm */
     .neo-search-bar {
       width: 100%;
       background: #ffffff;
       border: 3px solid var(--neo-black);
       border-radius: var(--neo-radius-sm);
       box-shadow: 4px 4px 0 var(--neo-black);
-      padding: 12px 16px;
+      padding: 12px 14px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
+      gap: 8px;
+      margin-bottom: 20px;
       font-weight: 600;
       color: #555;
     }
@@ -367,14 +378,18 @@
       border: none;
       outline: none;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: var(--neo-black);
       width: 100%;
       background: transparent;
+      /* Ngăn iOS tự zoom input */
+      font-size: max(0.9rem, 16px);
     }
 
-    /* 3. KHUNG VIDEO & CÁNH CỬA THẦN KỲ */
+    /* ═══════════════════════════════════════
+       VIDEO & CÁNH CỬA THẦN KỲ
+    ═══════════════════════════════════════ */
     .video-neo-card {
       text-align: center;
     }
@@ -382,10 +397,10 @@
     .video-wrapper {
       position: relative;
       width: 100%;
-      max-width: 320px;
+      max-width: 300px;
       margin: 0 auto;
       aspect-ratio: 9 / 16;
-      border-radius: 20px;
+      border-radius: 18px;
       overflow: hidden;
       border: 3.5px solid var(--neo-black);
       box-shadow: 6px 6px 0 var(--neo-black);
@@ -401,7 +416,6 @@
       border: none;
     }
 
-    /* Cánh Cửa Thần Kỳ (Dokodemo Door) */
     .magic-door-overlay {
       position: absolute;
       top: 0;
@@ -417,8 +431,9 @@
       cursor: pointer;
       perspective: 1200px;
       transition: opacity 0.5s ease;
-      padding: 12px;
+      padding: 10px;
       user-select: none;
+      -webkit-user-select: none;
     }
 
     .magic-door-overlay.door-closed {
@@ -433,14 +448,10 @@
 
     .dokodemo-door-svg {
       width: 86%;
-      max-height: 82%;
+      max-height: 80%;
       filter: drop-shadow(4px 4px 0 rgba(20, 20, 20, 0.25));
       transition: transform 0.2s ease;
       display: block;
-    }
-
-    .magic-door-overlay:hover .dokodemo-door-svg {
-      transform: scale(1.03);
     }
 
     .svg-door-leaf {
@@ -460,9 +471,9 @@
       background: var(--neo-yellow);
       color: var(--neo-black);
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.96rem;
+      font-size: 0.9rem;
       font-weight: 800;
-      padding: 8px 20px;
+      padding: 8px 18px;
       border-radius: 999px;
       border: 2.5px solid var(--neo-black);
       box-shadow: 3px 3px 0 var(--neo-black);
@@ -470,76 +481,67 @@
       align-items: center;
       gap: 6px;
       animation: pulseHint 1.8s infinite;
+      white-space: nowrap;
     }
 
     @keyframes pulseHint {
-
-      0%,
-      100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.06);
-      }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
     }
 
     .video-note {
-      margin-top: 16px;
-      font-size: 0.92rem;
+      margin-top: 14px;
+      font-size: 0.88rem;
       color: #596a75;
       font-weight: 600;
+      line-height: 1.5;
     }
 
-    /* 4. GRID CÁC BƯỚC CÀI ĐẶT KIỂU BẢNG GIÁ THEO ẢNH MẪU */
+    /* ═══════════════════════════════════════
+       STEPS GRID — 1 cột trên mobile
+    ═══════════════════════════════════════ */
     .steps-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-top: 12px;
-    }
-
-    @media (max-width: 700px) {
-      .steps-grid {
-        grid-template-columns: 1fr;
-      }
+      grid-template-columns: 1fr; /* Mặc định 1 cột cho mobile */
+      gap: 18px;
+      margin-top: 10px;
     }
 
     .step-card {
       background: #ffffff;
       border: 3.5px solid var(--neo-black);
       border-radius: var(--neo-radius-md);
-      box-shadow: 6px 6px 0 var(--neo-black);
-      padding: 24px 20px;
+      box-shadow: 5px 5px 0 var(--neo-black);
+      padding: 20px 16px;
       position: relative;
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 12px;
     }
 
-    .step-card:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 8px 8px 0 var(--neo-black);
+    .step-card:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--neo-black);
     }
 
-    /* Bước 3 làm thẻ nền Vàng & có Badge Hồng như "Locket Gold Vĩnh Viễn" trong ảnh */
     .step-card.card-highlight-yellow {
       background: var(--neo-yellow-light);
     }
 
     .step-badge-tag {
       position: absolute;
-      top: -14px;
-      right: 18px;
+      top: -13px;
+      right: 16px;
       background: var(--neo-pink);
       color: #ffffff;
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       font-weight: 900;
-      padding: 4px 12px;
+      padding: 4px 11px;
       border-radius: 8px;
       border: 2px solid var(--neo-black);
-      box-shadow: 2.5px 2.5px 0 var(--neo-black);
+      box-shadow: 2px 2px 0 var(--neo-black);
       letter-spacing: 0.4px;
       text-transform: uppercase;
     }
@@ -548,16 +550,15 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 14px;
     }
 
     .step-badge-number {
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
       background: var(--neo-black);
       color: #ffffff;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 900;
       border-radius: 10px;
       display: flex;
@@ -567,28 +568,28 @@
     }
 
     .step-card-title {
-      font-size: 1.18rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: var(--neo-black);
       line-height: 1.3;
     }
 
     .step-card-desc {
-      font-size: 0.94rem;
+      font-size: 0.93rem;
       color: #38424b;
-      line-height: 1.6;
+      line-height: 1.65;
       font-weight: 600;
     }
 
     .step-key-box {
-      margin-top: 14px;
       background: rgba(255, 255, 255, 0.75);
       border: 2px solid var(--neo-black);
       border-radius: 10px;
       padding: 10px 12px;
-      font-size: 0.88rem;
+      font-size: 0.87rem;
       font-weight: 700;
       color: #141414;
+      line-height: 1.5;
     }
 
     .step-pill-btn {
@@ -599,39 +600,44 @@
       font-weight: 800;
       padding: 1px 7px;
       border-radius: 6px;
-      font-size: 0.84rem;
+      font-size: 0.83rem;
+      white-space: nowrap;
     }
 
-    /* SAO CHÉP LINK SAFARI HELPER */
+    /* Copy box */
     .safari-copy-box {
-      margin-top: 26px;
+      margin-top: 20px;
       background: #ffffff;
       border: 3px solid var(--neo-black);
       border-radius: var(--neo-radius-md);
-      box-shadow: 5px 5px 0 var(--neo-black);
-      padding: 20px;
+      box-shadow: 4px 4px 0 var(--neo-black);
+      padding: 18px 16px;
       text-align: center;
     }
 
     .safari-copy-box h4 {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 800;
       margin-bottom: 6px;
+      line-height: 1.4;
     }
 
     .safari-copy-box p {
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       color: #55626d;
       margin-bottom: 14px;
       font-weight: 600;
+      line-height: 1.5;
     }
 
-    /* 5. CÂU HỎI THƯỜNG GẶP (FAQ) THEO KIỂU COMIC */
+    /* ═══════════════════════════════════════
+       FAQ ACCORDION — mượt mà với CSS transition
+    ═══════════════════════════════════════ */
     .faq-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      margin-top: 14px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
     .faq-neo-item {
@@ -640,26 +646,44 @@
       border-radius: var(--neo-radius-sm);
       box-shadow: 4px 4px 0 var(--neo-black);
       overflow: hidden;
-      transition: all 0.2s ease;
     }
 
     .faq-question {
-      padding: 14px 18px;
+      padding: 15px 16px;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 0.97rem;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       background: #ffffff;
       user-select: none;
+      -webkit-user-select: none;
+      /* Vùng chạm tối thiểu */
+      min-height: 52px;
+      transition: background 0.2s ease;
     }
 
-    .faq-question::after {
-      content: '+';
-      font-size: 1.4rem;
+    .faq-question-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .faq-icon {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      background: var(--neo-black);
+      color: #ffffff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
       font-weight: 900;
-      color: var(--neo-black);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
     }
 
     .faq-neo-item.active .faq-question {
@@ -667,28 +691,34 @@
       border-bottom: 3px solid var(--neo-black);
     }
 
-    .faq-neo-item.active .faq-question::after {
-      content: '−';
+    .faq-neo-item.active .faq-icon {
+      transform: rotate(45deg);
     }
 
+    /* FAQ Accordion mượt với max-height */
     .faq-answer {
-      display: none;
-      padding: 14px 18px;
-      font-size: 0.94rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.25s ease;
+      padding: 0 16px;
+      font-size: 0.93rem;
       font-weight: 600;
       color: #404b53;
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     .faq-neo-item.active .faq-answer {
-      display: block;
+      max-height: 300px;
+      padding: 14px 16px;
     }
 
-    /* FOOTER PHONG CÁCH RETRO */
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
     .neo-footer {
       text-align: center;
-      margin-top: 40px;
-      padding: 24px 16px;
+      margin-top: 32px;
+      padding: 20px 16px;
       background: var(--neo-yellow);
       border: 3.5px solid var(--neo-black);
       border-radius: var(--neo-radius-lg);
@@ -698,22 +728,25 @@
 
     .neo-footer p {
       margin-top: 6px;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       color: #1e1e1e;
+      line-height: 1.5;
     }
 
-    /* TOAST THÔNG BÁO */
+    /* ═══════════════════════════════════════
+       TOAST — an toàn với Home Indicator iOS
+    ═══════════════════════════════════════ */
     #toast {
       position: fixed;
-      bottom: 24px;
+      bottom: calc(20px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%) translateY(120px);
       background: var(--neo-black);
       color: #ffffff;
       border: 3px solid #ffffff;
-      padding: 12px 24px;
+      padding: 12px 20px;
       border-radius: 999px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 800;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       z-index: 999;
@@ -724,6 +757,7 @@
       gap: 8px;
       text-align: center;
       max-width: 90vw;
+      white-space: nowrap;
     }
 
     #toast.show {
@@ -731,22 +765,64 @@
       opacity: 1;
     }
 
-    @media (max-width: 600px) {
-      .hero-main-title {
-        font-size: 2.2rem;
-      }
-
-      .hero-highlight-box {
-        font-size: 1.65rem;
-        padding: 5px 18px;
+    /* ═══════════════════════════════════════
+       RESPONSIVE TABLET (≥ 600px)
+    ═══════════════════════════════════════ */
+    @media (min-width: 600px) {
+      .hero-cta-group {
+        flex-direction: row;
+        align-items: center;
+        padding: 0;
       }
 
       .btn-neo {
-        width: 100%;
+        width: auto;
+        min-width: 180px;
       }
 
-      .nav-actions .btn-white {
-        display: none;
+      .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .container {
+        padding: 32px 24px 80px 24px;
+      }
+
+      .neo-card {
+        padding: 26px 22px;
+      }
+
+      .brand-title {
+        font-size: 1.55rem;
+      }
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE DESKTOP (≥ 900px)
+    ═══════════════════════════════════════ */
+    @media (min-width: 900px) {
+      .nav-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3.5px 3.5px 0 var(--neo-black);
+      }
+
+      .btn-neo:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0 var(--neo-black);
+      }
+
+      .step-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 var(--neo-black);
+      }
+
+      .doraemon-avatar-wrap:hover {
+        transform: scale(1.08) rotate(-3deg);
+      }
+
+      .hero-highlight-box:hover {
+        transform: rotate(1deg) scale(1.02);
       }
     }
   </style>
@@ -975,23 +1051,27 @@
 
       <div class="faq-list">
         <div class="faq-neo-item active">
-          <div class="faq-question">1. Cài đặt này có an toàn cho iPhone không?</div>
-          <div class="faq-answer">Hoàn toàn an toàn 100%. Hồ sơ chỉ cấu hình chuyển hướng kết nối DNS của riêng ứng dụng
-            Locket (RevenueCat) qua máy chủ chuyên dụng, không ảnh hưởng đến bất kỳ ứng dụng ngân hàng hay thông tin cá
-            nhân nào khác.</div>
+          <div class="faq-question">
+            <span class="faq-question-text">1. Cài đặt này có an toàn cho iPhone không?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">Hoàn toàn an toàn 100%. Hồ sơ chỉ cấu hình chuyển hướng kết nối DNS của riêng ứng dụng Locket (RevenueCat) qua máy chủ chuyên dụng, không ảnh hưởng đến bất kỳ ứng dụng ngân hàng hay thông tin cá nhân nào khác.</div>
         </div>
 
         <div class="faq-neo-item">
-          <div class="faq-question">2. Tại sao tôi không thấy mục "Đã tải về hồ sơ"?</div>
-          <div class="faq-answer">Hãy đảm bảo bạn đã dùng trình duyệt Safari để bấm tải và nhấn "Cho phép". Nếu vẫn
-            không thấy, bạn vào <strong>Cài đặt ➜ Cài đặt chung ➜ Quản lý VPN & Thiết bị</strong> để tìm hồ sơ tải về
-            nhé.</div>
+          <div class="faq-question">
+            <span class="faq-question-text">2. Tại sao tôi không thấy mục "Đã tải về hồ sơ"?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">Hãy đảm bảo bạn đã dùng trình duyệt Safari để bấm tải và nhấn "Cho phép". Nếu vẫn không thấy, bạn vào <strong>Cài đặt ➜ Cài đặt chung ➜ Quản lý VPN &amp; Thiết bị</strong> để tìm hồ sơ tải về nhé.</div>
         </div>
 
         <div class="faq-neo-item">
-          <div class="faq-question">3. Locket Gold VIP có được dùng vĩnh viễn không?</div>
-          <div class="faq-answer">Có, cấu hình đã tích hợp bộ chứng chỉ tự động duy trì gói VIP vĩnh viễn và tự động
-            chặn thu hồi bản quyền.</div>
+          <div class="faq-question">
+            <span class="faq-question-text">3. Locket Gold VIP có được dùng vĩnh viễn không?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">Có, cấu hình đã tích hợp bộ chứng chỉ tự động duy trì gói VIP vĩnh viễn và tự động chặn thu hồi bản quyền.</div>
         </div>
       </div>
     </section>
@@ -1120,12 +1200,28 @@
       });
     }
 
-    // FAQ Accordion tương tác
+    // FAQ Accordion tương tác — mượt mà với CSS max-height transition
     document.querySelectorAll('.faq-question').forEach(header => {
       header.addEventListener('click', () => {
         const item = header.parentElement;
-        item.classList.toggle('active');
+        const isActive = item.classList.contains('active');
+        // Đóng tất cả
+        document.querySelectorAll('.faq-neo-item').forEach(el => {
+          el.classList.remove('active');
+          const icon = el.querySelector('.faq-icon');
+          if (icon) icon.textContent = '+';
+        });
+        // Mở cái được bấm (nếu chưa active)
+        if (!isActive) {
+          item.classList.add('active');
+          const icon = item.querySelector('.faq-icon');
+          if (icon) icon.textContent = '+';
+        }
       });
+    });
+    // Set icon ban đầu cho item active
+    document.querySelectorAll('.faq-neo-item.active .faq-icon').forEach(icon => {
+      icon.textContent = '+';
     });
   </script>
 
